@@ -1,0 +1,86 @@
+<%# app/views/feedbacks/index.html.erb %>
+<div style="max-width: 800px; margin: 60px auto; padding: 0 20px; font-family: 'Helvetica Neue', Arial, sans-serif; color: #1a1a1a;">
+  
+  <%# ヘッダー部分 %>
+  <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 60px; border-bottom: 1px solid #1a1a1a; padding-bottom: 15px;">
+    <h2 style="font-size: 22px; font-weight: 300; letter-spacing: 0.15em; margin: 0;">FEEDBACKS</h2>
+    <%= link_to "New Post", new_feedback_path, style: "font-size: 11px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em; border: 1px solid #1a1a1a; padding: 8px 20px;" %>
+  </div>
+
+<%# 絞り込みフォーム %>
+  <div style="margin-bottom: 40px;">
+    <%= form_with url: feedbacks_path, method: :get, local: true do |f| %>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <span style="font-size: 10px; letter-spacing: 0.1em; color: #999;">FILTER:</span>
+        <%= f.collection_select :student_id, @students, :id, :name, 
+            { include_blank: "ALL STUDENTS", selected: params[:student_id] }, 
+            { style: "border: none; border-bottom: 1px solid #e5e5e5; padding: 5px; font-size: 12px; color: #1a1a1a; background: transparent; border-radius: 0; outline: none;" } %>
+        <%= f.submit "SEARCH", style: "background: none; border: none; font-size: 10px; letter-spacing: 0.1em; cursor: pointer; color: #666;" %>
+        <% if params[:student_id].present? %>
+          <%= link_to "CLEAR", feedbacks_path, style: "font-size: 10px; color: #ccc; text-decoration: none; margin-left: 10px;" %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <%# フィードバック一覧から「名簿」へのリンク （講師だけに表示） %>
+  <div style="text-align: right; margin-bottom: 10px;">
+    <% if current_user.teacher? %>
+      <%= link_to "→ STUDENT LIST", users_path, style: "font-size: 10px; color: #999; text-decoration: none; letter-spacing: 0.1em; font-weight: bold;" %>
+    <% end %>
+  </div>
+
+  <%# リスト部分 %>
+  <div style="display: flex; flex-direction: column;">
+    <% @feedbacks.each do |feedback| %>
+      <%= link_to feedback_path(feedback), style: "text-decoration: none; color: inherit; display: block; border-bottom: 1px solid #f0f0f0; padding: 20px 0; transition: background 0.2s;" do %>
+        <div style="display: flex; align-items: center; gap: 30px;" onmouseover="this.style.backgroundColor='#fafafa'" onmouseout="this.style.backgroundColor='transparent'">
+      
+          <%# 1. 評価スコア（一番最初に目に入るように） %>
+          <div style="width: 50px; text-align: center;">
+            <div style="font-size: 18px; font-family: 'Georgia', serif; font-weight: 300; border-bottom: 1px solid #1a1a1a; display: inline-block; min-width: 25px;">
+              <%= feedback.rating %>
+            </div>
+            <div style="font-size: 8px; color: #999; margin-top: 4px; letter-spacing: 0.1em;">SCORE</div>
+            <%# NEW!マーク %>
+            <% if feedback.new_arrival? %>
+              <span style="
+                font-size: 9px; 
+                color: #fff; 
+                background: #1a1a1a; 
+                padding: 2px 4px; 
+                margin-left: 5px; 
+                vertical-align: middle;
+                letter-spacing: 0.05em;
+              ">NEW!</span>
+            <% end %>
+          </div>
+
+          <%# 2. メイン情報（日付・講習名・名前） %>
+          <div style="flex-grow: 1;">
+            <%# 日付 %>
+            <div style="font-size: 10px; color: #999; letter-spacing: 0.05em; margin-bottom: 2px;">
+              <%= feedback.lesson_date.strftime("%Y . %m . %d") %>
+            </div>
+            <%# 講習名 %>
+            <div style="font-size: 16px; font-weight: 500; color: #1a1a1a; letter-spacing: 0.02em; margin-bottom: 4px;">
+              <%= feedback.title.present? ? feedback.title : "Untitled Lesson" %>
+            </div>
+            <%# 生徒名 %>
+            <div style="font-size: 10px; color: #999; letter-spacing: 0.05em; text-transform: uppercase;">
+              <%= feedback.student.name %>
+            </div>
+          </div>
+
+          <%# 3. 補助情報（項目の数など） %>
+          <div style="text-align: right; min-width: 100px;">
+            <span style="font-size: 10px; color: #bbb; letter-spacing: 0.1em;">
+              <%= feedback.check_items.count %> CHECK POINTS
+            </span>
+            <span style="margin-left: 15px; color: #ccc; font-size: 12px;">→</span>
+          </div>
+
+        </div>
+      <% end %>
+    <% end %>
+  </div>

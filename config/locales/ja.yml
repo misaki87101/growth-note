@@ -1,0 +1,27 @@
+ja:
+  activerecord:
+    models:
+      feedback: "フィードバック"
+      user: "ユーザー"
+    attributes:
+      feedback:
+        student_id: "生徒"
+        lesson_date: "レッスン日"
+        title: "講習名"
+        rating: "理解度"
+        content: "全体フィードバック"
+      user:
+        name: "お名前"
+        email: "メールアドレス"
+        password: "パスワード"
+        password_confirmation: "パスワード（確認）"
+        bio: "自己紹介"
+        goals: "目標"
+        features: "特徴"
+        favorite_things: "好きなもの"
+        message: "メッセージ"
+  errors:
+    messages:
+      blank: "を入力してください"
+      required: "は必須項目です"
+      too_short: "は%{count}文字以上で入力してください"

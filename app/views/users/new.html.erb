@@ -1,0 +1,45 @@
+<div style="max-width: 400px; margin: 60px auto; padding: 0 20px; font-family: 'Helvetica Neue', Arial, sans-serif;">
+  <h2 style="font-size: 18px; font-weight: 300; letter-spacing: 0.2em; text-align: center; margin-bottom: 40px; color: #1a1a1a;">SIGN UP</h2>
+
+  <%= form_with(model: @user, url: signup_path, local: true) do |f| %>
+    <%# エラーメッセージ表示 %>
+    <% if @user.errors.any? %>
+      <div style="background: #fff5f5; border: 1px solid #ff4b5c; padding: 15px; margin-bottom: 25px;">
+        <p style="color: #ff4b5c; font-size: 12px; font-weight: bold; margin: 0 0 10px 0;">
+          入力内容にエラーがあります
+        </p>
+        <ul style="list-style: none; padding: 0; margin: 0;">
+          <% @user.errors.full_messages.each do |message| %>
+            <li style="color: #ff4b5c; font-size: 11px; margin-bottom: 3px;">・<%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div style="margin-bottom: 25px;">
+      <%= f.label :name, "NAME / お名前", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 8px;" %>
+      <%= f.text_field :name, style: "width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 0; outline: none; font-size: 14px;" %>
+    </div>
+
+    <div style="margin-bottom: 25px;">
+      <%= f.label :email, "EMAIL / メールアドレス", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 8px;" %>
+      <%= f.email_field :email, style: "width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 0; outline: none; font-size: 14px;" %>
+    </div>
+
+    <div style="margin-bottom: 25px;">
+      <%= f.label :password, "PASSWORD / パスワード", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 8px;" %>
+      <%= f.password_field :password, style: "width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 0; outline: none; font-size: 14px;" %>
+    </div>
+
+    <div style="margin-bottom: 30px;">
+      <%= f.label :password_confirmation, "CONFIRM PASSWORD / 確認用パスワード", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 8px;" %>
+      <%= f.password_field :password_confirmation, style: "width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 0; outline: none; font-size: 14px;" %>
+    </div>
+
+    <%= f.submit "CREATE ACCOUNT", style: "width: 100%; background: #1a1a1a; color: #fff; border: none; padding: 15px; font-size: 12px; letter-spacing: 0.2em; cursor: pointer; transition: 0.3s; border-radius: 0;" %>
+  <% end %>
+
+  <div style="text-align: center; margin-top: 30px;">
+    <%= link_to "ALREADY HAVE AN ACCOUNT? LOGIN", login_path, style: "font-size: 10px; color: #999; text-decoration: none; letter-spacing: 0.1em;" %>
+  </div>
+</div>

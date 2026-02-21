@@ -1,0 +1,78 @@
+<div style="max-width: 700px; margin: 60px auto; padding: 0 20px; font-family: 'Helvetica Neue', Arial, sans-serif; color: #1a1a1a;">
+  
+  <%# タイトル %>
+  <div style="text-align: center; margin-bottom: 60px;">
+    <h1 style="font-size: 22px; font-weight: 300; letter-spacing: 0.15em; margin-bottom: 10px; text-transform: uppercase;">My Growth Note</h1>
+    <div style="font-size: 10px; color: #999; letter-spacing: 0.2em;">LEARNING ARCHIVE</div>
+  </div>
+
+  <% if @feedbacks.any? %>
+    <div style="display: flex; flex-direction: column;">
+      <% @feedbacks.each do |feedback| %>
+        <%= link_to feedback_path(feedback), style: "text-decoration: none; color: inherit; display: block; border-bottom: 1px solid #eee; padding: 40px 0; transition: opacity 0.3s;" do %>
+          <div style="display: flex; gap: 40px; align-items: flex-start;">
+
+            <%# スコア（左側に配置） %>
+            <div style="width: 40px; text-align: center;">
+              <div style="font-size: 20px; font-family: 'Georgia', serif; font-weight: 300; border-bottom: 1px solid #1a1a1a; display: inline-block; min-width: 25px;">
+                <%= feedback.rating %>
+              </div>
+              <div style="font-size: 8px; color: #999; margin-top: 5px;">SCORE</div>
+              <%# NEW!マーク %>
+              <% if feedback.new_arrival? %>
+                <span style="
+                  font-size: 9px; 
+                  color: #fff; 
+                  background: #1a1a1a; 
+                  padding: 2px 4px; 
+                  margin-left: 5px; 
+                  vertical-align: middle;
+                  letter-spacing: 0.05em;
+                ">NEW!</span>
+              <% end %>
+            </div>
+
+            <div style="flex-grow: 1;">
+              <div style="font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 5px;">
+                <%= feedback.lesson_date.strftime("%Y . %m . %d") %>
+              </div>
+              <div style="font-size: 16px; font-weight: 500; letter-spacing: 0.05em; margin-bottom: 10px;">
+                <%= feedback.title.present? ? feedback.title : "Lesson Feedback" %>
+              </div>
+              <div style="color: #666; font-size: 13px; line-height: 1.8; letter-spacing: 0.02em;">
+                <%= feedback.content.truncate(60) %>
+              </div>
+            </div>
+
+            <div style="color: #ccc; font-size: 18px; align-self: center;">→</div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <div style="text-align: center; padding: 80px 0; color: #999; font-weight: 300; letter-spacing: 0.1em;">
+      No records found.
+    </div>
+  <% end %>
+</div>
+
+<style>
+  @media print {
+    /* 印刷時にボタンやリンクを隠す */
+    button, a, .no-print {
+      display: none !important;
+    }
+    
+    /* 印刷時の余白調整 */
+    body {
+      background: white !important;
+    }
+    div[style*="margin: 60px auto"] {
+      margin: 0 !important;
+      border: none !important;
+      box-shadow: none !important;
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+  }
+</style>

@@ -1,0 +1,200 @@
+<%# 外枠のメインコンテナ %>
+<div style="max-width: 650px; margin: 60px auto; padding: 50px 60px; background-color: #ffffff; border: 1px solid #e5e5e5; border-radius: 2px; font-family: 'Helvetica Neue', 'Helvetica', 'Hiragino Sans', sans-serif; color: #1a1a1a; line-height: 1.6; letter-spacing: 0.02em;">
+
+  <%# タイトル部分 %>
+  <h2 style="font-size: 20px; font-weight: 300; text-align: center; margin-bottom: 50px; letter-spacing: 0.15em; color: #1a1a1a; text-transform: uppercase;">
+    <%= action_name == 'new' ? 'New Feedback' : 'Edit Feedback' %>
+  </h2>
+  
+  <%= form_with(model: @feedback, local: true) do |f| %>
+    <%# エラーメッセージの表示 %>
+    <% if @feedback.errors.any? %>
+      <div style="color: red; font-size: 12px; margin-bottom: 20px; padding: 10px; border: 1px solid red;">
+        <p><%= @feedback.errors.count %>件のエラーがあります：</p>
+        <ul>
+          <% @feedback.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    
+    <%# 生徒選択 %>
+    <div style="margin-bottom: 15px;">
+      <%= f.label :student_id, style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" do %>
+        生徒を選択 <span style="color: #d1d1d1; margin-left: 5px;">*</span>
+      <% end %>
+
+      <% if current_user.student? %>
+        <%= f.collection_select :student_id, @students, :id, :name, {}, { disabled: true, style: "font-size: 12px; width: 100%; #{'background: #f5f5f5;' if current_user.student?}" } %>
+        <%= f.hidden_field :student_id %>
+      <% else %>
+        <%= f.collection_select :student_id, @students, :id, :name, { prompt: "選択してください" }, { style: "font-size: 12px; width: 100%; #{'background: #f5f5f5;' if current_user.student?}" } %>
+      <% end %>
+    </div>
+
+    <%# レッスン日 %>
+    <div style="margin-bottom: 15px;">
+      <%= f.label :lesson_date, style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" do%>
+        レッスン日 <span style="color: #d1d1d1; margin-left: 5px;">*</span>
+      <% end %>
+      <%= f.date_field :lesson_date, readonly: current_user.student?, 
+          style: "font-size: 12px; width: 100%; #{'background: #f5f5f5;' if current_user.student?}" %>
+    </div>
+
+    <%# 講習名（タイトル） %>
+    <div style="margin-bottom: 25px;">
+      <%= f.label :title, style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" do%>
+        講習名 <span style="color: #d1d1d1; margin-left: 5px;">*</span>
+      <% end %>
+      <%= f.text_field :title, readonly: current_user.student?, placeholder: "例：夏期講習 第1回 / TOEIC対策", style: "width: 100%; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff; font-size: 12px; color: #1a1a1a; outline: none;" %>
+    </div>
+
+    <%# 講習時間 %>
+    <div style="margin-bottom: 25px;">
+      <%= f.label :time, "講習時間", style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" %>
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <%# HOURの入力 %>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <%= f.number_field :hour, readonly: current_user.student?, placeholder: "0", min: 0, style: "width: 70px; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff; font-size: 12px; color: #1a1a1a; outline: none;" %>
+          <span style="font-size: 11px; color: #999;">HR</span>
+        </div>
+
+        <%# MINUTEの入力 %>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <%= f.number_field :minute, readonly: current_user.student?, placeholder: "0", min: 0, max: 59, style: "width: 70px; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff; font-size: 12px; color: #1a1a1a; outline: none;" %>
+          <span style="font-size: 11px; color: #999;">MIN</span>
+        </div>
+      </div>
+    </div>
+
+    <%# 理解度（星評価） %>
+    <div style="margin-bottom: 15px;">
+      <%= f.label :rating, "本日の理解度", style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;"  %>
+      <div style="font-size: 20px; color: #030200;">
+        <%= f.select :rating, [["★★★★★", 5], ["★★★★", 4], ["★★★", 3], ["★★", 2], ["★", 1]], { prompt: "評価を選択" }, { disabled: current_user.student?, style: "width: 100%; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff; font-size: 12px; -webkit-appearance: none;" } %>
+      </div>
+    </div>
+
+    <%# 項目別評価（○△×） %>
+    <div style="margin: 40px 0; padding: 25px 0; border-top: 1px solid #eee; border-bottom: 1px solid #eee;">
+      <%= f.label :check_items, "◎ 項目別チェック", style: "display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" %>
+      <span style="font-size: 10px; color: #666; width: 100%;">定型文を挿入:</span>
+
+      <% if current_user.teacher? %>
+        <div style="margin-bottom: 10px; display: flex; gap: 10px;">
+          <button type="button" class="template-btn" data-items='["宿題チェック", "前回の復習"]' style="background: transparent; border: 1px solid #e5e5e5; color: #1a1a1a; padding: 6px 12px; border-radius: 0; font-size: 10px; letter-spacing: 0.05em; cursor: pointer;">ベーシック</button>
+          <button type="button" class="template-btn" data-items='["テキスト", "文法講義", "リーディング"]' style="background: transparent; border: 1px solid #e5e5e5; color: #1a1a1a; padding: 6px 12px; border-radius: 0; font-size: 10px; letter-spacing: 0.05em; cursor: pointer;">座学</button>
+        </div>
+      <% end %>
+
+      <div style="background: #f1f5f9; padding: 10px; border-radius: 0px; font-size: 12px; margin-bottom: 15px; color: #475569;">
+        <%= render 'rating_legend' %>
+      </div>
+
+      <h3 style="font-size: 13px; font-weight: 300; letter-spacing: 0.1em; margin-bottom: 20px; color: #1a1a1a; display: flex; justify-content: space-between; align-items: center;">
+        Add Button
+        <% if current_user.teacher? %> <%# 💡 講師の時だけ表示！ %>
+        <button type="button" id="add-item-button" style="background: none; border: 1px solid #1a1a1a; color: #1a1a1a; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center;">+</button>
+        <% end %>
+      </h3>
+      
+      <div id="check-items-container">
+        <%= f.fields_for :check_items do |item_f| %>
+          <div class="check-item-row" style="display: flex; gap: 10px; margin-bottom: 12px; align-items: center;">
+            <%# タイム入力欄 %>
+            <%= item_f.text_field :timestamp, placeholder: "00:00", style: "width: 60px; padding: 10px; border: 1px solid #e5e5e5; font-size: 12px; text-align: center;" %>
+            <%= item_f.text_field :name, readonly: current_user.student?, placeholder: "項目名 (例: あいさつ)", style: "flex: 2; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff; font-size: 12px;"  %>
+            <%= item_f.select :result, [["◎", "◎"], ["○", "○"], ["△", "△"], ["×", "×"]], { prompt: "評価" }, { disabled: current_user.student?, style: "flex: 1; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff; font-size: 12px;" } %>
+          </div>
+        <% end %>
+      </div>
+
+      <template id="item-template">
+        <div class="check-item-row" style="display: flex; gap: 10px; margin-bottom: 12px; align-items: center;">
+          <input type="text" name="feedback[check_items_attributes][NEW_RECORD][timestamp]" placeholder="00:00" style="width: 60px; padding: 10px; border: 1px solid #e5e5e5; font-size: 12px; text-align: center;">
+          <input type="text" name="feedback[check_items_attributes][NEW_RECORD][name]" placeholder="項目名 (例: あいさつ)" style="flex: 2; padding: 10px; border: 1px solid #e5e5e5; border-radius: 0px; font-size: 12px;">
+          <select name="feedback[check_items_attributes][NEW_RECORD][result]" style="flex: 1; padding: 10px; border: 1px solid #e5e5e5; border-radius: 0px; font-size: 12px;">
+            <option value="">評価</option>
+            <option value="◎">◎</option>
+            <option value="○">○</option>
+            <option value="△">△</option>
+            <option value="×">×</option>
+          </select>
+            <% if current_user.teacher? %>
+            <button type="button" class="remove-item-button" style="background: none; border: none; color: #999; cursor: pointer; font-size: 18px; font-weight: 200;">×</button>
+            <% end %>
+        </div>
+      </template>
+    </div>
+
+    <%# フィードバックテンプレボタン %>
+    <%= f.label :content_label, "◎ 全体フィードバック", style: "display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" %>
+    <% if current_user.teacher? %>
+      <div style="margin-bottom: 8px; display: flex; gap: 8px; flex-wrap: wrap;">
+        <span style="font-size: 10px; color: #666; width: 100%;">定型文を挿入:</span>
+        <button type="button" class="phrase-btn" data-text="今日もステップアップできましたね！この調子で次回も頑張りましょう✨" style="background: transparent; border: 1px solid #e5e5e5; color: #666; padding: 6px 12px; border-radius: 0; font-size: 10px; cursor: pointer;">😊 うまくできた</button>
+        <button type="button" class="phrase-btn" data-text="レッスン中に伝えた内容を振り返り、反復練習しながら自分のスキルに繋げましょう！" style="background: transparent; border: 1px solid #e5e5e5; color: #666; padding: 6px 12px; border-radius: 0; font-size: 10px; cursor: pointer;">💪 復習頑張ろう</button>
+        <button type="button" class="phrase-btn" data-text="次回のレッスンは『 』の予定です。余裕があればテキストに目を通しておいてくださいね！" style="background: transparent; border: 1px solid #e5e5e5; color: #666; padding: 6px 12px; border-radius: 0; font-size: 10px; cursor: pointer;">📖 次回の予告</button>
+      </div>
+    <% end %>
+
+    <%# 全体フィードバック %>
+    <div style="margin-bottom: 20px;">
+        <%= f.text_area :content, id: "feedback-content", readonly: current_user.student?, 
+            style: "padding: 15px; font-size: 11px; margin-bottom: 20px; color: #888; border: 1px solid #f0f0f0; line-height: 1.8; letter-spacing: 0.02em;width: 100%; #{'background: #f5f5f5;' if current_user.student?}" %>
+      </div>
+      
+    <%= f.submit f.object.new_record? ? "CREATE FEEDBACK" : "UPDATE FEEDBACK", style: "width: 100%; padding: 16px; background-color: #1a1a1a; color: #fff; border: none; border-radius: 0; font-weight: 300; font-size: 12px; letter-spacing: 0.2em; cursor: pointer; margin-top: 30px;" %>
+  <% end %> 
+</div> 
+
+<%# JavaScript はフォームの外部（コンテナの下）に配置 %>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('check-items-container');
+    const addButton = document.getElementById('add-item-button');
+    const template = document.getElementById('item-template');
+    const templateBtns = document.querySelectorAll('.template-btn');
+
+    addButton.addEventListener('click', () => {
+      let content = template.innerHTML;
+      const newId = new Date().getTime();
+      content = content.replace(/NEW_RECORD/g, newId);
+      container.insertAdjacentHTML('beforeend', content);
+    });
+
+    container.addEventListener('click', (e) => {
+      if (e.target.classList.contains('remove-item-button')) {
+        const row = e.target.closest('.check-item-row');
+        row.remove();
+      }
+    });
+
+    templateBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const items = JSON.parse(btn.dataset.items);
+        items.forEach(itemName => {
+          let content = template.innerHTML;
+          const newId = new Date().getTime() + Math.random();
+          content = content.replace(/NEW_RECORD/g, newId);
+          container.insertAdjacentHTML('beforeend', content);
+
+          const lastRow = container.lastElementChild;
+          const input = lastRow.querySelector('[name*="[name]"]');
+          if (input) input.value = itemName;
+        });
+      });
+    });
+
+    const phraseBtns = document.querySelectorAll('.phrase-btn');
+    const contentArea = document.getElementById('feedback-content');
+    phraseBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const text = btn.dataset.text;
+        contentArea.value = contentArea.value ? contentArea.value + "\n" + text : text;
+        contentArea.focus();
+      });
+    });
+  });
+</script>

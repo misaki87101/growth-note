@@ -1,0 +1,55 @@
+<div style="max-width: 600px; margin: 60px auto; padding: 50px; background: #fff; border: 1px solid #eee; font-family: 'Helvetica Neue', Arial, sans-serif;">
+  
+  <h2 style="font-size: 18px; font-weight: 300; letter-spacing: 0.15em; text-align: center; margin-bottom: 40px; text-transform: uppercase;">Edit Profile</h2>
+
+  <%= form_with(model: @user, local: true) do |f| %>
+    
+    <%# 共通項目：名前 %>
+  <div style="margin-bottom: 25px;">
+    <%= f.label :name, "NAME / 名前", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 8px;" %>
+    <%= f.text_field :name, style: "width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 0; outline: none; font-size: 14px;" %>
+  </div>
+
+    <%# 共通項目：誕生日 %>
+    <div style="margin-bottom: 25px;">
+      <%= f.label :bio, "BIRTHDAY / 誕生日", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 8px;" %>
+      <%= f.text_area :bio, rows: 1, style: "width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 0; outline: none; font-size: 14px;" %>
+    </div>
+    <%# 共通項目：好きなもの %>
+    <div style="margin-bottom: 25px;">
+      <%= f.label :favorite_things, "FAVORITE THINGS / 好きなもの", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 8px;" %>
+      <%= f.text_field :favorite_things, placeholder: "コーヒー、テニス、読書など", style: "width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 0; outline: none; font-size: 14px;" %>
+    </div>
+
+    <%# 共通項目：経歴 %>
+    <div style="margin-bottom: 25px;">
+      <%= f.label :bio, "BIOGRAPHY / 経歴", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 8px;" %>
+      <%= f.text_area :bio, rows: 3, placeholder: "資格、経歴など", style: "width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 0; outline: none; font-size: 14px;" %>
+    </div>
+
+    <% if @user.teacher? %>
+      <%# 講師専用：生徒へのメッセージ %>
+      <div style="margin-bottom: 25px;">
+        <%= f.label :message, "MESSAGE TO STUDENTS / メッセージ", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 8px;" %>
+        <%= f.text_area :message, rows: 3, placeholder: "生徒へ一言メッセージ", style: "width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 0; outline: none; font-size: 14px;" %>
+      </div>
+    <% else %>
+      <%# 生徒専用：目標 %>
+      <div style="margin-bottom: 25px;">
+        <%= f.label :goals, "MY GOALS / 今後の目標", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 8px;" %>
+        <%= f.text_area :goals, rows: 3, style: "width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 0; outline: none; font-size: 14px;" %>
+      </div>
+    <% end %>
+
+    <%# ⚠️ 講師だけが「生徒の編集画面」で入力できる項目（カルテ機能） %>
+    <% if current_user.teacher? && !@user.teacher? %>
+      <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #f0f0f0;">
+        <%= f.label :features, "TEACHER'S NOTES / 指導上の注意・特徴 💡この項目は生徒には表示されません", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 8px;" %>
+        <%= f.text_area :features, rows: 3, placeholder: "講師間共有用：性格や苦手分野など", style: "width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 0; outline: none; font-size: 14px; color: #666; background: #fcfcfc;" %>
+      </div>
+    <% end %>
+
+    <%= f.submit "UPDATE PROFILE", style: "width: 100%; padding: 15px; background: #1a1a1a; color: #fff; border: none; font-size: 11px; letter-spacing: 0.2em; cursor: pointer; margin-top: 30px;" %>
+  <% end %>
+
+</div>

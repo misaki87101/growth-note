@@ -1,0 +1,24 @@
+<div style="max-width: 400px; margin: 100px auto; padding: 0 20px; font-family: 'Helvetica Neue', Arial, sans-serif; text-align: center;">
+  <h2 style="font-size: 18px; font-weight: 300; letter-spacing: 0.2em; margin-bottom: 40px; color: #1a1a1a;">LOGIN</h2>
+
+  <%= form_with(url: login_path, scope: :session, local: true) do |f| %>
+    <div style="margin-bottom: 20px;">
+      <%= f.email_field :email, placeholder: "EMAIL", style: "width: 100%; padding: 12px; border: none; border-bottom: 1px solid #eee; border-radius: 0; outline: none; font-size: 13px;" %>
+    </div>
+    <div style="margin-bottom: 30px;">
+      <%= f.password_field :password, placeholder: "PASSWORD", style: "width: 100%; padding: 12px; border: none; border-bottom: 1px solid #eee; border-radius: 0; outline: none; font-size: 13px;" %>
+    </div>
+    
+    <%= f.submit "LOGIN", style: "width: 100%; padding: 15px; background: #1a1a1a; color: #fff; border: none; letter-spacing: 0.1em; font-size: 11px; cursor: pointer; margin-bottom: 30px;" %>
+  <% end %>
+
+  <div style="display: flex; flex-direction: column; gap: 15px; border-top: 1px solid #f9f9f9; padding-top: 30px;">
+    <%# 新規登録 %>
+    <%= link_to "CREATE ACCOUNT / 会員登録", signup_path, 
+        style: "font-size: 10px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.05em; border-bottom: 1px solid #1a1a1a; display: inline-block; width: fit-content; margin: 0 auto;" %>
+  
+    <%# パスワード忘れ %>
+    <%= link_to "FORGOT PASSWORD? / パスワードを忘れた方はこちら", new_password_reset_path, style: "font-size: 9px; color: #999; letter-spacing: 0.05em;" %>
+    
+  </div>
+</div>

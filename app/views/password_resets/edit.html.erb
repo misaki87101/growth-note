@@ -1,0 +1,20 @@
+<div style="max-width: 400px; margin: 60px auto; padding: 0 20px; text-align: center;">
+  <h2 style="font-size: 18px; font-weight: 300; letter-spacing: 0.2em; margin-bottom: 40px;">RESET PASSWORD</h2>
+
+  <%= form_with(model: @user, url: password_reset_path(params[:id]), local: true, method: :patch) do |f| %>
+    <%= hidden_field_tag :email, @user.email %>
+    <%# ここにエラーメッセージ表示のコードを入れると親切です！ %>
+
+    <div style="margin-bottom: 25px; text-align: left;">
+      <%= f.label :password, "新しいパスワード", style: "display: block; font-size: 10px; color: #999; margin-bottom: 8px;" %>
+      <%= f.password_field :password, style: "width: 100%; padding: 12px; border: 1px solid #eee; outline: none;" %>
+    </div>
+
+    <div style="margin-bottom: 30px; text-align: left;">
+      <%= f.label :password_confirmation, "新しいパスワード（確認用）", style: "display: block; font-size: 10px; color: #999; margin-bottom: 8px;" %>
+      <%= f.password_field :password_confirmation, style: "width: 100%; padding: 12px; border: 1px solid #eee; outline: none;" %>
+    </div>
+
+    <%= f.submit "パスワードを更新する", style: "width: 100%; background: #1a1a1a; color: #fff; border: none; padding: 15px; font-size: 12px; letter-spacing: 0.1em; cursor: pointer;" %>
+  <% end %>
+</div>

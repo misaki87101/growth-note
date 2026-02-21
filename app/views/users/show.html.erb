@@ -1,0 +1,68 @@
+<div style="max-width: 600px; margin: 60px auto; padding: 60px; background: #fff; border: 1px solid #eee; font-family: 'Helvetica Neue', Arial, sans-serif; color: #1a1a1a;">
+
+  <%# ヘッダー部分 %>
+  <div style="text-align: center; margin-bottom: 50px;">
+    <div style="font-size: 10px; color: #999; letter-spacing: 0.2em; margin-bottom: 10px;">
+      <%= @user.teacher? ? "INSTRUCTOR PROFILE" : "STUDENT PROFILE" %>
+    </div>
+    <h2 style="font-size: 24px; font-weight: 300; letter-spacing: 0.1em; margin: 0; text-transform: uppercase;">
+      <%= @user.name %>
+    </h2>
+  </div>
+
+  <%# プロフィール内容 %>
+  <div style="display: flex; flex-direction: column; gap: 40px;">
+    
+    <%# 経歴 %>
+    <% if @user.bio.present? %>
+      <div style="border-bottom: 1px solid #f9f9f9; padding-bottom: 20px;">
+        <div style="font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;">BIOGRAPHY</div>
+        <div style="font-size: 14px; line-height: 1.8; color: #333;"><%= @user.bio %></div>
+      </div>
+    <% end %>
+
+    <%# 好きなもの %>
+    <% if @user.favorite_things.present? %>
+      <div style="border-bottom: 1px solid #f9f9f9; padding-bottom: 20px;">
+        <div style="font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;">FAVORITE THINGS</div>
+        <div style="font-size: 14px; color: #333;"><%= @user.favorite_things %></div>
+      </div>
+    <% end %>
+
+    <% if @user.teacher? %>
+      <%# 講師のみ：一言メッセージ %>
+      <% if @user.message.present? %>
+        <div style="background: #fcfcfc; padding: 30px; border-left: 2px solid #1a1a1a;">
+          <div style="font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;">MESSAGE</div>
+          <div style="font-size: 15px; font-style: italic; color: #1a1a1a;"><%= @user.message %></div>
+        </div>
+      <% end %>
+    <% else %>
+      <%# 生徒のみ：目標 %>
+      <% if @user.goals.present? %>
+        <div style="border-bottom: 1px solid #f9f9f9; padding-bottom: 20px;">
+          <div style="font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;">GOALS</div>
+          <div style="font-size: 14px; color: #333;"><%= @user.goals %></div>
+        </div>
+      <% end %>
+
+      <%# 講師だけにしか見せない：指導上の特徴 %>
+      <% if current_user.teacher? && @user.features.present? %>
+        <div style="background: #f9f9f9; padding: 25px; border-left: 2px solid #e5e5e5; margin-bottom: 40px;">
+          <div style="font-size: 10px; color: #1a1a1a; letter-spacing: 0.1em; margin-bottom: 10px; font-weight: bold;">
+            TEACHER'S NOTES (SECRET)
+          </div>
+          <div style="font-size: 13px; color: #666; line-height: 1.6;">
+            <%= @user.features %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+
+  <%# 戻るボタン %>
+  <div style="margin-top: 50px; text-align: center;">
+    <% back_path = current_user.teacher? ? feedbacks_path : mypage_path %>
+    <%= link_to "BACK", back_path, style: "font-size: 11px; color: #ccc; text-decoration: none; letter-spacing: 0.1em; border-bottom: 1px solid #ccc;" %>
+  </div>
+</div>

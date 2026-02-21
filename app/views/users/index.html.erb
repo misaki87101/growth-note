@@ -1,0 +1,45 @@
+<div style="max-width: 800px; margin: 60px auto; padding: 0 20px; font-family: 'Helvetica Neue', Arial, sans-serif; color: #1a1a1a;">
+  
+  <%# ヘッダー部分 %>
+  <div style="margin-bottom: 60px; border-bottom: 1px solid #1a1a1a; padding-bottom: 15px;">
+    <h2 style="font-size: 22px; font-weight: 300; letter-spacing: 0.15em; margin: 0;">STUDENT LIST</h2>
+    <p style="font-size: 10px; color: #999; letter-spacing: 0.05em; margin-top: 5px;">生徒名簿 / カルテ管理</p>
+  </div>
+
+  <%# リスト部分 %>
+  <div style="display: flex; flex-direction: column;">
+    <% @students.each do |student| %>
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f0f0f0; padding: 25px 0;">
+        
+        <%# 左側：生徒の名前と目標の一部 %>
+        <div>
+          <div style="font-size: 16px; letter-spacing: 0.05em; margin-bottom: 5px;">
+            <%= link_to student.name, user_path(student), style: "text-decoration: none; color: inherit; font-weight: 500;" %>
+          </div>
+          <div style="font-size: 11px; color: #999; letter-spacing: 0.02em;">
+            <%= student.goals.to_s.truncate(40) %>
+          </div>
+        </div>
+
+        <%# 右側：操作ボタン %>
+        <div style="display: flex; gap: 15px; align-items: center;">
+          <%# この生徒のフィードバック一覧へ飛ぶ（絞り込み） %>
+          <%= link_to feedbacks_path(student_id: student.id), style: "text-decoration: none;" do %>
+            <span style="font-size: 10px; color: #1a1a1a; letter-spacing: 0.1em; border-bottom: 1px solid #1a1a1a;">VIEW LOGS</span>
+          <% end %>
+
+          <%# プロフィール（カルテ）編集へ %>
+          <%= link_to edit_user_path(student), style: "text-decoration: none;" do %>
+            <span style="font-size: 10px; color: #fff; background: #1a1a1a; padding: 8px 15px; letter-spacing: 0.1em;">EDIT PROFILE</span>
+          <% end %>
+        </div>
+
+      </div>
+    <% end %>
+  </div>
+
+  <%# 戻るボタン %>
+  <div style="margin-top: 50px; text-align: center;">
+    <%= link_to "BACK TO FEEDBACKS", feedbacks_path, style: "font-size: 11px; color: #ccc; text-decoration: none; letter-spacing: 0.1em; border-bottom: 1px solid #ccc;" %>
+  </div>
+</div>

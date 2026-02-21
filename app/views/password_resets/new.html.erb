@@ -1,0 +1,11 @@
+<div style="max-width: 400px; margin: 60px auto; padding: 0 20px; text-align: center;">
+  <h2 style="font-size: 18px; font-weight: 300; letter-spacing: 0.2em; margin-bottom: 40px;">FORGOT PASSWORD</h2>
+  
+  <%= form_with(scope: :password_reset, url: password_resets_path, local: true) do |f| %>
+    <div style="margin-bottom: 25px; text-align: left;">
+      <%= f.label :email, "登録済みのメールアドレス", style: "display: block; font-size: 10px; color: #999; margin-bottom: 8px;" %>
+      <%= f.email_field :email, style: "width: 100%; padding: 12px; border: 1px solid #eee; outline: none;" %>
+    </div>
+    <%= f.submit "メールを送信する", style: "width: 100%; background: #1a1a1a; color: #fff; border: none; padding: 15px; font-size: 12px; letter-spacing: 0.1em; cursor: pointer;" %>
+  <% end %>
+</div>
