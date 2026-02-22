@@ -26,7 +26,7 @@ Rails.application.routes.draw do
   end
 
   # ユーザープロフィールの表示・編集
-  resources :users, only: [:show, :edit, :update , :index]
+  resources :users, only: [:show, :edit, :update , :index, :destroy]
 
   # 生徒用：マイページ
   get 'mypage', to: 'dashboards#show'

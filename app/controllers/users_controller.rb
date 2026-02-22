@@ -36,17 +36,20 @@ class UsersController < ApplicationController
   # プロフィール更新処理
   def update
     @user = User.find(params[:id])
-    if @user.update(user_params)
-      # 更新した本人が誰かによって戻り先を変える
-      if current_user.teacher?
-        redirect_to users_path, notice: "プロフィールを更新しました！"
+    # セキュリティ：自分自身、または講師だけが削除できるようにする
+    if @user == current_user || current_user.teacher?
+      @user.destroy
+      
+      # 自分のアカウントを消した場合はログアウトさせてトップへ
+      if @user == current_user
+        log_out 
+        redirect_to root_path, notice: "ご利用ありがとうございました。アカウントを削除しました。", status: :see_other
       else
-        redirect_to mypage_path, notice: "プロフィールを更新しました！"
+        # 講師が生徒を消した場合は生徒一覧へ戻る
+        redirect_to users_path, notice: "ユーザーを削除しました。", status: :see_other
       end
     else
-      # 💡 保存に失敗（バリデーション落ち）したらここに来る
-      flash.now[:alert] = "更新に失敗しました。入力内容を確認してください。"
-      render :edit, status: :unprocessable_entity
+      redirect_to root_path, alert: "権限がありません"
     end
   end
 
@@ -59,6 +62,21 @@ class UsersController < ApplicationController
       redirect_to mypage_path, alert: "権限がありません"
     end
   end
+
+  def destroy
+    @user = User.find(params[:id])
+    # 自分のアカウントか、講師権限がある場合のみ削除可能にする
+    if @user == current_user || current_user.teacher?
+      @user.destroy
+      # 自分のアカウントを消した場合はログアウトさせる
+      log_out if @user == current_user
+      flash[:notice] = "ユーザーを削除しました"
+      redirect_to root_path, status: :see_other
+    else
+      redirect_to root_path, alert: "権限がありません"
+    end
+  end
+
 
   private
 
