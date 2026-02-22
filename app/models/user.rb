@@ -11,8 +11,8 @@ class User < ApplicationRecord
   enum :role, { teacher: 0, student: 1 }
 
   # 講師（teacher）としての関連付け
-  has_many :students, foreign_key: 'user_id', dependent: :destroy
-  has_many :feedbacks, foreign_key: 'teacher_id'
+  # has_many :students, foreign_key: 'user_id', dependent: :destroy
+  has_many :feedbacks, foreign_key: 'teacher_id', dependent: :destroy
   has_many :likes, dependent: :destroy
   has_many :comments, dependent: :destroy
 
