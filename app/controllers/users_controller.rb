@@ -8,7 +8,7 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     # 💡 デフォルトは生徒（student）にする（enum設定があれば自動で入りますが念のため）
-    @user.role = :student if @user.respond_to?(:role)
+    # @user.role = :student if @user.respond_to?(:role)
 
     if @user.save
       log_in @user # 💡 登録後すぐにログイン状態にする
@@ -63,9 +63,12 @@ class UsersController < ApplicationController
   private
 
   # ここが重要！追加した項目を許可する
+  private
+
   def user_params
     params.require(:user).permit(
-      :name, :email, :bio, :goals, 
+      :name, :email, :role, 
+      :bio, :goals, 
       :features, :favorite_things, :message,
       :password, :password_confirmation
     )

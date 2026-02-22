@@ -36,6 +36,19 @@
       <%= f.password_field :password_confirmation, style: "width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 0; outline: none; font-size: 14px;" %>
     </div>
 
+    <%# 権限選択の追加 %>
+    <div style="margin-bottom: 30px;">
+      <label style="display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 12px;">ACCOUNT TYPE / アカウント種別</label>
+      <div style="display: flex; gap: 20px; font-size: 14px;">
+        <label style="cursor: pointer; display: flex; align-items: center;">
+          <%= f.radio_button :role, :student, checked: true, style: "margin-right: 8px;" %> 生徒
+        </label>
+        <label style="cursor: pointer; display: flex; align-items: center;">
+          <%= f.radio_button :role, :teacher, style: "margin-right: 8px;" %> 講師
+        </label>
+      </div>
+    </div>
+
     <%= f.submit "CREATE ACCOUNT", style: "width: 100%; background: #1a1a1a; color: #fff; border: none; padding: 15px; font-size: 12px; letter-spacing: 0.2em; cursor: pointer; transition: 0.3s; border-radius: 0;" %>
   <% end %>
 
