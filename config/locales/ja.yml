@@ -20,13 +20,12 @@ ja:
         features: "特徴"
         favorite_things: "好きなもの"
         message: "メッセージ"
-      errors:
-        messages:
-          models:
-            user:
-              attributes:
-                email:
-                  taken: "は既に使用されています。"
+    # ✅ attributes と同じ階層に errors を置くのが正解！
+    errors:
+      messages:
+        taken: "は既に使用されています"
+        confirmation: "が一致しません"
+  # ✅ ActiveRecord以外（通常のバリデーション）の共通エラー
   errors:
     messages:
       blank: "を入力してください"
@@ -34,3 +33,5 @@ ja:
       too_short: "は%{count}文字以上で入力してください"
       taken: "は既に使用されています"
       invalid: "は不正な値です"
+      confirmation: "が一致しません"
+      
