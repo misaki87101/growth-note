@@ -69,7 +69,12 @@ class UsersController < ApplicationController
   end
 
   private
-
+  def ensure_teacher_user
+    unless current_user.teacher?
+      redirect_to mypage_path, alert: "講師専用の機能です。"
+    end
+  end
+  
   def user_params
     params.require(:user).permit(
       :name, :email, :role, 
