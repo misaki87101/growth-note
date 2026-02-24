@@ -50,14 +50,16 @@ class UsersController < ApplicationController
   def destroy
     @user = User.find(params[:id])
     if @user == current_user || current_user.teacher?
+      # 強制的に紐づくデータを削除する（エラー回避用）
+      Feedback.where(teacher_id: @user.id).delete_all if defined?(Feedback)
+      
       @user.destroy
       log_out if @user == current_user
       flash[:notice] = "ユーザーを削除しました"
       redirect_to root_path, status: :see_other
-    else
-      redirect_to root_path, alert: "権限がありません"
     end
   end
+
 # ユーザー一覧（講師のみアクセス可能）
   def index
     @students = User.where(role: :student).order(:name)

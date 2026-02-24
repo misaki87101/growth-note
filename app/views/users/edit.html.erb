@@ -50,15 +50,13 @@
     <% end %>
 
     <%= f.submit "UPDATE PROFILE", style: "width: 100%; padding: 15px; background: #1a1a1a; color: #fff; border: none; font-size: 11px; letter-spacing: 0.2em; cursor: pointer; margin-top: 30px;" %>
+  <% end %>
+
     <div style="margin-top: 60px; padding-top: 30px; border-top: 1px dotted #eee; text-align: center;">
       <p style="font-size: 10px; color: #999; margin-bottom: 15px; letter-spacing: 0.1em;">DANGER ZONE</p>
-  
-      <%# link_to から button_to に変更しました %>
       <%= button_to "DELETE ACCOUNT / アカウント削除", user_path(@user), 
                     method: :delete,
                     form: { data: { turbo_confirm: "本当に削除しますか？\nこの操作は取り消せません。" } }, 
                     style: "font-size: 11px; color: #ff4b5c; background: none; border: 1px solid #ff4b5c; padding: 10px 20px; letter-spacing: 0.1em; display: inline-block; cursor: pointer;" %>
     </div>
-  <% end %>
-
 </div>
