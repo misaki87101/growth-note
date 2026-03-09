@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class Feedback < ApplicationRecord
-  belongs_to :student, class_name: 'User' , optional: true
-  belongs_to :teacher, class_name: 'User' , optional: true
+  belongs_to :student, class_name: 'User', optional: true
+  belongs_to :teacher, class_name: 'User', optional: true
 
   # validates :content, presence: true
   validates :student_id, presence: true

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class User < ApplicationRecord
   attr_accessor :reset_token
 
@@ -25,6 +27,7 @@ class User < ApplicationRecord
   def authenticated?(attribute, token)
     digest = send("#{attribute}_digest")
     return false if digest.nil?
+
     BCrypt::Password.new(digest).is_password?(token)
   end
 
@@ -38,4 +41,3 @@ class User < ApplicationRecord
     reset_sent_at < 2.hours.ago
   end
 end
-

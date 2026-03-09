@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ApplicationController < ActionController::Base
   helper_method :current_user, :logged_in?
 
@@ -27,16 +29,16 @@ class ApplicationController < ActionController::Base
         redirect_to mypage_path
       end
     else
-      render 'sessions/new' 
+      render 'sessions/new'
     end
   end
 
   private
 
   def logged_in_user
-    unless logged_in?
-      flash[:alert] = "ログインしてください"
-      redirect_to login_url, status: :see_other
-    end
+    return if logged_in?
+
+    flash[:alert] = "ログインしてください"
+    redirect_to login_url, status: :see_other
   end
 end

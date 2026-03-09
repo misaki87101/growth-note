@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Student < User
   # 生徒は一人の講師に所属する
   belongs_to :user
