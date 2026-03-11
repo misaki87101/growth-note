@@ -79,8 +79,15 @@
     <%= yield %>
   </body>
 
-  <footer>
-    <%= link_to '利用規約', terms_path %>
-    <%= link_to 'プライバシーポリシー', privacy_path %>
+  <footer style="margin-top: 100px; padding: 60px 0 40px; background-color: #ffffff; border-top: 1px solid #eee; text-align: center;">
+    <div style="display: flex; justify-content: center; gap: 30px; margin-bottom: 25px;">
+      <%= link_to '利用規約', terms_path, style: "text-decoration: none; color: #999; font-size: 10px; letter-spacing: 0.1em;" %>
+      <%= link_to 'プライバシーポリシー', privacy_path, style: "text-decoration: none; color: #999; font-size: 10px; letter-spacing: 0.1em;" %>
+    </div>
+    
+    <div style="font-size: 9px; color: #ccc; letter-spacing: 0.2em;">
+      © <%= Time.current.year %> GROWTH NOTE
+    </div>
   </footer>
+  
 </html>
