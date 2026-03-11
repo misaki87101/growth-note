@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get "static_pages/terms"
+  get "static_pages/privacy"
   get "password_resets/new"
   get "password_resets/edit"
   # 基本ページ
@@ -30,6 +32,10 @@ Rails.application.routes.draw do
 
   # 生徒用：マイページ
   get 'mypage', to: 'dashboards#show'
+
+  # 利用規約とプライバシーポリシー
+  get 'terms', to: 'static_pages#terms'
+  get 'privacy', to: 'static_pages#privacy'
 
   # トップページ（ログインしていなければログイン画面へ）
   root 'application#top'
