@@ -41,7 +41,7 @@ jobs:
 
       # 6. 失敗した時のスクリーンショットを保存（今の設定を活かします！）
       - name: Keep screenshots from failed system tests
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: screenshots
