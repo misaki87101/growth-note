@@ -19,11 +19,7 @@ jobs:
 
       # 2. MySQLが立ち上がるのを待つ（ここが安定の秘訣です）
       - name: Wait for MySQL to be ready
-        run: |
-          until docker compose exec db mysqladmin ping -h "db" --silent; do
-            echo "Waiting for database connection..."
-            sleep 3
-          done
+        run: sleep 15
 
       # 3. データベースの作成とマイグレーション
       - name: Database setup
