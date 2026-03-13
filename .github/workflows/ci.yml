@@ -15,7 +15,7 @@ jobs:
 
       # 1. Dockerコンテナを起動
       - name: Build and run Docker containers
-        run: docker compose up -d
+        run: docker compose up -d --build
 
       # 2. MySQLが立ち上がるのを待つ（ここが安定の秘訣です）
       - name: Wait for MySQL to be ready
