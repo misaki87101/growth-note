@@ -38,6 +38,7 @@ class UsersController < ApplicationController
       flash[:notice] = "アカウントを作成しました！"
       redirect_to mypage_path
     else
+      flash.now[:danger] = "入力内容にエラーがあります"
       render :new, status: :unprocessable_content
     end
   end

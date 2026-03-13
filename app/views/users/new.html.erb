@@ -1,7 +1,7 @@
 <div style="max-width: 400px; margin: 60px auto; padding: 0 20px; font-family: 'Helvetica Neue', Arial, sans-serif;">
   <h2 style="font-size: 18px; font-weight: 300; letter-spacing: 0.2em; text-align: center; margin-bottom: 40px; color: #1a1a1a;">SIGN UP</h2>
 
-  <%= form_with(model: @user, url: signup_path, local: true) do |f| %>
+  <%= form_with(model: @user, url: signup_path, data: { turbo: false }) do |f| %>
     <%# エラーメッセージ表示 %>
     <% if @user.errors.any? %>
       <div style="background: #fff5f5; border: 1px solid #ff4b5c; padding: 15px; margin-bottom: 25px;">

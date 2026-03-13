@@ -47,6 +47,10 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  gem 'factory_bot_rails' # テスト用のデータ（インスタンス）を簡単に作るツール
+  gem 'faker' # テストデータに使う名前やメールアドレスをランダム生成するツール
+  gem 'rspec-rails' # RSpec本体
 end
 
 group :development do

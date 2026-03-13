@@ -1,4 +1,3 @@
-# ✅ plugins という書き方に変えるのが最新のルールです
 plugins:
   - rubocop-rails
   - rubocop-performance
@@ -12,7 +11,6 @@ AllCops:
     - 'node_modules/**/*'
     - 'vendor/**/*'
 
-# --- Misakiさん仕様のカスタマイズ ---
 Style/AsciiComments:
   Enabled: false
 
@@ -21,3 +19,32 @@ Style/Documentation:
 
 Style/StringLiterals:
   Enabled: false
+
+# 日本語のメッセージ（flash等）をコントローラに直接書くのを許可
+Rails/I18nLocaleTexts:
+  Enabled: false
+
+# 1つのメソッドの行数制限を緩和（デフォルト10行は厳しいため20行へ）
+Metrics/MethodLength:
+  Max: 20
+
+# メソッドの複雑度の制限を緩和
+Metrics/AbcSize:
+  Max: 30
+
+# メソッド名に get_ を使うのを許可
+Naming/AccessorMethodName:
+  Enabled: false
+
+# inverse_of の指定を不要にする
+Rails/InverseOf:
+  Enabled: false
+
+# update_columns（バリデーションを飛ばす更新）の警告を抑制
+Rails/SkipsModelValidations:
+  Enabled: false
+
+# テストコード（spec）の中では、ブロックの長さを気にしないようにする
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'

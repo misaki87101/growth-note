@@ -34,3 +34,14 @@ COPY . .
 # 6. サーバー起動設定
 EXPOSE 3000
 CMD ["bin/rails", "server", "-b", "0.0.0.0"]
+
+# ChromeとChromedriverをインストールするための設定
+RUN apt-get update -qq && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    nodejs \
+    # 👇 ここから追記：Chromeの動作に必要なライブラリ
+    chromium \
+    chromium-driver \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*

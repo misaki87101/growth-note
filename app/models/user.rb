@@ -6,8 +6,9 @@ class User < ApplicationRecord
   has_secure_password
 
   validates :name, presence: true
-  validates :email, presence: true, uniqueness: true
+  validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :password, presence: true, length: { minimum: 6 }, on: :create
+  validates :password, length: { minimum: 6 }, allow_nil: true, on: :update
 
   # roleの設定を追加（0を講師、1を生徒とする）
   enum :role, { teacher: 0, student: 1 }
