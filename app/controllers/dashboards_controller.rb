@@ -6,7 +6,7 @@ class DashboardsController < ApplicationController
   def show
     # 💡 .with_attached_images を追加して、画像データも一緒に読み込むようにします
     @feedbacks = Feedback.where(student_id: current_user.id)
-                         .with_attached_images 
+                         .with_attached_images
                          .order(lesson_date: :desc)
   end
 end

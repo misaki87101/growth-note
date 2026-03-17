@@ -2,7 +2,7 @@
 
 class FeedbacksController < ApplicationController
   before_action :logged_in_user
-  before_action :ensure_teacher_user, except: [:index, :show, :edit, :update]
+  before_action :ensure_teacher_user, except: %i[index show edit update]
 
   def index
     @students = Student.all # 絞り込み用のリスト
@@ -54,7 +54,7 @@ class FeedbacksController < ApplicationController
     else
       @feedback.student_id = current_user.id
       # 生徒が投稿する場合、teacher_id は空にするか、特定の講師がいればここでセット
-      @feedback.teacher_id = nil 
+      @feedback.teacher_id = nil
     end
 
     if @feedback.save
@@ -90,11 +90,11 @@ class FeedbacksController < ApplicationController
 
   def feedback_params
     if current_user.teacher?
-    params.require(:feedback).permit(
-      :student_id, :lesson_date, :content, :rating, :title, :hour, :minute,
-      images: [], # 画像の複数アップロードに対応
-      check_items_attributes: %i[id name result timestamp _destroy]
-    )
+      params.require(:feedback).permit(
+        :student_id, :lesson_date, :content, :rating, :title, :hour, :minute,
+        images: [], # 画像の複数アップロードに対応
+        check_items_attributes: %i[id name result timestamp _destroy]
+      )
     else
       params.require(:feedback).permit(:hour, :minute)
     end
