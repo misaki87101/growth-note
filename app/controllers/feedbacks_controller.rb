@@ -2,7 +2,7 @@
 
 class FeedbacksController < ApplicationController
   before_action :logged_in_user
-  before_action :ensure_teacher_user, only: %i[new create edit update destroy]
+  before_action :ensure_teacher_user, except: [:index, :show, :edit, :update]
 
   def index
     @students = Student.all # 絞り込み用のリスト
@@ -46,8 +46,16 @@ class FeedbacksController < ApplicationController
 
   def create
     @feedback = Feedback.new(feedback_params)
-    # ログイン中の講師のIDを自動セット
-    @feedback.teacher_id = current_user.id
+
+    # 💡 保存する前に、誰が投稿したかによってIDを振り分ける
+    if current_user.teacher?
+      @feedback.teacher_id = current_user.id
+      # student_id はフォームから送られてきたもの（feedback_params）が自動で入る想定
+    else
+      @feedback.student_id = current_user.id
+      # 生徒が投稿する場合、teacher_id は空にするか、特定の講師がいればここでセット
+      @feedback.teacher_id = nil 
+    end
 
     if @feedback.save
       redirect_to feedbacks_path, notice: "フィードバックを投稿しました！"
@@ -81,10 +89,15 @@ class FeedbacksController < ApplicationController
   private
 
   def feedback_params
+    if current_user.teacher?
     params.require(:feedback).permit(
       :student_id, :lesson_date, :content, :rating, :title, :hour, :minute,
+      images: [], # 画像の複数アップロードに対応
       check_items_attributes: %i[id name result timestamp _destroy]
     )
+    else
+      params.require(:feedback).permit(:hour, :minute)
+    end
   end
 
   def ensure_teacher_user

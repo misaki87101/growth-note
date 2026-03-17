@@ -13,6 +13,7 @@ class Feedback < ApplicationRecord
   has_many :check_items, dependent: :destroy
   has_many :likes, dependent: :destroy
   has_many :comments, dependent: :destroy
+  has_many_attached :images
 
   accepts_nested_attributes_for :check_items,
                                 allow_destroy: true,

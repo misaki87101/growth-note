@@ -139,6 +139,29 @@
       </div>
     <% end %>
 
+    <%# 写真投稿 %>
+    <div style="margin-bottom: 25px; padding: 20px; border: 1px dashed #e5e5e5;">
+      <%= f.label :image, style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" do %>
+        <%= current_user.teacher? ? "フィードバック写真" : "宿題の写真を添付" %>
+      <% end %>
+  
+      <%= f.file_field :images, multiple: true, style: "font-size: 12px;" %>
+     <%# 現在の写真 %>
+      <% if @feedback.images.attached? %>
+        <div>
+            <%= f.label :images, "ATTACHED PHOTOS", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;" %>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; padding: 10px; background: #fafafa; border: 1px solid #eee;">
+                <% @feedback.images.each do |image| %>
+                <%= image_tag image.variant(resize_to_limit: [200, 200]), 
+                    style: "width: 100%; height: auto; display: block; border: 1px solid #eee;" %>
+                <% end %>
+            </div>
+          <div style="font-size: 10px; color: #bbb; margin-top: 10px;">※編集画面では画像の削除はできません。新しい写真を追加するか、一度投稿を削除してください</div><br>
+        </div>
+      <% end %>
+
+
+
     <%# 全体フィードバック %>
     <div style="margin-bottom: 20px;">
         <%= f.text_area :content, id: "feedback-content", readonly: current_user.student?, 

@@ -1,0 +1,49 @@
+<div style="max-width: 700px; margin: 60px auto; padding: 0 20px; font-family: 'Helvetica Neue', Arial, sans-serif; color: #1a1a1a;">
+  
+  <%# ヘッダー：日付とタイトル %>
+  <div style="text-align: center; margin-bottom: 60px;">
+    <div style="font-size: 10px; color: #999; letter-spacing: 0.2em; margin-bottom: 10px; text-transform: uppercase;">Practice Record</div>
+    <h1 style="font-size: 22px; font-weight: 300; letter-spacing: 0.1em;"><%= @homework.lesson_date.strftime("%Y . %m . %d") %></h1>
+  </div>
+
+  <%# 練習時間セクション %>
+  <div style="display: flex; justify-content: center; gap: 40px; margin-bottom: 50px; padding: 20px; border-top: 1px solid #eee; border-bottom: 1px solid #eee;">
+    <div style="text-align: center;">
+      <div style="font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 5px;">TIME</div>
+      <div style="font-size: 18px; font-family: 'Georgia', serif;">
+        <%= @homework.hour %><span style="font-size: 12px; margin: 0 4px;">h</span><%= @homework.minute %><span style="font-size: 12px; margin-left: 4px;">m</span>
+      </div>
+    </div>
+  </div>
+
+  <%# メモ・内容 %>
+  <div style="margin-bottom: 60px;">
+    <div style="font-size: 10px; color: #999; letter-spacing: 0.1em; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 20px; text-transform: uppercase;">Notes & Progress</div>
+    <div style="font-size: 15px; line-height: 2; color: #444; letter-spacing: 0.03em; white-space: pre-wrap;">
+      <%= @homework.content.present? ? @homework.content : "No notes provided." %>
+    </div>
+  </div>
+
+  <%# 写真ギャラリー（ここがメイン！） %>
+  <% if @homework.images.attached? %>
+    <div style="margin-bottom: 60px;">
+      <div style="font-size: 10px; color: #999; letter-spacing: 0.1em; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 20px; text-transform: uppercase;">Progress Photos</div>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+        <% @homework.images.each do |image| %>
+          <div style="background: #fff; padding: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-radius: 2px;">
+            <%= image_tag image.variant(resize_to_limit: [800, 800]), 
+                style: "width: 100%; height: auto; display: block; object-fit: cover;" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <%# アクションボタン %>
+  <div style="display: flex; justify-content: center; gap: 20px; margin-top: 80px; border-top: 1px solid #eee; padding-top: 40px;">
+    <%= link_to "EDIT", edit_homework_path(@homework), style: "font-size: 10px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.2em; border: 1px solid #1a1a1a; padding: 12px 30px;" %>
+    <%= link_to "BACK TO LIST", homeworks_path, style: "font-size: 10px; color: #999; text-decoration: none; letter-spacing: 0.2em; padding: 12px 30px;" %>
+  </div>
+
+</div>

@@ -6,32 +6,50 @@
     <div style="font-size: 10px; color: #999; letter-spacing: 0.2em;">LEARNING ARCHIVE</div>
   </div>
 
+  <%# ナビゲーションメニュー %>
+  <div style="display: flex; justify-content: center; gap: 40px; margin-bottom: 60px; border-bottom: 1px solid #eee;">
+    <%# FEEDBACKタブ %>
+    <div style="padding-bottom: 15px; border-bottom: 2px solid #1a1a1a;">
+      <%= link_to "FEEDBACK", mypage_path, style: "text-decoration: none; color: #1a1a1a; font-size: 11px; letter-spacing: 0.15em; font-weight: bold;" %>
+    </div>
+    <%# HOMEWORKタブ %>
+    <div style="padding-bottom: 15px;">
+      <%= link_to "HOMEWORK", homeworks_path, style: "text-decoration: none; color: #999; font-size: 11px; letter-spacing: 0.15em;" %>
+    </div>
+  </div>
+
+  <%# コンテンツエリア（既存のフィードバック一覧） %>
+  <div style="margin-bottom: 40px; display: flex; justify-content: space-between; align-items: baseline;">
+    <h2 style="font-size: 12px; font-weight: 600; letter-spacing: 0.1em; color: #1a1a1a; margin: 0;">LESSON FEEDBACKS</h2>
+    <span style="font-size: 10px; color: #999;"><%= @feedbacks.count %> Records</span>
+  </div>
+
   <% if @feedbacks.any? %>
     <div style="display: flex; flex-direction: column;">
       <% @feedbacks.each do |feedback| %>
         <%= link_to feedback_path(feedback), style: "text-decoration: none; color: inherit; display: block; border-bottom: 1px solid #eee; padding: 40px 0; transition: opacity 0.3s;" do %>
           <div style="display: flex; gap: 40px; align-items: flex-start;">
 
-            <%# スコア（左側に配置） %>
-            <div style="width: 40px; text-align: center;">
+            <%# スコア & アイコン（左側に配置） %>
+            <div style="width: 45px; text-align: center; flex-shrink: 0;">
               <div style="font-size: 20px; font-family: 'Georgia', serif; font-weight: 300; border-bottom: 1px solid #1a1a1a; display: inline-block; min-width: 25px;">
                 <%= feedback.rating %>
               </div>
-              <div style="font-size: 8px; color: #999; margin-top: 5px;">SCORE</div>
-              <%# NEW!マーク %>
-              <% if feedback.new_arrival? %>
-                <span style="
-                  font-size: 9px; 
-                  color: #fff; 
-                  background: #1a1a1a; 
-                  padding: 2px 4px; 
-                  margin-left: 5px; 
-                  vertical-align: middle;
-                  letter-spacing: 0.05em;
-                ">NEW!</span>
-              <% end %>
+              <div style="font-size: 8px; color: #999; margin-top: 5px; margin-bottom: 10px;">SCORE</div>
+              
+              <%# アイコン類を縦に並べるコンテナ %>
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                <% if feedback.new_arrival? %>
+                  <span style="font-size: 8px; color: #fff; background: #1a1a1a; padding: 1px 4px; letter-spacing: 0.05em; display: inline-block;">NEW!</span>
+                <% end %>
+
+                <% if feedback.images.attached? %>
+                  <span style="font-size: 12px; color: #bbb;" title="画像あり">📷</span>
+                <% end %>
+              </div>
             </div>
 
+            <%# テキストコンテンツ（中央） %>
             <div style="flex-grow: 1;">
               <div style="font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 5px;">
                 <%= feedback.lesson_date.strftime("%Y . %m . %d") %>
@@ -44,6 +62,7 @@
               </div>
             </div>
 
+            <%# 矢印（右側） %>
             <div style="color: #ccc; font-size: 18px; align-self: center;">→</div>
           </div>
         <% end %>

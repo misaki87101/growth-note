@@ -1,0 +1,53 @@
+<%# app/views/homeworks/index.html.erb %>
+<div style="max-width: 800px; margin: 60px auto; padding: 0 20px; font-family: 'Helvetica Neue', Arial, sans-serif; color: #1a1a1a;">
+  
+  <%# ヘッダー部分 %>
+  <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 60px; border-bottom: 1px solid #1a1a1a; padding-bottom: 15px;">
+    <h2 style="font-size: 22px; font-weight: 300; letter-spacing: 0.15em; margin: 0;">HOMEWORKS</h2>
+    <%= link_to "New Post", new_homework_path, style: "font-size: 11px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em; border: 1px solid #1a1a1a; padding: 8px 20px;" %>
+  </div>
+
+  <%# リスト部分 %>
+  <div style="display: flex; flex-direction: column;">
+    <% @homeworks.each do |homework| %>
+      <%= link_to homework_path(homework), style: "text-decoration: none; color: inherit; display: block; border-bottom: 1px solid #f0f0f0; padding: 40px 0; transition: background 0.2s;" do %>
+        <div style="display: flex; align-items: center; gap: 40px;">
+      
+          <%# 1. 練習時間（評価の代わりのアクセント） %>
+          <div style="width: 50px; text-align: center; flex-shrink: 0;">
+            <div style="font-size: 16px; font-family: 'Georgia', serif; font-weight: 300; border-bottom: 1px solid #1a1a1a; display: inline-block; min-width: 30px;">
+              <%# 1.5h のような形式で表示 %>
+              <%= homework.hour %>.<%= (homework.minute.to_f / 6).to_i %>
+            </div>
+            <div style="font-size: 8px; color: #999; margin-top: 5px; margin-bottom: 10px;">TIME</div>
+            
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+              <% if homework.new_arrival? %>
+                <span style="font-size: 8px; color: #fff; background: #1a1a1a; padding: 1px 4px; letter-spacing: 0.05em;">NEW!</span>
+              <% end %>
+              <% if homework.images.attached? %>
+                <span style="font-size: 12px; color: #bbb;">📷</span>
+              <% end %>
+            </div>
+          </div>
+
+          <%# 2. メイン情報 %>
+          <div style="flex-grow: 1;">
+            <div style="font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 5px;">
+              <%= homework.lesson_date.strftime("%Y . %m . %d") %>
+            </div>
+            <div style="font-size: 15px; font-weight: 500; letter-spacing: 0.05em; margin-bottom: 8px;">
+              <%= homework.content.present? ? homework.content.truncate(30) : "Practice Record" %>
+            </div>
+            <%# 時間を 1h 30m のように補足 %>
+            <div style="font-size: 11px; color: #999;">
+              Duration: <%= homework.hour %>h <%= homework.minute %>m
+            </div>
+          </div>
+
+          <div style="color: #ccc; font-size: 18px;">→</div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>

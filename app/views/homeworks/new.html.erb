@@ -1,0 +1,56 @@
+<div style="max-width: 600px; margin: 60px auto; padding: 0 20px; font-family: 'Helvetica Neue', Arial, sans-serif;">
+  
+  <div style="text-align: center; margin-bottom: 40px;">
+    <div style="font-size: 10px; color: #999; letter-spacing: 0.2em; margin-bottom: 10px;">SUBMIT YOUR PROGRESS</div>
+    <h1 style="font-size: 20px; font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase;">Homework Record</h1>
+  </div>
+
+  <%= form_with(model: @homework, local: true) do |f| %>
+    <div style="display: flex; flex-direction: column; gap: 30px;">
+      
+      <%# 日付選択 %>
+      <div>
+        <%= f.label :lesson_date, "DATE", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;" %>
+        <%= f.date_field :lesson_date, style: "width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 0; font-size: 14px; -webkit-appearance: none;" %>
+      </div>
+
+      <%# タイム記録 %>
+      <div style="display: flex; gap: 20px;">
+        <div style="flex: 1;">
+          <%= f.label :hour, "HOUR", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;" %>
+          <%= f.number_field :hour, placeholder: "0", style: "width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 0; font-size: 14px;" %>
+        </div>
+        <div style="flex: 1;">
+          <%= f.label :minute, "MINUTE", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;" %>
+          <%= f.number_field :minute, placeholder: "30", style: "width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 0; font-size: 14px;" %>
+        </div>
+      </div>
+
+      <%# 内容メモ %>
+      <div>
+        <%= f.label :content, "NOTE / MESSAGE", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;" %>
+        <%= f.text_area :content, placeholder: "今日の気づきや質問を書いてください", style: "width: 100%; min-height: 120px; padding: 12px; border: 1px solid #eee; border-radius: 0; font-size: 14px; line-height: 1.6;" %>
+      </div>
+
+      <%# 写真添付 %>
+      <div>
+        <%= f.label :images, "ATTACH PHOTOS", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;" %>
+        <div style="border: 1px dashed #ccc; padding: 30px; text-align: center; background: #fafafa;">
+          <%= f.file_field :images, multiple: true, style: "font-size: 12px; color: #666;" %>
+          <div style="font-size: 10px; color: #bbb; margin-top: 10px;">※複数選択（Command/Ctrl + クリック）可能です</div>
+        </div>
+      </div>
+
+      <%# 送信ボタン %>
+      <div style="margin-top: 20px;">
+        <%= f.submit "SUBMIT RECORD", style: "width: 100%; background: #1a1a1a; color: #fff; border: none; padding: 18px; font-size: 12px; letter-spacing: 0.2em; font-weight: 500; cursor: pointer; transition: opacity 0.3s;" %>
+      </div>
+
+      <div style="text-align: center;">
+        <%= link_to "CANCEL", homeworks_path, style: "font-size: 10px; color: #999; text-decoration: none; letter-spacing: 0.1em;" %>
+      </div>
+
+    </div>
+  <% end %>
+
+</div>

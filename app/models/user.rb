@@ -18,6 +18,7 @@ class User < ApplicationRecord
   has_many :feedbacks, foreign_key: 'teacher_id', dependent: :destroy
   has_many :likes, dependent: :destroy
   has_many :comments, dependent: :destroy
+  has_many :homeworks, dependent: :destroy
 
   # パスワード再設定用の属性を設定する
   def create_reset_digest

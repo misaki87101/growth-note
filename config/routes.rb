@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  get "homeworks/index"
+  get "homeworks/show"
+  get "homeworks/new"
+  get "homeworks/edit"
   get "static_pages/terms"
   get "static_pages/privacy"
   get "password_resets/new"
@@ -17,6 +21,8 @@ Rails.application.routes.draw do
   
   # ログアウト（GETもDELETEも受け付ける安全策）
   match  'logout',  to: 'sessions#destroy', via: [:get, :delete]
+
+  resources :homeworks, except: [:destroy] # 宿題の管理（生徒が提出、講師が確認）
 
   # 講師用：フィードバックの管理
   # 💡 resources :feedbacks は一つにまとめます
