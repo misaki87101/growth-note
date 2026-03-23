@@ -27,6 +27,13 @@ class HomeworksController < ApplicationController
 
   def edit; end
 
+  def purge_image
+  @homework = Homework.find(params[:id])
+  image = @homework.images.find(params[:image_id])
+  image.purge
+  redirect_to edit_homework_path(@homework), notice: "画像を削除しました"
+end
+
   def create
     @homework = current_user.homeworks.build(homework_params)
     if @homework.save

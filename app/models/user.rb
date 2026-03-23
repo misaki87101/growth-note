@@ -19,6 +19,9 @@ class User < ApplicationRecord
   has_many :likes, dependent: :destroy
   has_many :comments, dependent: :destroy
   has_many :homeworks, dependent: :destroy
+  has_many :boards, dependent: :destroy
+  has_many :board_comments, dependent: :destroy
+  has_many :board_likes, dependent: :destroy
 
   # パスワード再設定用の属性を設定する
   def create_reset_digest

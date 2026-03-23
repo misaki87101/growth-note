@@ -1,0 +1,37 @@
+<%# コメント一覧 %>
+<div id="comments">
+  <% @board.board_comments.each do |comment| %>
+    <div style="border-bottom: 1px solid #eee; padding: 10px;">
+      <strong><%= comment.user.name %></strong>: 
+      <%= comment.content %>
+      
+      <%# パスを board_board_comment_path に変更 %>
+      <%= button_to '削除', board_board_comment_path(@board, comment), 
+            method: :delete, 
+            data: { confirm: '本当に削除しますか？' }, 
+            class: "btn-delete-link" %>
+  <% end %>
+</div>
+
+<%# コメント投稿フォーム %>
+<div style="margin-top: 20px;">
+  <%# model の指定を [@board, BoardComment.new] に変更 %>
+  <%= form_with(model: [@board, BoardComment.new], local: true) do |f| %>
+    <div>
+      <%= f.text_area :content, rows: 3, style: "width: 100%;", placeholder: "コメントを入力してください" %>
+    </div>
+    <%= f.submit "コメントする", class: "btn btn-primary" %>
+  <% end %>
+</div>
+
+<div id="like-section" style="margin: 20px 0;">
+  <% if @board.liked_by?(current_user) %>
+    <%= button_to board_board_like_path(@board), method: :delete, style: "background: none; border: none; cursor: pointer;" do %>
+      <span style="color: red; font-size: 1.5em;">🖤</span> <%= @board.board_likes.count %>
+    <% end %>
+  <% else %>
+    <%= button_to board_board_like_path(@board), method: :post, style: "background: none; border: none; cursor: pointer;" do %>
+      <span style="color: gray; font-size: 1.5em;">🤍</span> <%= @board.board_likes.count %>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,42 @@
+<div class="container">
+  <h1>掲示板 新規投稿</h1>
+
+  <%= form_with(model: @board, local: true) do |f| %>
+    <% if @board.errors.any? %>
+      <div id="error_explanation" style="color: red;">
+        <h2><%= @board.errors.count %>件のエラーがあります。</h2>
+        <ul>
+          <% @board.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+  <div class="field" style="margin-top: 15px;">
+    <%= f.label :category, "カテゴリー" %>
+    <%= f.select :category, Board.categories.keys.map { |k| [I18n.t("enums.board.category.#{k}", default: k), k] }, {}, class: "form-control" %>
+  </div>
+
+    <div class="field">
+      <%= f.label :title, "タイトル" %>
+      <%= f.text_field :title, class: "form-control" %>
+    </div>
+
+    <div class="field" style="margin-top: 15px;">
+      <%= f.label :content, "内容" %>
+      <%= f.text_area :content, rows: 10, class: "form-control" %>
+    </div>
+
+    <div class="field" style="margin-top: 15px;">
+  <%= f.label :images, "画像投稿（複数選択可）" %>
+  <% # multiple: true を追加することで、コマンド(Ctrl)＋クリックでの複数選択が可能になります %>
+  <%= f.file_field :images, multiple: true, accept: "image/jpeg,image/png", class: "form-control" %>
+</div>
+
+    <div class="actions" style="margin-top: 20px;">
+      <%= f.submit "投稿する", class: "btn btn-primary" %>
+      <%= link_to "戻る", boards_path, class: "btn btn-secondary" %>
+    </div>
+  <% end %>
+</div>

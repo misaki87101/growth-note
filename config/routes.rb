@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  #get "boards/index"
+  #get "boards/show"
+  #get "boards/new"
+  #get "boards/edit"
   get "homeworks/index"
   get "homeworks/show"
   get "homeworks/new"
@@ -22,11 +26,19 @@ Rails.application.routes.draw do
   # ログアウト（GETもDELETEも受け付ける安全策）
   match  'logout',  to: 'sessions#destroy', via: [:get, :delete]
 
-  resources :homeworks, except: [:destroy] # 宿題の管理（生徒が提出、講師が確認）
+  resources :homeworks do
+    member do
+      delete :purge_image
+    end
+    resources :homeworks, except: [:destroy] # 宿題の管理（生徒が提出、講師が確認）
+  end
 
   # 講師用：フィードバックの管理
   # 💡 resources :feedbacks は一つにまとめます
   resources :feedbacks do
+    member do
+      delete :purge_image
+    end
     # いいね機能（resource と単数形にすることで /likes/create ではなく /likes になります）
     resource :likes, only: [:create, :destroy]
     # コメント機能
@@ -35,6 +47,16 @@ Rails.application.routes.draw do
 
   # ユーザープロフィールの表示・編集
   resources :users, only: [:show, :edit, :update , :index, :destroy]
+
+  # 掲示板機能
+  resources :boards do
+    member do
+      delete :purge_image
+    end
+    resource :board_like, only: [:create, :destroy]
+    resources :board_comments, only: [:create, :destroy, :edit, :update]
+  end
+
 
   # 生徒用：マイページ
   get 'mypage', to: 'dashboards#show'

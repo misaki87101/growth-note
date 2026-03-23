@@ -9,11 +9,17 @@
 
   <%# ナビゲーションメニュー %>
   <div style="display: flex; justify-content: center; gap: 40px; margin-bottom: 60px; border-bottom: 1px solid #eee;">
+    <%# FEEDBACKタブ %>
     <div style="padding-bottom: 15px; border-bottom: 2px solid #1a1a1a;">
       <%= link_to "FEEDBACK", mypage_path, style: "text-decoration: none; color: #1a1a1a; font-size: 11px; letter-spacing: 0.15em; font-weight: bold;" %>
     </div>
+    <%# HOMEWORKタブ %>
     <div style="padding-bottom: 15px;">
       <%= link_to "HOMEWORK", homeworks_path, style: "text-decoration: none; color: #999; font-size: 11px; letter-spacing: 0.15em;" %>
+    </div>
+    <%# BOARDタブ %>
+    <div style="padding-bottom: 15px;">
+      <%= link_to "BOARD", boards_path, style: "text-decoration: none; color: #999; font-size: 11px; letter-spacing: 0.15em;" %>
     </div>
   </div>
 

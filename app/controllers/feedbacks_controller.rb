@@ -16,6 +16,13 @@ class FeedbacksController < ApplicationController
                  end
   end
 
+  def purge_image
+  @feedback = Feedback.find(params[:id])
+  image = @feedback.images.find(params[:image_id])
+  image.purge
+  redirect_to edit_feedback_path(@feedback), notice: "画像を削除しました"
+end
+
   def show
     @feedback = Feedback.find(params[:id])
 

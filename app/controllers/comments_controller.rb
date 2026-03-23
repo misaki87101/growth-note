@@ -12,6 +12,7 @@ class CommentsController < ApplicationController
   end
 
   def create
+    @@board = Board.find(params[:board_id])
     @feedback = Feedback.find(params[:feedback_id])
     @comment = @feedback.comments.build(comment_params)
     @comment.user = current_user

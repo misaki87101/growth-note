@@ -1,4 +1,10 @@
 ja:
+  enums:
+    board:
+      category:
+        general: "雑談"
+        question: "質問"
+        news: "お知らせ"
   activerecord:
     models:
       feedback: "フィードバック"

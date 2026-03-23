@@ -1,0 +1,51 @@
+<h1>掲示板 編集</h1>
+
+<%= form_with(model: @board, local: true) do |f| %>
+  <%# 1. エラー表示（もしあれば） %>
+  <% if @board.errors.any? %>
+    <div style="color: red;">
+      <ul>
+        <% @board.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%# 2. カテゴリー選択（ここが f の中にある必要があります） %>
+  <div class="field" style="margin-top: 15px;">
+    <%= f.label :category, "カテゴリー" %>
+    <%= f.select :category, Board.categories.keys.map { |k| [I18n.t("enums.board.category.#{k}", default: k), k] }, {}, class: "form-control" %>
+    </div>
+
+  <%# 3. タイトルと内容 %>
+  <div class="field">
+    <%= f.label :title, "タイトル" %>
+    <%= f.text_field :title, class: "form-control" %>
+  </div>
+
+  <div class="field">
+    <%= f.label :content, "内容" %>
+    <%= f.text_area :content, rows: 10, class: "form-control" %>
+  </div>
+
+  <%# --- ここに画像削除機能を追加している場合 --- %>
+  <% if @board.images.attached? %>
+    <div style="display: flex; gap: 10px; margin-top: 20px;">
+      <% @board.images.each do |image| %>
+        <div style="text-align: center;">
+          <%= image_tag image, style: "width: 100px; display: block;" %>
+          <%= link_to "削除", purge_image_board_path(@board, image_id: image.id), 
+                      data: { "turbo-method": :delete, turbo_confirm: "この画像を削除しますか？" }, 
+                      style: "color: red; font-size: 0.8em;" %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+  <%# --------------------------------------- %>
+
+  <div class="actions" style="margin-top: 20px;">
+    <%= f.submit "更新する", class: "btn btn-primary" %>
+    <%= link_to "戻る", board_path(@board), class: "btn btn-secondary" %>
+  </div>
+<% end %>

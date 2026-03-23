@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class ApplicationController < ActionController::Base
+  protect_from_forgery with: :exception
+  
   helper_method :current_user, :logged_in?
 
   # 💡 これを追加！ ユーザーをログイン状態にする魔法です
@@ -31,6 +33,11 @@ class ApplicationController < ActionController::Base
     else
       render 'sessions/new'
     end
+  end
+
+  def destroy
+    log_out
+    redirect_to login_path, notice: "ログアウトしました", status: :see_other
   end
 
   private

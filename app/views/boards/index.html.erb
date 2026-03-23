@@ -1,0 +1,65 @@
+<div style="max-width: 700px; margin: 60px auto; padding: 0 20px; font-family: 'Helvetica Neue', Arial, sans-serif; color: #1a1a1a;">
+  <%# タイトル・ナビゲーション（フィードバックと同じ） %>
+  <div style="text-align: center; margin-bottom: 60px;">
+    <h1 style="font-size: 22px; font-weight: 300; letter-spacing: 0.15em; margin-bottom: 10px; text-transform: uppercase;">My Growth Note</h1>
+    <div style="font-size: 10px; color: #999; letter-spacing: 0.2em;">COMMUNITY BOARD</div>
+  </div>
+
+  <%# ナビゲーション（BOARDをアクティブに） %>
+  <div style="display: flex; justify-content: center; gap: 40px; margin-bottom: 60px; border-bottom: 1px solid #eee;">
+    <div style="padding-bottom: 15px;"><%= link_to "FEEDBACK", feedbacks_path, style: "text-decoration: none; color: #999; font-size: 11px; letter-spacing: 0.15em;" %></div>
+    <div style="padding-bottom: 15px;"><%= link_to "HOMEWORK", homeworks_path, style: "text-decoration: none; color: #999; font-size: 11px; letter-spacing: 0.15em;" %></div>
+    <div style="padding-bottom: 15px; border-bottom: 2px solid #1a1a1a;">
+      <%= link_to "BOARD", boards_path, style: "text-decoration: none; color: #1a1a1a; font-size: 11px; letter-spacing: 0.15em; font-weight: bold;" %>
+    </div>
+  </div>
+
+  <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 40px; border-bottom: 1px solid #1a1a1a; padding-bottom: 15px;">
+    <h2 style="font-size: 22px; font-weight: 300; letter-spacing: 0.15em; margin: 0;">BOARDS</h2>
+    <%= link_to "New Post", new_board_path, style: "font-size: 11px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em; border: 1px solid #1a1a1a; padding: 8px 20px;" %>
+  </div>
+
+  <%# 絞り込み フォーム（BOARD用） %>
+<div style="margin-bottom: 40px;">
+  <%= form_with url: boards_path, method: :get, local: true do |f| %>
+    <div style="display: flex; gap: 10px; align-items: center;">
+      <span style="font-size: 10px; letter-spacing: 0.1em; color: #999;">FILTER:</span>
+      
+      <%# カテゴリーで絞り込むように変更 %>
+      <%= f.select :category, 
+          Board.categories.keys.map { |k| [I18n.t("enums.board.category.#{k}"), k] }, 
+          { include_blank: "全てのカテゴリー", selected: params[:category] }, 
+          { style: "border: none; border-bottom: 1px solid #e5e5e5; padding: 5px; font-size: 12px; color: #1a1a1a; background: transparent; border-radius: 0; outline: none;" } %>
+      
+      <%= f.submit "SEARCH", style: "background: none; border: none; font-size: 10px; letter-spacing: 0.1em; cursor: pointer; color: #666;" %>
+      
+      <% if params[:category].present? %>
+        <%= link_to "CLEAR", boards_path, style: "font-size: 10px; color: #ccc; text-decoration: none; margin-left: 10px;" %>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+
+  <div style="display: flex; flex-direction: column;">
+    <% @boards.each do |board| %>
+      <%= link_to board_path(board), style: "text-decoration: none; color: inherit; display: block; border-bottom: 1px solid #f0f0f0; padding: 20px 0;" do %>
+        <div style="display: flex; align-items: center; gap: 30px;">
+          <div style="flex-grow: 1;">
+            <div style="font-size: 10px; color: #999; letter-spacing: 0.05em; margin-bottom: 2px;">
+              <%= board.created_at.strftime("%Y . %m . %d") %> | <%= board.category_i18n if board.respond_to?(:category_i18n) %>
+            </div>
+            <div style="font-size: 16px; font-weight: 500; color: #1a1a1a; letter-spacing: 0.02em; margin-bottom: 4px;">
+              <%= board.title %>
+            </div>
+            <div style="font-size: 10px; color: #999;">by <%= board.user.name %></div>
+          </div>
+          <div style="text-align: right; min-width: 100px;">
+            <span style="font-size: 10px; color: #bbb;">🖤 <%= board.board_likes.count %></span>
+            <span style="margin-left: 15px; color: #ccc;">→</span>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>
