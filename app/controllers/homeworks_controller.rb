@@ -5,7 +5,18 @@ class HomeworksController < ApplicationController
   before_action :set_homework, only: %i[show edit update destroy]
 
   def index
-    @homeworks = current_user.homeworks.order(lesson_date: :desc)
+    if current_user.teacher?
+      @students = User.where(role: :student)
+      # 🌟 絞り込み条件（params[:student_id]）があれば適用する
+      if params[:student_id].present?
+        @homeworks = Homework.where(user_id: params[:student_id])
+      else
+        @homeworks = Homework.all
+      end
+      @homeworks = @homeworks.includes(:user).order(lesson_date: :desc)
+    else
+      @homeworks = current_user.homeworks.order(lesson_date: :desc)
+    end
   end
 
   def show; end
@@ -41,7 +52,13 @@ class HomeworksController < ApplicationController
   private
 
   def set_homework
-    @homework = current_user.homeworks.find(params[:id])
+    if current_user.teacher?
+      # 先生はデータベースの全宿題から探せる
+      @homework = Homework.find(params[:id])
+    else
+      # 生徒は自分の宿題の中からしか探せない（セキュリティのため！）
+      @homework = current_user.homeworks.find(params[:id])
+    end
   end
 
   def homework_params

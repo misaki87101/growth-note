@@ -18,6 +18,24 @@
     </div>
   </div>
 
+  <%# 生徒絞り込み %>
+<% if current_user.teacher? %>
+  <div style="margin-bottom: 40px; border-bottom: 1px solid #f0f0f0; padding-bottom: 30px;">
+    <%= form_with url: mypage_path, method: :get, local: true do |f| %>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <span style="font-size: 10px; letter-spacing: 0.1em; color: #999;">FILTER STUDENT:</span>
+        <%= f.collection_select :student_id, @students || [], :id, :name, 
+            { include_blank: "ALL STUDENTS", selected: params[:student_id] }, 
+            { style: "border: none; border-bottom: 1px solid #e5e5e5; padding: 5px; font-size: 12px; color: #1a1a1a; background: transparent; outline: none;" } %>
+        <%= f.submit "SEARCH", style: "background: #1a1a1a; border: none; font-size: 9px; letter-spacing: 0.1em; cursor: pointer; color: #fff; padding: 5px 15px;" %>
+        <% if params[:student_id].present? %>
+          <%= link_to "CLEAR", mypage_path, style: "font-size: 10px; color: #ccc; text-decoration: none; margin-left: 10px;" %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
   <%# コンテンツエリア（既存のフィードバック一覧） %>
   <div style="margin-bottom: 40px; display: flex; justify-content: space-between; align-items: baseline;">
     <h2 style="font-size: 12px; font-weight: 600; letter-spacing: 0.1em; color: #1a1a1a; margin: 0;">LESSON FEEDBACKS</h2>

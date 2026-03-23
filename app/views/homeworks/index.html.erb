@@ -1,26 +1,58 @@
 <%# app/views/homeworks/index.html.erb %>
 <div style="max-width: 800px; margin: 60px auto; padding: 0 20px; font-family: 'Helvetica Neue', Arial, sans-serif; color: #1a1a1a;">
   
-  <%# ヘッダー部分 %>
-  <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 60px; border-bottom: 1px solid #1a1a1a; padding-bottom: 15px;">
-    <h2 style="font-size: 22px; font-weight: 300; letter-spacing: 0.15em; margin: 0;">HOMEWORKS</h2>
-    <%= link_to "New Post", new_homework_path, style: "font-size: 11px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em; border: 1px solid #1a1a1a; padding: 8px 20px;" %>
+  <%# 1. タイトル部分（フィードバック側と統一） %>
+  <div style="text-align: center; margin-bottom: 60px;">
+    <h1 style="font-size: 22px; font-weight: 300; letter-spacing: 0.15em; margin-bottom: 10px; text-transform: uppercase;">My Growth Note</h1>
+    <div style="font-size: 10px; color: #999; letter-spacing: 0.2em;">LEARNING ARCHIVE</div>
   </div>
+
+  <%# 2. ナビゲーションメニュー（フィードバックと統一） %>
+  <div style="display: flex; justify-content: center; gap: 40px; margin-bottom: 60px; border-bottom: 1px solid #eee;">
+    <div style="padding-bottom: 15px;">
+      <%= link_to "FEEDBACK", mypage_path, style: "text-decoration: none; color: #999; font-size: 11px; letter-spacing: 0.15em;" %>
+    </div>
+    <div style="padding-bottom: 15px; border-bottom: 2px solid #1a1a1a;">
+      <%= link_to "HOMEWORK", homeworks_path, style: "text-decoration: none; color: #1a1a1a; font-size: 11px; letter-spacing: 0.15em; font-weight: bold;" %>
+    </div>
+  </div>
+
+  <%# 3. ヘッダー部分 %>
+  <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 40px; border-bottom: 1px solid #1a1a1a; padding-bottom: 15px;">
+    <h2 style="font-size: 22px; font-weight: 300; letter-spacing: 0.15em; margin: 0;">HOMEWORKS</h2>
+    <%# 生徒の時だけ投稿ボタンを表示 %>
+    <% unless current_user.teacher? %>
+      <%= link_to "New Post", new_homework_path, style: "font-size: 11px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em; border: 1px solid #1a1a1a; padding: 8px 20px;" %>
+    <% end %>
+  </div>
+
+  <%# 4. 先生用の絞り込みフォーム %>
+  <% if current_user.teacher? %>
+    <div style="margin-bottom: 40px;">
+      <%= form_with url: homeworks_path, method: :get, local: true do |f| %>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <span style="font-size: 10px; letter-spacing: 0.1em; color: #999;">FILTER STUDENT:</span>
+          <%= f.collection_select :student_id, @students || [], :id, :name, 
+              { include_blank: "ALL STUDENTS", selected: params[:student_id] }, 
+              { style: "border: none; border-bottom: 1px solid #e5e5e5; padding: 5px; font-size: 12px; color: #1a1a1a; background: transparent;" } %>
+          <%= f.submit "SEARCH", style: "background: #1a1a1a; border: none; font-size: 9px; letter-spacing: 0.1em; cursor: pointer; color: #fff; padding: 5px 15px;" %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
 
   <%# リスト部分 %>
   <div style="display: flex; flex-direction: column;">
     <% @homeworks.each do |homework| %>
       <%= link_to homework_path(homework), style: "text-decoration: none; color: inherit; display: block; border-bottom: 1px solid #f0f0f0; padding: 40px 0; transition: background 0.2s;" do %>
         <div style="display: flex; align-items: center; gap: 40px;">
-      
-          <%# 1. 練習時間（評価の代わりのアクセント） %>
+          
+          <%# 左側の時間表示 %>
           <div style="width: 50px; text-align: center; flex-shrink: 0;">
             <div style="font-size: 16px; font-family: 'Georgia', serif; font-weight: 300; border-bottom: 1px solid #1a1a1a; display: inline-block; min-width: 30px;">
-              <%# 1.5h のような形式で表示 %>
               <%= homework.hour %>.<%= (homework.minute.to_f / 6).to_i %>
             </div>
             <div style="font-size: 8px; color: #999; margin-top: 5px; margin-bottom: 10px;">TIME</div>
-            
             <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
               <% if homework.new_arrival? %>
                 <span style="font-size: 8px; color: #fff; background: #1a1a1a; padding: 1px 4px; letter-spacing: 0.05em;">NEW!</span>
@@ -31,15 +63,20 @@
             </div>
           </div>
 
-          <%# 2. メイン情報 %>
+          <%# メイン情報 %>
           <div style="flex-grow: 1;">
             <div style="font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 5px;">
               <%= homework.lesson_date.strftime("%Y . %m . %d") %>
+              <%# 先生の場合だけ、生徒名を表示 %>
+              <% if current_user.teacher? %>
+                <span style="margin-left: 10px; color: #1a1a1a; font-weight: bold; border-left: 1px solid #ddd; padding-left: 10px; letter-spacing: 0.05em;">
+                  <%= homework.user.name.upcase %>
+                </span>
+              <% end %>
             </div>
             <div style="font-size: 15px; font-weight: 500; letter-spacing: 0.05em; margin-bottom: 8px;">
               <%= homework.content.present? ? homework.content.truncate(30) : "Practice Record" %>
             </div>
-            <%# 時間を 1h 30m のように補足 %>
             <div style="font-size: 11px; color: #999;">
               Duration: <%= homework.hour %>h <%= homework.minute %>m
             </div>

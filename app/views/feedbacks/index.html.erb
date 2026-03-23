@@ -1,12 +1,32 @@
 <%# app/views/feedbacks/index.html.erb %>
-<div style="max-width: 800px; margin: 60px auto; padding: 0 20px; font-family: 'Helvetica Neue', Arial, sans-serif; color: #1a1a1a;">
+<div style="max-width: 700px; margin: 60px auto; padding: 0 20px; font-family: 'Helvetica Neue', Arial, sans-serif; color: #1a1a1a;">
   
-  <%# ヘッダー部分 %>
-  <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 60px; border-bottom: 1px solid #1a1a1a; padding-bottom: 15px;">
-    <h2 style="font-size: 22px; font-weight: 300; letter-spacing: 0.15em; margin: 0;">FEEDBACKS</h2>
-    <%= link_to "New Post", new_feedback_path, style: "font-size: 11px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em; border: 1px solid #1a1a1a; padding: 8px 20px;" %>
+  <%# タイトル %>
+  <div style="text-align: center; margin-bottom: 60px;">
+    <h1 style="font-size: 22px; font-weight: 300; letter-spacing: 0.15em; margin-bottom: 10px; text-transform: uppercase;">My Growth Note</h1>
+    <div style="font-size: 10px; color: #999; letter-spacing: 0.2em;">LEARNING ARCHIVE</div>
   </div>
 
+  <%# ナビゲーションメニュー %>
+  <div style="display: flex; justify-content: center; gap: 40px; margin-bottom: 60px; border-bottom: 1px solid #eee;">
+    <div style="padding-bottom: 15px; border-bottom: 2px solid #1a1a1a;">
+      <%= link_to "FEEDBACK", mypage_path, style: "text-decoration: none; color: #1a1a1a; font-size: 11px; letter-spacing: 0.15em; font-weight: bold;" %>
+    </div>
+    <div style="padding-bottom: 15px;">
+      <%= link_to "HOMEWORK", homeworks_path, style: "text-decoration: none; color: #999; font-size: 11px; letter-spacing: 0.15em;" %>
+    </div>
+  </div>
+
+  <%# ヘッダー部分 %>
+  <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 40px; border-bottom: 1px solid #1a1a1a; padding-bottom: 15px;">
+    <h2 style="font-size: 22px; font-weight: 300; letter-spacing: 0.15em; margin: 0;">FEEDBACKS</h2>
+    <%# 先生の時だけ投稿ボタンを表示 %>
+    <% unless current_user.student? %>
+      <%= link_to "New Post", new_feedback_path, style: "font-size: 11px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em; border: 1px solid #1a1a1a; padding: 8px 20px;" %>
+    <% end %>
+  </div>
+
+  
 <%# 絞り込みフォーム %>
   <div style="margin-bottom: 40px;">
     <%= form_with url: feedbacks_path, method: :get, local: true do |f| %>
@@ -23,6 +43,7 @@
     <% end %>
   </div>
 
+  
   <%# フィードバック一覧から「名簿」へのリンク （講師だけに表示） %>
   <div style="text-align: right; margin-bottom: 10px;">
     <% if current_user.teacher? %>
