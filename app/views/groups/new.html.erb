@@ -1,0 +1,20 @@
+<%# app/views/groups/new.html.erb %>
+<div style="max-width: 600px; margin: 60px auto; padding: 0 20px;">
+  <div style="text-align: center; margin-bottom: 40px;">
+    <h1 style="font-size: 20px; font-weight: 300; letter-spacing: 0.15em;">CREATE NEW CLASS</h1>
+  </div>
+
+  <%= form_with model: @group, local: true do |f| %>
+    <div style="margin-bottom: 30px;">
+      <%= f.label :name, "CLASS NAME", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;" %>
+      <%= f.text_field :name, placeholder: "例：2026年 4月期 Aクラス", 
+          style: "width: 100%; padding: 15px; border: none; border-bottom: 1px solid #1a1a1a; font-size: 16px; outline: none; border-radius: 0;" %>
+    </div>
+
+    <%= f.submit "SAVE CLASS", style: "width: 100%; padding: 15px; background: #1a1a1a; color: #fff; border: none; cursor: pointer; letter-spacing: 0.2em; font-size: 12px;" %>
+    
+    <div style="text-align: center; margin-top: 20px;">
+      <%= link_to "BACK", feedbacks_path, style: "font-size: 10px; color: #999; text-decoration: none;" %>
+    </div>
+  <% end %>
+</div>

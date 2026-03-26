@@ -40,26 +40,49 @@
   <% end %>
 </div>
 
-
-  <div style="display: flex; flex-direction: column;">
+<div style="display: flex; flex-direction: column;">
     <% @boards.each do |board| %>
-      <%= link_to board_path(board), style: "text-decoration: none; color: inherit; display: block; border-bottom: 1px solid #f0f0f0; padding: 20px 0;" do %>
-        <div style="display: flex; align-items: center; gap: 30px;">
-          <div style="flex-grow: 1;">
-            <div style="font-size: 10px; color: #999; letter-spacing: 0.05em; margin-bottom: 2px;">
+      <%= link_to board_path(board), style: "text-decoration: none; color: inherit; display: block; border-bottom: 1px solid #f0f0f0; padding: 25px 0;" do %>
+        <div style="display: flex; align-items: flex-start; gap: 20px;">
+          
+          <%# 左側：投稿No.セクション（ホームワークのTIME風） %>
+          <div style="min-width: 60px; text-align: center; border-right: 1px solid #eee; padding-right: 15px;">
+            <div style="font-size: 18px; font-weight: 500; color: #1a1a1a; line-height: 1;">
+              <%= board.id %>
+            </div>
+            <div style="font-size: 8px; color: #999; letter-spacing: 0.1em; margin-top: 5px;">NO.</div>
+            
+            <%# アイコン類をNo.の下に縦に並べる %>
+            <div style="margin-top: 10px; display: flex; flex-direction: column; align-items: center; gap: 5px;">
+              <% if board.respond_to?(:new_arrival?) && board.new_arrival? %>
+                <span style="font-size: 8px; color: #fff; background: #1a1a1a; padding: 1px 4px; letter-spacing: 0.05em; display: inline-block;">NEW!</span>
+              <% end %>
+              <% if board.images.attached? %>
+                <span style="font-size: 10px; color: #bbb;">📷</span>
+              <% end %>
+            </div>
+          </div>
+
+          <%# 中央：メインコンテンツ %>
+          <div style="flex-grow: 1; padding-left: 5px;">
+            <div style="font-size: 10px; color: #999; letter-spacing: 0.05em; margin-bottom: 4px;">
               <%= board.created_at.strftime("%Y . %m . %d") %> | <%= board.category_i18n if board.respond_to?(:category_i18n) %>
             </div>
-            <div style="font-size: 16px; font-weight: 500; color: #1a1a1a; letter-spacing: 0.02em; margin-bottom: 4px;">
+            <div style="font-size: 16px; font-weight: 500; color: #1a1a1a; letter-spacing: 0.02em; margin-bottom: 6px;">
               <%= board.title %>
             </div>
             <div style="font-size: 10px; color: #999;">by <%= board.user.name %></div>
           </div>
-          <div style="text-align: right; min-width: 100px;">
-            <span style="font-size: 10px; color: #bbb;">🖤 <%= board.board_likes.count %></span>
-            <span style="margin-left: 15px; color: #ccc;">→</span>
+
+          <%# 右側：リアクションと矢印 %>
+          <div style="text-align: right; min-width: 60px; padding-top: 15px;">
+            <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
+              <span style="font-size: 10px; color: #bbb;">🖤 <%= board.board_likes.count %></span>
+              <span style="color: #ccc; font-size: 14px;">→</span>
+            </div>
           </div>
+
         </div>
       <% end %>
     <% end %>
   </div>
-</div>

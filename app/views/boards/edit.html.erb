@@ -1,51 +1,61 @@
-<h1>掲示板 編集</h1>
-
-<%= form_with(model: @board, local: true) do |f| %>
-  <%# 1. エラー表示（もしあれば） %>
-  <% if @board.errors.any? %>
-    <div style="color: red;">
-      <ul>
-        <% @board.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
-
-  <%# 2. カテゴリー選択（ここが f の中にある必要があります） %>
-  <div class="field" style="margin-top: 15px;">
-    <%= f.label :category, "カテゴリー" %>
-    <%= f.select :category, Board.categories.keys.map { |k| [I18n.t("enums.board.category.#{k}", default: k), k] }, {}, class: "form-control" %>
-    </div>
-
-  <%# 3. タイトルと内容 %>
-  <div class="field">
-    <%= f.label :title, "タイトル" %>
-    <%= f.text_field :title, class: "form-control" %>
+<div style="max-width: 700px; margin: 60px auto; padding: 0 20px; font-family: 'Helvetica Neue', Arial, sans-serif; color: #1a1a1a;">
+  
+  <%# タイトルセクション %>
+  <div style="text-align: center; margin-bottom: 60px;">
+    <h1 style="font-size: 22px; font-weight: 300; letter-spacing: 0.15em; margin-bottom: 10px; text-transform: uppercase;">Edit Post</h1>
+    <div style="font-size: 10px; color: #999; letter-spacing: 0.2em;">掲示板 編集</div>
   </div>
 
-  <div class="field">
-    <%= f.label :content, "内容" %>
-    <%= f.text_area :content, rows: 10, class: "form-control" %>
-  </div>
-
-  <%# --- ここに画像削除機能を追加している場合 --- %>
+  <%# --- 画像管理セクション（フォームの外側だが、デザイン的に内側に見せる） --- %>
   <% if @board.images.attached? %>
-    <div style="display: flex; gap: 10px; margin-top: 20px;">
-      <% @board.images.each do |image| %>
-        <div style="text-align: center;">
-          <%= image_tag image, style: "width: 100px; display: block;" %>
-          <%= link_to "削除", purge_image_board_path(@board, image_id: image.id), 
-                      data: { "turbo-method": :delete, turbo_confirm: "この画像を削除しますか？" }, 
-                      style: "color: red; font-size: 0.8em;" %>
-        </div>
-      <% end %>
+    <div style="margin-bottom: 40px; border: 1px solid #eee; padding: 25px;">
+      <div style="font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 20px; text-align: center;">ATTACHED PHOTOS</div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 20px;">
+        <% @board.images.each do |image| %>
+          <div style="position: relative; group;">
+            <%= image_tag image.variant(resize_to_limit: [300, 300]), style: "width: 100%; height: 120px; object-fit: cover; border: 1px solid #f0f0f0;" %>
+            <%= button_to purge_image_board_path(@board, image_id: image.id), 
+                      method: :delete, 
+                      form: { data: { turbo_confirm: 'この画像を削除しますか？' } }, 
+                      style: "width: 100%; background: #1a1a1a; color: #fff; border: none; font-size: 9px; padding: 6px 0; cursor: pointer; letter-spacing: 0.1em; margin-top: 5px; transition: 0.3s;" do %>
+              REMOVE
+            <% end %>
+          </div>
+        <% end %>
+      </div>
     </div>
   <% end %>
-  <%# --------------------------------------- %>
 
-  <div class="actions" style="margin-top: 20px;">
-    <%= f.submit "更新する", class: "btn btn-primary" %>
-    <%= link_to "戻る", board_path(@board), class: "btn btn-secondary" %>
-  </div>
-<% end %>
+  <%# --- メインフォーム --- %>
+  <%= form_with(model: @board, local: true) do |f| %>
+    <div style="display: flex; flex-direction: column; gap: 30px;">
+      
+      <%# カテゴリー %>
+      <div>
+        <%= f.label :category, "CATEGORY", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;" %>
+        <%= f.select :category, Board.categories.keys.map { |k| [I18n.t("enums.board.category.#{k}", default: k), k] }, {}, 
+            style: "width: 100%; border: none; border-bottom: 1px solid #eee; padding: 10px 0; font-size: 14px; outline: none; background: transparent; border-radius: 0;" %>
+      </div>
+
+      <%# タイトル %>
+      <div>
+        <%= f.label :title, "TITLE", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;" %>
+        <%= f.text_field :title, placeholder: "タイトルを入力してください",
+            style: "width: 100%; border: none; border-bottom: 1px solid #eee; padding: 10px 0; font-size: 18px; outline: none; border-radius: 0;" %>
+      </div>
+
+      <%# 内容 %>
+      <div>
+        <%= f.label :content, "CONTENT", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;" %>
+        <%= f.text_area :content, rows: 10, placeholder: "内容を入力してください",
+            style: "width: 100%; border: 1px solid #eee; padding: 15px; font-size: 14px; line-height: 1.8; outline: none; border-radius: 0;" %>
+      </div>
+
+      <%# ボタン類 %>
+      <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
+        <%= f.submit "UPDATE POST", style: "background: #1a1a1a; color: #fff; border: none; padding: 15px; font-size: 12px; letter-spacing: 0.2em; cursor: pointer;" %>
+        <%= link_to "CANCEL", board_path(@board), style: "text-align: center; text-decoration: none; color: #999; font-size: 11px; letter-spacing: 0.1em; padding: 10px;" %>
+      </div>
+    </div>
+  <% end %>
+</div>

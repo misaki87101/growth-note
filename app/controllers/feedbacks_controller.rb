@@ -5,23 +5,30 @@ class FeedbacksController < ApplicationController
   before_action :ensure_teacher_user, except: %i[index show edit update]
 
   def index
-    @students = Student.all # 絞り込み用のリスト
+    if current_user.teacher?
+      # 先生：自分が担当している生徒の分だけ
+      @feedbacks = Feedback.where(student_id: current_user.students.ids).order(lesson_date: :desc)
+      @students = current_user.students
+    else
+      # 生徒：自分宛、かつ自分が所属しているクラスの分だけ
+      # これで「他クラスのデータ」は一切混ざらなくなります！
+      @feedbacks = Feedback.where(student_id: current_user.id, group_id: current_user.group_ids)
+                           .order(lesson_date: :desc)
+      @students = [] # 生徒には空のリストを渡す
+    end
 
-    @feedbacks = if params[:student_id].present?
-                   # 生徒が選択されている場合
-                   Feedback.where(student_id: params[:student_id]).order(lesson_date: :desc)
-                 else
-                   # 何も選ばれていない場合は全て表示
-                   Feedback.order(lesson_date: :desc)
-                 end
+    # 生徒絞り込み検索（先生用）
+    return if params[:student_id].blank?
+
+    @feedbacks = @feedbacks.where(student_id: params[:student_id])
   end
 
   def purge_image
-  @feedback = Feedback.find(params[:id])
-  image = @feedback.images.find(params[:image_id])
-  image.purge
-  redirect_to edit_feedback_path(@feedback), notice: "画像を削除しました"
-end
+    @feedback = Feedback.find(params[:id])
+    image = @feedback.images.find(params[:image_id])
+    image.purge
+    redirect_to edit_feedback_path(@feedback), notice: "画像を削除しました"
+  end
 
   def show
     @feedback = Feedback.find(params[:id])
@@ -34,10 +41,23 @@ end
 
   def new
     @feedback = Feedback.new
+    # 先生が所属しているグループ一覧
+    @groups = current_user.groups
     # フォームの選択肢用に生徒一覧を取得（roleがstudentの人だけ）
-    @students = User.where(role: :student)
+    @students = []
+
     # 最初から2つ○、△、×評価の入力欄を表示
-    2.times { @feedback.check_items.build }
+    # 2.times { @feedback.check_items.build }
+  end
+
+  # クラスを選択した時に、そのクラスの生徒だけを返す専用のアクションを追加
+  def select_group
+    @group = Group.find(params[:group_id])
+    @students = @group.users.where(role: :student)
+
+    respond_to do |format|
+      format.turbo_stream # select_group.turbo_stream.erb を探しにいく
+    end
   end
 
   def edit
@@ -54,20 +74,29 @@ end
   def create
     @feedback = Feedback.new(feedback_params)
 
-    # 💡 保存する前に、誰が投稿したかによってIDを振り分ける
     if current_user.teacher?
       @feedback.teacher_id = current_user.id
-      # student_id はフォームから送られてきたもの（feedback_params）が自動で入る想定
+
+      # 💡選ばれた生徒が所属しているグループIDをセットする
+      # params[:feedback][:student_id] から生徒を探す
+      student = User.find_by(id: params[:feedback][:student_id])
+      if student
+        # その生徒が所属している「承認済み」の最初のグループIDをセット
+        @feedback.group_id = student.group_users.where(accepted: true).first&.group_id
+      end
     else
+      # 生徒自身が投稿する場合（もし今後使うなら）
       @feedback.student_id = current_user.id
-      # 生徒が投稿する場合、teacher_id は空にするか、特定の講師がいればここでセット
       @feedback.teacher_id = nil
+      @feedback.group_id = current_user.group_users.where(accepted: true).first&.group_id
     end
 
     if @feedback.save
       redirect_to feedbacks_path, notice: "フィードバックを投稿しました！"
     else
-      @students = User.where(role: :student)
+      # 失敗した時の再表示用データ
+      @groups = current_user.groups
+      @students = User.where(role: :student) # 必要に応じて絞り込み
       render :new, status: :unprocessable_content
     end
   end

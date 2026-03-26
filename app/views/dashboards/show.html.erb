@@ -29,7 +29,7 @@
       <div style="display: flex; gap: 10px; align-items: center;">
         <span style="font-size: 10px; letter-spacing: 0.1em; color: #999;">FILTER STUDENT:</span>
         <%= f.collection_select :student_id, @students || [], :id, :name, 
-            { include_blank: "ALL STUDENTS", selected: params[:student_id] }, 
+            { include_blank: "生徒を選択", selected: params[:student_id] }, 
             { style: "border: none; border-bottom: 1px solid #e5e5e5; padding: 5px; font-size: 12px; color: #1a1a1a; background: transparent; outline: none;" } %>
         <%= f.submit "SEARCH", style: "background: #1a1a1a; border: none; font-size: 9px; letter-spacing: 0.1em; cursor: pointer; color: #fff; padding: 5px 15px;" %>
         <% if params[:student_id].present? %>

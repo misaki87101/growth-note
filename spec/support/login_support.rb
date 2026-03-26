@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # spec/support/login_support.rb
 module LoginSupport
   def sign_in_as(user)

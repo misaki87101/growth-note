@@ -1,5 +1,5 @@
 <%# 外枠のメインコンテナ %>
-<div style="max-width: 650px; margin: 60px auto; padding: 50px 60px; background-color: #ffffff; border: 1px solid #e5e5e5; border-radius: 2px; font-family: 'Helvetica Neue', 'Helvetica', 'Hiragino Sans', sans-serif; color: #1a1a1a; line-height: 1.6; letter-spacing: 0.02em;">
+<div data-controller="feedback-form" style="max-width: 650px; margin: 60px auto; padding: 50px 60px; background-color: #ffffff; border: 1px solid #e5e5e5; border-radius: 2px; font-family: 'Helvetica Neue', 'Helvetica', 'Hiragino Sans', sans-serif; color: #1a1a1a; line-height: 1.6; letter-spacing: 0.02em;">
 
   <%# タイトル部分 %>
   <h2 style="font-size: 20px; font-weight: 300; text-align: center; margin-bottom: 50px; letter-spacing: 0.15em; color: #1a1a1a; text-transform: uppercase;">
@@ -19,24 +19,35 @@
       </div>
     <% end %>
     
-    <%# 生徒選択 %>
-    <div style="margin-bottom: 15px;">
-      <%= f.label :student_id, style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" do %>
-        生徒を選択 <span style="color: #d1d1d1; margin-left: 5px;">*</span>
-      <% end %>
+    <div style="display: flex; flex-direction: column; gap: 25px;" data-controller="feedback-form">
 
-      <% if current_user.student? %>
-        <%= f.collection_select :student_id, @students, :id, :name, {}, { disabled: true, style: "font-size: 12px; width: 100%; #{'background: #f5f5f5;' if current_user.student?}" } %>
-        <%= f.hidden_field :student_id %>
-      <% else %>
-        <%= f.collection_select :student_id, @students, :id, :name, { prompt: "選択してください" }, { style: "font-size: 12px; width: 100%; #{'background: #f5f5f5;' if current_user.student?}" } %>
+  <%# クラス選択（先生だけに表示） %>
+  <div>
+    <%= f.label :title, style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" do%>
+        クラス <span style="color: #d1d1d1; margin-left: 5px;">*入力必須</span>
       <% end %>
-    </div>
+    <%= select_tag :group_id, options_from_collection_for_select(@groups, :id, :name), 
+        prompt: "クラスを選択してください",
+        data: { action: "change->feedback-form#updateStudents" },
+        style: "width: 100%; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff; font-size: 12px; -webkit-appearance: none;" %>
+  </div>
+<%# クラスを選択したら、そのクラスの生徒だけが表示されるセレクトボックス %>
+  <div id="student_select_container">
+    <%= f.label :title, style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" do%>
+        生徒 <span style="color: #d1d1d1; margin-left: 5px;">*入力必須</span>
+      <% end %>
+    <%= select_tag "feedback[student_id]", options_for_select([]), 
+        prompt: "先にクラスを選んでください", 
+        required: true,
+        style: "width: 100%; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff; font-size: 12px; -webkit-appearance: none;" %>
+  </div>
+</div>
 
+<br>
     <%# レッスン日 %>
     <div style="margin-bottom: 15px;">
       <%= f.label :lesson_date, style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" do%>
-        レッスン日 <span style="color: #d1d1d1; margin-left: 5px;">*</span>
+        レッスン日 <span style="color: #d1d1d1; margin-left: 5px;">*入力必須</span>
       <% end %>
       <%= f.date_field :lesson_date, readonly: current_user.student?, 
           style: "font-size: 12px; width: 100%; #{'background: #f5f5f5;' if current_user.student?}" %>
@@ -45,7 +56,7 @@
     <%# 講習名（タイトル） %>
     <div style="margin-bottom: 25px;">
       <%= f.label :title, style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" do%>
-        講習名 <span style="color: #d1d1d1; margin-left: 5px;">*</span>
+        講習名 <span style="color: #d1d1d1; margin-left: 5px;">*入力必須</span>
       <% end %>
       <%= f.text_field :title, readonly: current_user.student?, placeholder: "例：夏期講習 第1回 / TOEIC対策", style: "width: 100%; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff; font-size: 12px; color: #1a1a1a; outline: none;" %>
     </div>
@@ -128,16 +139,6 @@
       </template>
     </div>
 
-    <%# フィードバックテンプレボタン %>
-    <%= f.label :content_label, "◎ 全体フィードバック", style: "display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" %>
-    <% if current_user.teacher? %>
-      <div style="margin-bottom: 8px; display: flex; gap: 8px; flex-wrap: wrap;">
-        <span style="font-size: 10px; color: #666; width: 100%;">定型文を挿入:</span>
-        <button type="button" class="phrase-btn" data-text="今日もステップアップできましたね！この調子で次回も頑張りましょう✨" style="background: transparent; border: 1px solid #e5e5e5; color: #666; padding: 6px 12px; border-radius: 0; font-size: 10px; cursor: pointer;">😊 うまくできた</button>
-        <button type="button" class="phrase-btn" data-text="レッスン中に伝えた内容を振り返り、反復練習しながら自分のスキルに繋げましょう！" style="background: transparent; border: 1px solid #e5e5e5; color: #666; padding: 6px 12px; border-radius: 0; font-size: 10px; cursor: pointer;">💪 復習頑張ろう</button>
-        <button type="button" class="phrase-btn" data-text="次回のレッスンは『 』の予定です。余裕があればテキストに目を通しておいてくださいね！" style="background: transparent; border: 1px solid #e5e5e5; color: #666; padding: 6px 12px; border-radius: 0; font-size: 10px; cursor: pointer;">📖 次回の予告</button>
-      </div>
-    <% end %>
 
     <%# 写真投稿 %>
     <div style="margin-bottom: 25px; padding: 20px; border: 1px dashed #e5e5e5;">
@@ -170,6 +171,18 @@
     </div>
 
 
+
+
+<%# フィードバックテンプレボタン %>
+    <%= f.label :content_label, "◎ 全体フィードバック", style: "display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" %>
+    <% if current_user.teacher? %>
+      <div style="margin-bottom: 8px; display: flex; gap: 8px; flex-wrap: wrap;">
+        <span style="font-size: 10px; color: #666; width: 100%;">定型文を挿入:</span>
+        <button type="button" class="phrase-btn" data-text="今日もステップアップできましたね！この調子で次回も頑張りましょう✨" style="background: transparent; border: 1px solid #e5e5e5; color: #666; padding: 6px 12px; border-radius: 0; font-size: 10px; cursor: pointer;">😊 うまくできた</button>
+        <button type="button" class="phrase-btn" data-text="レッスン中に伝えた内容を振り返り、反復練習しながら自分のスキルに繋げましょう！" style="background: transparent; border: 1px solid #e5e5e5; color: #666; padding: 6px 12px; border-radius: 0; font-size: 10px; cursor: pointer;">💪 復習頑張ろう</button>
+        <button type="button" class="phrase-btn" data-text="次回のレッスンは『 』の予定です。余裕があればテキストに目を通しておいてくださいね！" style="background: transparent; border: 1px solid #e5e5e5; color: #666; padding: 6px 12px; border-radius: 0; font-size: 10px; cursor: pointer;">📖 次回の予告</button>
+      </div>
+    <% end %>
 
     <%# 全体フィードバック %>
     <div style="margin-bottom: 20px;">

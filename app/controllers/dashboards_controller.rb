@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # app/controllers/dashboards_controller.rb
 
 class DashboardsController < ApplicationController
@@ -13,7 +15,7 @@ class DashboardsController < ApplicationController
       @feedbacks = current_user.feedbacks.with_attached_images.order(lesson_date: :desc)
     end
   end
-  
+
   def show
     if current_user.teacher?
       # 先生：全生徒のフィードバックを取得（画像も一緒に）
@@ -24,7 +26,6 @@ class DashboardsController < ApplicationController
       @feedbacks = current_user.feedbacks.with_attached_images.order(lesson_date: :desc)
     end
   end
-  
 
-  alias_method :index, :show
+  alias index show
 end

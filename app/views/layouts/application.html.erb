@@ -6,6 +6,7 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
 
     <style>
       body {
@@ -38,22 +39,20 @@
         <% if logged_in? %>
           <div style="display: flex; align-items: center; gap: 20px;">
             <% if current_user.teacher? %>
-              <%= link_to "NEW POST", new_feedback_path, style: "text-decoration: none; color: #1a1a1a; border: 1px solid #1a1a1a; padding: 6px 15px; font-size: 10px;" %>
-              <%= link_to "LIST", feedbacks_path, style: "text-decoration: none; font-size: 9px; color: #999; border: 1px solid #eee; padding: 4px 8px;" %>
+              <%= link_to "+ NEW CLASS", new_group_path, style: "font-size: 10px; color: #1a1a1a; text-decoration: none; border-bottom: 1px solid #1a1a1a; padding-bottom: 2px; letter-spacing: 0.1em;" %>
+              </div>
+              <%= link_to "STUDENT LIST", users_path, style: "font-size: 10px; color: #1a1a1a; text-decoration: none; border-bottom: 1px solid #1a1a1a; padding-bottom: 2px; letter-spacing: 0.1em;" %>
+
             <% else %>
               <%= link_to "MY PAGE", mypage_path, style: "text-decoration: none; color: #1a1a1a; font-size: 11px; border-bottom: 1px solid #1a1a1a;" %>
             <% end %>
           </div>
 
+
           <div style="display: flex; align-items: center; gap: 15px; margin-left: 20px; border-left: 1px solid #eee; padding-left: 20px;">
             <%# 名前をクリックすると自分のプロフィール詳細(show)へ %>
             <%= link_to user_path(current_user), style: "text-decoration: none; font-size: 10px; color: #1a1a1a; letter-spacing: 0.1em;" do %>
               👤 <%= current_user.name.upcase %>
-            <% end %>
-
-            <%# 編集ボタン %>
-            <%= link_to edit_user_path(current_user), style: "text-decoration: none; font-size: 9px; color: #999; border: 1px solid #eee; padding: 4px 8px;" do %>
-              PROFILE EDIT
             <% end %>
 
             <%= button_to "LOGOUT", logout_path, 

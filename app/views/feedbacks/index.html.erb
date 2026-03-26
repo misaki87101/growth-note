@@ -23,6 +23,20 @@
     </div>
   </div>
 
+  <% if current_user.teacher? %>
+    <%# 承認待ちの生徒がいる場合だけ表示 %>
+    <% pending_count = GroupUser.where(group_id: current_user.group_ids, accepted: false).count %>
+    <% if pending_count > 0 %>
+      <div style="background: #fafafa; border: 1px solid #1a1a1a; padding: 20px; margin-bottom: 40px; text-align: center;">
+        <div style="font-size: 10px; color: #1a1a1a; letter-spacing: 0.2em; margin-bottom: 10px;">PENDING REQUESTS</div>
+        <div style="font-size: 14px; font-weight: 300; margin-bottom: 15px;">
+          現在、<%= pending_count %>名の生徒がクラスへの参加を待っています。
+        </div>
+        <%= link_to "承認待ちリストを確認する", pending_group_users_path, style: "font-size: 11px; color: #fff; background: #1a1a1a; text-decoration: none; padding: 8px 25px; letter-spacing: 0.1em;" %>
+      </div>
+    <% end %>
+  <% end %>
+
   <%# ヘッダー部分 %>
   <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 40px; border-bottom: 1px solid #1a1a1a; padding-bottom: 15px;">
     <h2 style="font-size: 22px; font-weight: 300; letter-spacing: 0.15em; margin: 0;">FEEDBACKS</h2>
@@ -33,13 +47,14 @@
   </div>
 
   
-<%# 絞り込みフォーム %>
+<%# 先生の時だけ絞り込みフォームを表示 %>
+<% if current_user.teacher? %>
   <div style="margin-bottom: 40px;">
     <%= form_with url: feedbacks_path, method: :get, local: true do |f| %>
       <div style="display: flex; gap: 10px; align-items: center;">
         <span style="font-size: 10px; letter-spacing: 0.1em; color: #999;">FILTER:</span>
         <%= f.collection_select :student_id, @students, :id, :name, 
-            { include_blank: "ALL STUDENTS", selected: params[:student_id] }, 
+            { include_blank: "生徒を選択", selected: params[:student_id] }, 
             { style: "border: none; border-bottom: 1px solid #e5e5e5; padding: 5px; font-size: 12px; color: #1a1a1a; background: transparent; border-radius: 0; outline: none;" } %>
         <%= f.submit "SEARCH", style: "background: none; border: none; font-size: 10px; letter-spacing: 0.1em; cursor: pointer; color: #666;" %>
         <% if params[:student_id].present? %>
@@ -48,14 +63,8 @@
       </div>
     <% end %>
   </div>
-
+<% end %>
   
-  <%# フィードバック一覧から「名簿」へのリンク （講師だけに表示） %>
-  <div style="text-align: right; margin-bottom: 10px;">
-    <% if current_user.teacher? %>
-      <%= link_to "→ STUDENT LIST", users_path, style: "font-size: 10px; color: #999; text-decoration: none; letter-spacing: 0.1em; font-weight: bold;" %>
-    <% end %>
-  </div>
 
   <%# リスト部分 %>
   <div style="display: flex; flex-direction: column;">

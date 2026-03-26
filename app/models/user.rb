@@ -3,6 +3,12 @@
 class User < ApplicationRecord
   attr_accessor :reset_token
 
+  # フォームから送られてくる「招待コード」を一時的に受け取るための窓口
+  attr_accessor :invitation_code
+
+  # ユーザーが保存された直後に「クラス配属処理」を実行
+  after_create :assign_to_group_by_code
+
   has_secure_password
 
   validates :name, presence: true
@@ -15,6 +21,7 @@ class User < ApplicationRecord
 
   # 講師（teacher）としての関連付け
   # has_many :students, foreign_key: 'user_id', dependent: :destroy
+
   has_many :feedbacks, foreign_key: 'teacher_id', dependent: :destroy
   has_many :likes, dependent: :destroy
   has_many :comments, dependent: :destroy
@@ -22,6 +29,11 @@ class User < ApplicationRecord
   has_many :boards, dependent: :destroy
   has_many :board_comments, dependent: :destroy
   has_many :board_likes, dependent: :destroy
+  has_many :group_users, dependent: :destroy
+  has_many :groups, through: :group_users
+  # 先生が担当している全クラスの「承認済み」生徒一覧を直接取得できるようにする
+  has_many :students, -> { where(group_users: { accepted: true }, role: :student) },
+           through: :groups, source: :users
 
   # パスワード再設定用の属性を設定する
   def create_reset_digest
@@ -47,6 +59,20 @@ class User < ApplicationRecord
   end
 
   def teacher?
-    self.role == "teacher"
+    role == "teacher"
+  end
+
+  private
+
+  def assign_to_group_by_code
+    return if invitation_code.blank?
+
+    # 入力されたコードと一致するクラスを探す
+    group = Group.find_by(invitation_code: invitation_code)
+
+    return unless group
+
+    # GroupUser（中間テーブル）を作成。まだ「承認前(false)」の状態。
+    group_users.create(group: group, accepted: false)
   end
 end

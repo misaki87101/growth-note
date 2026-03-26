@@ -2,7 +2,7 @@
 
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
-  
+
   helper_method :current_user, :logged_in?
 
   # 💡 これを追加！ ユーザーをログイン状態にする魔法です
@@ -38,6 +38,10 @@ class ApplicationController < ActionController::Base
   def destroy
     log_out
     redirect_to login_path, notice: "ログアウトしました", status: :see_other
+  end
+
+  def ensure_teacher
+    redirect_to root_path, alert: '権限がありません' unless current_user&.teacher?
   end
 
   private

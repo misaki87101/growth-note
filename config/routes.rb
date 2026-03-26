@@ -39,6 +39,10 @@ Rails.application.routes.draw do
     member do
       delete :purge_image
     end
+    collection do
+      get :select_group # クラス選択用のルーティング
+    end
+
     # いいね機能（resource と単数形にすることで /likes/create ではなく /likes になります）
     resource :likes, only: [:create, :destroy]
     # コメント機能
@@ -57,6 +61,12 @@ Rails.application.routes.draw do
     resources :board_comments, only: [:create, :destroy, :edit, :update]
   end
 
+  # グループ（生徒のクラス）管理
+  resources :groups, only: [:new, :create, :index, :show]
+
+  resources :group_users, only: [:update, :destroy] do
+  get :pending, on: :collection # 承認待ち一覧用
+end
 
   # 生徒用：マイページ
   get 'mypage', to: 'dashboards#show'

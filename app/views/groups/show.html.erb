@@ -1,0 +1,26 @@
+<%# app/views/groups/show.html.erb %>
+<div style="max-width: 600px; margin: 60px auto; padding: 0 20px; text-align: center;">
+  
+  <div style="font-size: 10px; color: #999; letter-spacing: 0.2em; margin-bottom: 10px;">CLASS CREATED</div>
+  <h1 style="font-size: 24px; font-weight: 300; margin-bottom: 50px;"><%= @group.name %></h1>
+
+  <%# 招待コード表示エリア %>
+  <div style="background: #fafafa; border: 1px dashed #1a1a1a; padding: 40px 20px; margin-bottom: 40px;">
+    <div style="font-size: 10px; color: #1a1a1a; letter-spacing: 0.1em; margin-bottom: 15px;">INVITATION CODE</div>
+    <div style="font-size: 32px; font-weight: bold; letter-spacing: 0.3em; color: #1a1a1a;">
+      <%= @group.invitation_code %>
+    </div>
+    <p style="font-size: 11px; color: #666; margin-top: 20px;">このコードを生徒の新規登録時に入力してもらってください。</p>
+  </div>
+
+  <div style="text-align: left;">
+    <h3 style="font-size: 12px; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px;">MEMBER (<%= @users.count %>)</h3>
+    <% @users.each do |user| %>
+      <div style="font-size: 14px; padding: 10px 0; border-bottom: 1px solid #fafafa;"><%= user.name %></div>
+    <% end %>
+  </div>
+
+  <div style="margin-top: 60px;">
+    <%= link_to "TOP PAGE", feedbacks_path, style: "font-size: 11px; color: #fff; background: #1a1a1a; padding: 12px 40px; text-decoration: none; letter-spacing: 0.1em;" %>
+  </div>
+</div>

@@ -17,6 +17,12 @@
     <% end %>
 
     <div style="margin-bottom: 25px;">
+      <%= label_tag :invitation_code, "INVITATION CODE / 招待コード", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 8px;" %>
+      <%= f.text_field :invitation_code, placeholder: "招待コードを入力", 
+    style: "width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 0; outline: none; font-size: 14px;" %>
+</div>
+
+    <div style="margin-bottom: 25px;">
       <%= f.label :name, "NAME / お名前", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 8px;" %>
       <%= f.text_field :name, style: "width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 0; outline: none; font-size: 14px;" %>
     </div>

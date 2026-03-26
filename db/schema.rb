@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_23_145450) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_26_051507) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -68,6 +68,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_23_145450) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "category"
+    t.integer "group_id"
     t.index ["user_id"], name: "index_boards_on_user_id"
   end
 
@@ -106,8 +107,26 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_23_145450) do
     t.integer "duration"
     t.integer "hour"
     t.integer "minute"
+    t.integer "group_id"
     t.index ["student_id"], name: "index_feedbacks_on_student_id"
     t.index ["teacher_id"], name: "index_feedbacks_on_teacher_id"
+  end
+
+  create_table "group_users", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "group_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "accepted", default: false
+    t.index ["group_id"], name: "index_group_users_on_group_id"
+    t.index ["user_id"], name: "index_group_users_on_user_id"
+  end
+
+  create_table "groups", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "invitation_code"
   end
 
   create_table "homeworks", force: :cascade do |t|
@@ -156,6 +175,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_23_145450) do
     t.text "message"
     t.string "reset_digest"
     t.datetime "reset_sent_at"
+    t.date "birthday"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
@@ -171,6 +191,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_23_145450) do
   add_foreign_key "comments", "users"
   add_foreign_key "feedbacks", "users", column: "student_id"
   add_foreign_key "feedbacks", "users", column: "teacher_id"
+  add_foreign_key "group_users", "groups"
+  add_foreign_key "group_users", "users"
   add_foreign_key "homeworks", "feedbacks"
   add_foreign_key "homeworks", "users"
   add_foreign_key "likes", "feedbacks"

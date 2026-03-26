@@ -1,37 +1,80 @@
-<%# コメント一覧 %>
-<div id="comments">
-  <% @board.board_comments.each do |comment| %>
-    <div style="border-bottom: 1px solid #eee; padding: 10px;">
-      <strong><%= comment.user.name %></strong>: 
-      <%= comment.content %>
-      
-      <%# パスを board_board_comment_path に変更 %>
-      <%= button_to '削除', board_board_comment_path(@board, comment), 
-            method: :delete, 
-            data: { confirm: '本当に削除しますか？' }, 
-            class: "btn-delete-link" %>
-  <% end %>
-</div>
-
-<%# コメント投稿フォーム %>
-<div style="margin-top: 20px;">
-  <%# model の指定を [@board, BoardComment.new] に変更 %>
-  <%= form_with(model: [@board, BoardComment.new], local: true) do |f| %>
-    <div>
-      <%= f.text_area :content, rows: 3, style: "width: 100%;", placeholder: "コメントを入力してください" %>
+<div style="max-width: 700px; margin: 60px auto; padding: 0 20px; font-family: 'Helvetica Neue', Arial, sans-serif;">
+  
+  <%# 投稿ヘッダー %>
+  <div style="margin-bottom: 40px; border-bottom: 1px solid #1a1a1a; padding-bottom: 20px;">
+    <div style="font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;">
+      <%= @board.created_at.strftime("%Y.%m.%d") %> | <%= @board.category_i18n %>
     </div>
-    <%= f.submit "コメントする", class: "btn btn-primary" %>
-  <% end %>
-</div>
+    <h1 style="font-size: 24px; font-weight: 400; letter-spacing: 0.05em; margin: 0 0 10px 0;"><%= @board.title %></h1>
+    <div style="font-size: 11px; color: #666;">by <%= @board.user.name %></div>
+  </div>
 
-<div id="like-section" style="margin: 20px 0;">
+  <%# 投稿内容 %>
+  <div style="font-size: 15px; line-height: 1.8; color: #333; margin-bottom: 40px; white-space: pre-wrap;"><%= @board.content %></div>
+
+  <%# 投稿画像 %>
+  <% if @board.images.attached? %>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 40px;">
+      <% @board.images.each do |image| %>
+        <%= image_tag image, style: "width: 100%; height: auto; border: 1px solid #eee;" %>
+      <% end %>
+    </div>
+  <% end %>
+
+
+  <%# いいねセクション %>
+<div id="like-section" style="margin-bottom: 60px; padding: 20px 0; border-top: 1px solid #eee; text-align: center;">
   <% if @board.liked_by?(current_user) %>
-    <%= button_to board_board_like_path(@board), method: :delete, style: "background: none; border: none; cursor: pointer;" do %>
-      <span style="color: red; font-size: 1.5em;">🖤</span> <%= @board.board_likes.count %>
+    <%# 削除（method: :delete） %>
+    <%= button_to board_board_like_path(@board), method: :delete, style: "background: none; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;" do %>
+      <span style="color: #ff4b5c; font-size: 18px;">🖤</span>
+      <span style="font-size: 12px; color: #1a1a1a;"><%= @board.board_likes.count %></span>
     <% end %>
   <% else %>
-    <%= button_to board_board_like_path(@board), method: :post, style: "background: none; border: none; cursor: pointer;" do %>
-      <span style="color: gray; font-size: 1.5em;">🤍</span> <%= @board.board_likes.count %>
+    <%# 作成（method: :post） %>
+    <%= button_to board_board_like_path(@board), method: :post, style: "background: none; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;" do %>
+      <span style="color: #ccc; font-size: 18px;">🖤</span>
+      <span style="font-size: 12px; color: #999;"><%= @board.board_likes.count %></span>
     <% end %>
   <% end %>
+</div>
+
+  <%# コメントセクション %>
+  <div style="background: #fafafa; padding: 30px;">
+    <div style="font-size: 11px; letter-spacing: 0.1em; margin-bottom: 25px; color: #1a1a1a; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 10px;">COMMENTS (<%= @board.board_comments.count %>)</div>
+    
+    <div id="comments" style="margin-bottom: 30px;">
+      <% @board.board_comments.each do |comment| %>
+        <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px;">
+            <span style="font-size: 11px; font-weight: bold;"><%= comment.user.name %></span>
+            <span style="font-size: 9px; color: #999;"><%= comment.created_at.strftime("%Y.%m.%d %H:%M") %></span>
+          </div>
+          <div style="font-size: 13px; line-height: 1.5; color: #444;"><%= comment.content %></div>
+          
+          <% if comment.user == current_user %>
+            <%= button_to 'Delete', board_board_comment_path(@board, comment), 
+      method: :delete, 
+      form: { data: { turbo_confirm: '削除しますか？' } }, 
+      style: "background: none; border: none; color: #ff4b5c; font-size: 10px; cursor: pointer;" %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <%= form_with(model: [@board, BoardComment.new], local: true) do |f| %>
+      <div>
+        <%= f.text_area :content, rows: 3, style: "width: 100%; padding: 12px; border: 1px solid #eee; font-size: 13px; border-radius: 0; outline: none; margin-bottom: 10px;", placeholder: "Add a comment..." %>
+      </div>
+      <%= f.submit "SEND COMMENT", style: "background: #1a1a1a; color: #fff; border: none; padding: 10px 25px; font-size: 10px; letter-spacing: 0.1em; cursor: pointer;" %>
+    <% end %>
+  </div>
+
+  <div style="text-align: center; margin-top: 40px;">
+    <%= link_to "BACK TO LIST", boards_path, style: "font-size: 10px; color: #999; text-decoration: none; letter-spacing: 0.1em;" %>
+    <% if @board.user == current_user %>
+      <span style="margin: 0 15px; color: #eee;">|</span>
+      <%= link_to "EDIT POST", edit_board_path(@board), style: "font-size: 10px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em;" %>
+    <% end %>
+  </div>
 </div>

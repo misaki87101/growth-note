@@ -15,11 +15,15 @@
     <div style="padding-bottom: 15px; border-bottom: 2px solid #1a1a1a;">
       <%= link_to "HOMEWORK", homeworks_path, style: "text-decoration: none; color: #1a1a1a; font-size: 11px; letter-spacing: 0.15em; font-weight: bold;" %>
     </div>
+    <div style="padding-bottom: 15px;">
+      <%= link_to "BOARD", boards_path, style: "text-decoration: none; color: #999; font-size: 11px; letter-spacing: 0.15em;" %>
+    </div>
   </div>
 
   <%# 3. ヘッダー部分 %>
   <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 40px; border-bottom: 1px solid #1a1a1a; padding-bottom: 15px;">
     <h2 style="font-size: 22px; font-weight: 300; letter-spacing: 0.15em; margin: 0;">HOMEWORKS</h2>
+    
     <%# 生徒の時だけ投稿ボタンを表示 %>
     <% unless current_user.teacher? %>
       <%= link_to "New Post", new_homework_path, style: "font-size: 11px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em; border: 1px solid #1a1a1a; padding: 8px 20px;" %>
@@ -33,9 +37,9 @@
         <div style="display: flex; gap: 10px; align-items: center;">
           <span style="font-size: 10px; letter-spacing: 0.1em; color: #999;">FILTER STUDENT:</span>
           <%= f.collection_select :student_id, @students || [], :id, :name, 
-              { include_blank: "ALL STUDENTS", selected: params[:student_id] }, 
-              { style: "border: none; border-bottom: 1px solid #e5e5e5; padding: 5px; font-size: 12px; color: #1a1a1a; background: transparent;" } %>
-          <%= f.submit "SEARCH", style: "background: #1a1a1a; border: none; font-size: 9px; letter-spacing: 0.1em; cursor: pointer; color: #fff; padding: 5px 15px;" %>
+              { include_blank: "生徒を選択", selected: params[:student_id] }, 
+              { style: "border: none; border-bottom: 1px solid #e5e5e5; padding: 5px; font-size: 12px; color: #1a1a1a; background: transparent; border-radius: 0; outline: none;" } %>
+        <%= f.submit "SEARCH", style: "background: none; border: none; font-size: 10px; letter-spacing: 0.1em; cursor: pointer; color: #666;" %>
         </div>
       <% end %>
     </div>

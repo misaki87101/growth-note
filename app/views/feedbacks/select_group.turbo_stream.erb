@@ -1,0 +1,9 @@
+<%# app/views/feedbacks/select_group.turbo_stream.erb %>
+<%= turbo_stream.replace "student_select_container" do %>
+  <div id="student_select_container">
+    <label style="display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 8px;">SELECT STUDENT</label>
+    <%= select_tag "feedback[student_id]", options_from_collection_for_select(@students, :id, :name), 
+        prompt: "生徒を選択してください", 
+        style: "width: 100%; padding: 12px; border: 1px solid #eee; outline: none;" %>
+  </div>
+<% end %>

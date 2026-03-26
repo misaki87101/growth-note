@@ -1,0 +1,38 @@
+<%# app/views/group_users/pending.html.erb %>
+<div style="max-width: 700px; margin: 60px auto; padding: 0 20px;">
+  <div style="text-align: center; margin-bottom: 60px;">
+    <h1 style="font-size: 20px; font-weight: 300; letter-spacing: 0.2em;">PENDING REQUESTS</h1>
+    <div style="font-size: 10px; color: #999; margin-top: 10px;">参加リクエスト</div>
+  </div>
+
+  <% if @pending_group_users.any? %>
+    <% @pending_group_users.each do |gu| %>
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 25px 0; border-bottom: 1px solid #eee;">
+        <div>
+          <div style="font-size: 16px; font-weight: 500; margin-bottom: 5px;"><%= gu.user.name %></div>
+          <div style="font-size: 11px; color: #999; letter-spacing: 0.05em;">
+            APPLYING TO: <span style="color: #1a1a1a;"><%= gu.group.name %></span>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 15px;">
+          <%# 承認ボタン %>
+          <%= button_to "承認", group_user_path(gu), method: :patch, 
+              style: "background: #1a1a1a; color: #fff; border: none; padding: 10px 20px; font-size: 10px; letter-spacing: 0.1em; cursor: pointer;" %>
+          
+          <%# 拒否ボタン %>
+          <%= button_to "却下", group_user_path(gu), method: :delete, data: { confirm: "削除しますか？" },
+              style: "background: none; color: #ccc; border: 1px solid #eee; padding: 10px 20px; font-size: 10px; letter-spacing: 0.1em; cursor: pointer;" %>
+        </div>
+      </div>
+    <% end %>
+  <% else %>
+    <div style="text-align: center; color: #999; font-size: 12px; margin-top: 100px;">
+      現在、未承認のリクエストはありません。
+    </div>
+  <% end %>
+
+  <div style="text-align: center; margin-top: 60px;">
+    <%= link_to "BACK", feedbacks_path, style: "font-size: 11px; color: #999; text-decoration: none; letter-spacing: 0.1em;" %>
+  </div>
+</div>

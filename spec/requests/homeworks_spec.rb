@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe "Homeworks", type: :request do
@@ -7,13 +9,13 @@ RSpec.describe "Homeworks", type: :request do
   describe "POST /homeworks" do
     context "ログインしている場合" do
       let(:student) { create(:user, role: :student, password: 'password') }
-      
+
       before { sign_in_as student }
 
       xit "宿題を投稿できること" do
         homework_params = {
           homework: {
-            lesson_date: Date.today,
+            lesson_date: Time.zone.today,
             content: "テスト投稿",
             hour: 2,
             minute: 0
@@ -23,10 +25,10 @@ RSpec.describe "Homeworks", type: :request do
         puts response.body if response.status != 302
 
         # 投稿されることを確認
-        expect {
+        expect do
           post homeworks_path, params: homework_params
-        }.to change(Homework, :count).by(1)
-        
+        end.to change(Homework, :count).by(1)
+
         expect(response).to redirect_to(homeworks_path)
       end
     end
