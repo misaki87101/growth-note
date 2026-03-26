@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # app/controllers/teacher/approvals_controller.rb (一例)
+class Teacher::ApprovalsController < ApplicationController
 def index
   # 自分が担当しているクラスの、承認待ち生徒だけを取得
   @pending_users = GroupUser.where(group: current_user.groups, accepted: false).includes(:user, :group)
