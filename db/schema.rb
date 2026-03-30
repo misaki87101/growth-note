@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_26_051507) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_30_141357) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -92,6 +92,24 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_26_051507) do
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
+  create_table "daily_reports", force: :cascade do |t|
+    t.integer "group_id"
+    t.date "date"
+    t.integer "staff_count"
+    t.integer "new_customers"
+    t.integer "repeat_customers"
+    t.string "referral_source"
+    t.integer "tech_sales"
+    t.integer "item_sales"
+    t.integer "tech_target"
+    t.integer "item_target"
+    t.float "total_working_hours"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.json "referral_data"
+    t.text "memo"
+  end
+
   create_table "feedbacks", force: :cascade do |t|
     t.bigint "student_id", null: false
     t.bigint "teacher_id", null: false
@@ -151,6 +169,29 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_26_051507) do
     t.index ["user_id"], name: "index_likes_on_user_id"
   end
 
+  create_table "monthly_notes", force: :cascade do |t|
+    t.date "month"
+    t.bigint "group_id", null: false
+    t.text "memo"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["group_id"], name: "index_monthly_notes_on_group_id"
+  end
+
+  create_table "staff_sales", force: :cascade do |t|
+    t.bigint "daily_report_id", null: false
+    t.bigint "user_id", null: false
+    t.integer "tech_sales"
+    t.integer "item_sales"
+    t.float "working_hours"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "tech_target"
+    t.integer "item_target"
+    t.index ["daily_report_id"], name: "index_staff_sales_on_daily_report_id"
+    t.index ["user_id"], name: "index_staff_sales_on_user_id"
+  end
+
   create_table "students", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "name"
@@ -197,5 +238,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_26_051507) do
   add_foreign_key "homeworks", "users"
   add_foreign_key "likes", "feedbacks"
   add_foreign_key "likes", "users"
+  add_foreign_key "monthly_notes", "groups"
+  add_foreign_key "staff_sales", "daily_reports"
+  add_foreign_key "staff_sales", "users"
   add_foreign_key "students", "users"
 end

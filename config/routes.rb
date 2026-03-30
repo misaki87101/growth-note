@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get "daily_reports/index"
+  get "daily_reports/new"
   #get "boards/index"
   #get "boards/show"
   #get "boards/new"
@@ -61,6 +63,16 @@ Rails.application.routes.draw do
     resources :board_comments, only: [:create, :destroy, :edit, :update]
   end
 
+  # 月間分析ページ
+
+  resources :monthly_notes, only: [:create, :update]
+  
+  resources :daily_reports do
+  collection do
+    get :analysis
+  end
+end
+
   # グループ（生徒のクラス）管理
   resources :groups, only: [:new, :create, :index, :show]
 
@@ -80,6 +92,9 @@ end
 
   # パスワードリセット機能
   resources :password_resets, only: [:new, :create, :edit, :update]
+
+  # 売上管理
+  resources :daily_reports, only: [:index, :new, :create]
 
   if Rails.env.development?
   mount LetterOpenerWeb::Engine, at: "/letter_opener"

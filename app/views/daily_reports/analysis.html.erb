@@ -1,0 +1,148 @@
+<div style="max-width: 1000px; margin: 0 auto; padding: 40px; font-family: sans-serif;">
+  <h2 style="text-align: center; border-bottom: 2px solid #1a1a1a; padding-bottom: 10px;">
+    <%= @display_month.strftime("%Y年 %m月") %> 分析表
+  </h2>
+
+
+<%# --- 売上サマリー（昨対比あり） --- %>
+<div style="display: flex; gap: 20px; margin-bottom: 30px;">
+  <div style="flex: 1; border: 1px solid #1a1a1a; padding: 20px; text-align: center;">
+    <div style="font-size: 10px; color: #666;">今年 総売上</div>
+    <div style="font-size: 20px; font-weight: bold;">¥<%= number_with_delimiter(@reports.sum(:tech_sales) + @reports.sum(:item_sales)) %></div>
+  </div>
+  
+  <div style="flex: 1; border: 1px solid #ccc; padding: 20px; text-align: center; background: #f9f9f9;">
+    <div style="font-size: 10px; color: #666;">前年 総売上</div>
+    <div style="font-size: 20px; font-weight: bold; color: #999;">
+      ¥<%= number_with_delimiter(@last_year_reports.sum(:tech_sales) + @last_year_reports.sum(:item_sales)) %>
+    </div>
+  </div>
+
+  <div style="flex: 1; border: 2px solid #d63384; padding: 20px; text-align: center;">
+    <div style="font-size: 10px; color: #d63384; font-weight: bold;">昨年対比</div>
+    <div style="font-size: 20px; font-weight: bold; color: #d63384;">
+      <% 
+        this_year = @reports.sum(:tech_sales).to_f
+        last_year = @last_year_reports.sum(:tech_sales).to_f
+        growth = last_year > 0 ? (this_year / last_year * 100).round(1) : 0
+      %>
+      <%= growth %>%
+    </div>
+  </div>
+</div>
+
+<%# --- スタッフ別実績（目標と達成率を追加） --- %>
+<table style="width: 100%; border-collapse: collapse;">
+  <thead style="background: #eee; font-size: 12px;">
+    <tr>
+      <th>スタッフ名</th>
+      <th>目標</th>
+      <th>実績</th>
+      <th>達成率</th>
+      <th>生産性</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @staff_summary.each do |summary| %>
+      <tr style="text-align: center; border-bottom: 1px solid #eee;">
+        <td style="padding: 15px;"><%= User.find(summary.user_id).name %></td>
+        <td style="color: #666;">¥<%= number_with_delimiter(summary.tech_target || 0) %></td>
+        <td style="font-weight: bold;">¥<%= number_with_delimiter(summary.total_tech) %></td>
+        <td style="color: #d63384; font-weight: bold;">
+          <%= summary.tech_target.to_i > 0 ? (summary.total_tech.to_f / summary.tech_target * 100).round(1) : 0 %>%
+        </td>
+        <td>¥<%= number_with_delimiter((summary.total_tech.to_f / summary.total_hours).round(0)) rescue 0 %>/h</td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+
+  <div style="display: flex; gap: 40px; margin-top: 40px;">
+  
+  <%# --- 来店動機セクション --- %>
+  <div style="flex: 1; background: #fff; border: 1px solid #eee; padding: 25px; border-radius: 8px;">
+    <h3 style="font-size: 13px; margin-bottom: 20px; border-left: 4px solid #1a1a1a; padding-left: 10px;">
+      新規客の来店動機内訳
+    </h3>
+    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+      <% DailyReport::REFERRAL_SOURCES.each do |source| %>
+        <tr style="border-bottom: 1px solid #f9f9f9;">
+          <td style="padding: 10px 0; color: #666;"><%= source %></td>
+          <td style="padding: 10px 0; text-align: right; font-weight: bold;">
+            <%= @referral_summary[source] || 0 %> <span style="font-size: 10px; font-weight: normal;">名</span>
+          </td>
+        </tr>
+      <% end %>
+      <tr style="background: #fafafa; font-weight: bold;">
+        <td style="padding: 10px;">合計</td>
+        <td style="padding: 10px; text-align: right;">
+          <%= @referral_summary.values.map(&:to_i).sum %> 名
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <%# --- 振り返りコメント欄 --- %>
+<div style="flex: 1; background: #fff5f7; border: 1px solid #f8d7da; padding: 25px; border-radius: 8px;">
+  <h3 style="font-size: 13px; margin-bottom: 15px; color: #d63384;">今月の振り返り・メモ</h3>
+  
+  <%= form_with(model: @monthly_note, local: true) do |f| %>
+    <%= f.hidden_field :month %>
+    <%= f.hidden_field :group_id %>
+    
+    <div style="font-size: 13px; line-height: 1.8; color: #333;">
+      <%= f.text_area :memo, 
+          placeholder: "今月の総括や、来月の目標を入力してください...",
+          style: "width: 100%; min-height: 150px; background: #fff; border-radius: 4px; padding: 15px; border: 1px solid #eee; font-family: inherit;",
+          class: "no-print" %>
+      
+      <%# 印刷時にはテキストだけを表示する %>
+      <div class="only-print" style="display: none; min-height: 150px; background: #fff; padding: 15px; border: 1px solid #eee; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; height: auto;">
+  <%= @monthly_note.memo %>
+</div>
+    </div>
+
+    <div style="text-align: right; margin-top: 10px;">
+      <%= f.submit "メモを保存する", class: "no-print", style: "background: #d63384; color: #fff; border: none; padding: 5px 15px; border-radius: 4px; cursor: pointer; font-size: 12px;" %>
+    </div>
+  <% end %>
+</div>
+  
+  <%# --- 印刷ボタン --- %>
+    <%# 印刷ボタンセクション（中央寄せ） %>
+  <div style="padding-top: 30px; display: flex; justify-content: center;">
+    <button onclick="window.print()" style="background: none; color: #1a1a1a; border: 1px solid #1a1a1a; padding: 10px 40px; font-size: 10px; letter-spacing: 0.2em; cursor: pointer; font-family: inherit;">
+      PRINT / PDF
+    </button>
+  </div>
+</div>
+
+<style>
+  @media print {
+    /* 1. 印刷時に「入力フォーム」や「ボタン」を隠す */
+    button, a, .no-print {
+      display: none !important;
+    }
+
+    /* 2. 【重要】印刷時に「隠していたテキスト（div）」を表示させる */
+    .only-print {
+      display: block !important;
+      page-break-inside: avoid;
+    }
+    
+    /* 印刷時の背景と余白の調整 */
+    body {
+      background: white !important;
+      -webkit-print-color-adjust: exact; /* 背景色を強制的に印刷する設定 */
+    }
+    div[style*="margin: 0 auto"] {
+      margin: 0 !important;
+      border: none !important;
+      box-shadow: none !important;
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+  }
+</style>
+</div>

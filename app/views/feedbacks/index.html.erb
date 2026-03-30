@@ -21,6 +21,10 @@
     <div style="padding-bottom: 15px;">
       <%= link_to "BOARD", boards_path, style: "text-decoration: none; color: #999; font-size: 11px; letter-spacing: 0.15em;" %>
     </div>
+    <%# REPORTSタブ %>
+    <div style="padding-bottom: 15px;">
+      <%= link_to "REPORT", daily_reports_path, style: "text-decoration: none; color: #999; font-size: 11px; letter-spacing: 0.15em;" %>
+    </div>
   </div>
 
   <% if current_user.teacher? %>

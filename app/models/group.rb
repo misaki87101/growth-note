@@ -4,6 +4,8 @@ class Group < ApplicationRecord
   has_many :group_users, dependent: :destroy
   has_many :users, through: :group_users
   has_many :boards, dependent: :destroy
+  has_many :daily_reports, dependent: :destroy
+  has_many :monthly_notes, dependent: :destroy
 
   before_create :generate_invitation_code
 
