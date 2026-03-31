@@ -15,22 +15,30 @@
     <% end %>
 
     <div style="display: flex; flex-direction: column; gap: 30px;">
-    <% if current_user.teacher? %>
+  <% if current_user.teacher? %>
     <%# 先生の場合：担当しているクラスから選ばせる %>
     <div>
       <%= f.label :group_id, "投稿するグループを選択", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;" %>
-      <%= f.collection_select :group_id, @user_groups, :id, :name, { prompt: "クラスを選択してください" }, 
+      <%# @user_groups が nil の場合でもエラーにならないようボッチ演算子(&.)や current_user を活用 %>
+      <%= f.collection_select :group_id, (current_user.groups), :id, :name, { prompt: "クラスを選択してください" }, 
           style: "width: 100%; padding: 12px; border: 1px solid #eee; background: #fff; font-size: 14px; border-radius: 0; outline: none;" %>
     </div>
   <% else %>
     <%# 生徒の場合：所属しているクラスのIDを隠しフィールドで送る（自動設定） %>
-    <% if @user_groups.any? %>
-      <%= f.hidden_field :group_id, value: @user_groups.first.id %>
+    <%# @user_groups ではなく直接 current_user.groups を見ることで確実に取得する %>
+    <% if current_user.groups.any? %>
+      <%= f.hidden_field :group_id, value: current_user.groups.first.id %>
       <div style="font-size: 12px; color: #666; margin-bottom: 20px;">
-        投稿先: <span style="font-weight: bold;"><%= @user_groups.first.name %></span>
+        投稿先: <span style="font-weight: bold;"><%= current_user.groups.first.name %></span>
+      </div>
+    <% else %>
+      <%# 万が一、どのグループにも所属していない生徒が投稿しようとした場合の警告 %>
+      <div style="font-size: 12px; color: #e74c3c; margin-bottom: 20px;">
+        ※所属クラスが見つかりません。招待コードを確認してください。
       </div>
     <% end %>
   <% end %>
+</div>
   
       <%# カテゴリー %>
       <div>

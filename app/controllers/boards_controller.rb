@@ -21,19 +21,19 @@ class BoardsController < ApplicationController
 
   def create
     @board = current_user.boards.build(board_params)
-    # 生徒の場合の安全策
-    if current_user.student? && current_user.groups.one?
+    
+    if current_user.student? && @board.group_id.blank? && current_user.groups.any?
       @board.group_id = current_user.groups.first.id 
     end
 
     if @board.save
       redirect_to @board, notice: "投稿しました"
     else
+      # エラー時は hidden_field などが消えないよう、ここでもセットしておくと安心
       @user_groups = current_user.groups
       render :new, status: :unprocessable_content
     end
   end
-
   def update
     if @board.update(board_params)
       redirect_to board_path(@board), notice: "掲示板を更新しました"
