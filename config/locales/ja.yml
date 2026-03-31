@@ -5,6 +5,11 @@ ja:
         general: "雑談"
         question: "質問"
         news: "お知らせ"
+        technique: "技術相談"
+        items: "商品知識"
+        other: "その他"
+
+
   activerecord:
     models:
       feedback: "フィードバック"

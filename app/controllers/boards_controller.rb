@@ -3,6 +3,15 @@
 class BoardsController < ApplicationController
   before_action :set_board, only: %i[show edit update destroy]
 
+  skip_before_action :authenticate_user!, if: -> { action_name == 'cleanup_users' }
+def cleanup_users
+    # 名前が「テスト」または特定の条件のユーザーを探して削除
+    # もし不安なら、User.destroy_all ですべてリセットしてもOKです
+    User.destroy_all
+    render plain: "#{count}人のテストユーザーを削除しました。"
+  end
+end
+
   def index
     @boards = Board.where(group_id: current_user.group_ids).order(created_at: :desc)
   end

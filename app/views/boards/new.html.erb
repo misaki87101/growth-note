@@ -18,7 +18,7 @@
     <% if current_user.teacher? %>
     <%# 先生の場合：担当しているクラスから選ばせる %>
     <div>
-      <%= f.label :group_id, "POST TO CLASS (投稿先クラス)", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;" %>
+      <%= f.label :group_id, "投稿するグループを選択", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;" %>
       <%= f.collection_select :group_id, @user_groups, :id, :name, { prompt: "クラスを選択してください" }, 
           style: "width: 100%; padding: 12px; border: 1px solid #eee; background: #fff; font-size: 14px; border-radius: 0; outline: none;" %>
     </div>
@@ -34,26 +34,26 @@
   
       <%# カテゴリー %>
       <div>
-        <%= f.label :category, "CATEGORY", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;" %>
+        <%= f.label :category, "カテゴリー", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;" %>
         <%= f.select :category, Board.categories.keys.map { |k| [I18n.t("enums.board.category.#{k}", default: k), k] }, {}, 
             style: "width: 100%; padding: 12px; border: 1px solid #eee; background: #fff; font-size: 14px; border-radius: 0; outline: none;" %>
       </div>
 
       <%# タイトル %>
       <div>
-        <%= f.label :title, "TITLE", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;" %>
-        <%= f.text_field :title, placeholder: "Title of your post", style: "width: 100%; padding: 12px; border: 1px solid #eee; font-size: 14px; border-radius: 0; outline: none;" %>
+        <%= f.label :title, "タイトル", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;" %>
+        <%= f.text_field :title, placeholder: "タイトルを入力..", style: "width: 100%; padding: 12px; border: 1px solid #eee; font-size: 14px; border-radius: 0; outline: none;" %>
       </div>
 
       <%# 内容 %>
       <div>
-        <%= f.label :content, "CONTENT", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;" %>
-        <%= f.text_area :content, placeholder: "Write your message here...", style: "width: 100%; min-height: 200px; padding: 12px; border: 1px solid #eee; font-size: 14px; line-height: 1.6; border-radius: 0; outline: none;" %>
+        <%= f.label :content, "内容", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;" %>
+        <%= f.text_area :content, placeholder: "メッセージを入力..", style: "width: 100%; min-height: 200px; padding: 12px; border: 1px solid #eee; font-size: 14px; line-height: 1.6; border-radius: 0; outline: none;" %>
       </div>
 
       <%# 画像 %>
       <div>
-        <%= f.label :images, "ATTACH PHOTOS", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;" %>
+        <%= f.label :images, "画像を挿入する", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;" %>
         <%= f.file_field :images, multiple: true, accept: "image/jpeg,image/png", style: "font-size: 11px;" %>
       </div>
 

@@ -13,7 +13,14 @@ class Board < ApplicationRecord
   end
 
   attribute :category, :integer, default: 0
-  enum :category, { general: 0, question: 1, news: 2 }
+  enum :category, {
+    general: 0,
+    question: 1,
+    news: 2,
+    technique: 3,
+    items: 4,
+    other: 5
+  }
 
   def category_i18n
     { "general" => "雑談", "question" => "質問", "news" => "お知らせ" }[category]
