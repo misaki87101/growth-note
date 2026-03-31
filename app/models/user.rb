@@ -23,6 +23,7 @@ class User < ApplicationRecord
   # has_many :students, foreign_key: 'user_id', dependent: :destroy
 
   has_many :feedbacks, foreign_key: 'teacher_id', dependent: :destroy
+  has_many :received_feedbacks, class_name: 'Feedback', foreign_key: 'student_id', dependent: :destroy
   has_many :likes, dependent: :destroy
   has_many :comments, dependent: :destroy
   has_many :homeworks, dependent: :destroy
