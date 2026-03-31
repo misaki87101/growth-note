@@ -1,0 +1,23 @@
+
+  <%# ナビゲーションメニュー %>
+  <div style="display: flex; justify-content: center; gap: 40px; margin-bottom: 60px; border-bottom: 1px solid #eee;">
+  <%# FEEDBACK %>
+  <div style="padding-bottom: 15px; <%= 'border-bottom: 2px solid #1a1a1a;' if current_page?(mypage_path) %>">
+    <%= link_to "FEEDBACK", mypage_path, style: "text-decoration: none; color: #{current_page?(mypage_path) ? '#1a1a1a' : '#999'}; font-size: 11px; letter-spacing: 0.15em; font-weight: bold;" %>
+  </div>
+  
+  <%# HOMEWORK %>
+  <div style="padding-bottom: 15px; <%= 'border-bottom: 2px solid #1a1a1a;' if current_page?(homeworks_path) %>">
+    <%= link_to "HOMEWORK", homeworks_path, style: "text-decoration: none; color: #{current_page?(homeworks_path) ? '#1a1a1a' : '#999'}; font-size: 11px; letter-spacing: 0.15em;" %>
+  </div>
+
+  <%# BOARD %>
+  <div style="padding-bottom: 15px; <%= 'border-bottom: 2px solid #1a1a1a;' if current_page?(boards_path) %>">
+    <%= link_to "BOARD", boards_path, style: "text-decoration: none; color: #{current_page?(boards_path) ? '#1a1a1a' : '#999'}; font-size: 11px; letter-spacing: 0.15em;" %>
+  </div>
+
+  <%# REPORT %>
+  <div style="padding-bottom: 15px; <%= 'border-bottom: 2px solid #1a1a1a;' if current_page?(daily_reports_path) %>">
+    <%= link_to "REPORT", daily_reports_path, style: "text-decoration: none; color: #{current_page?(daily_reports_path) ? '#1a1a1a' : '#999'}; font-size: 11px; letter-spacing: 0.15em;" %>
+  </div>
+</div>

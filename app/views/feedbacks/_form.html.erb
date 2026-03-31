@@ -94,8 +94,9 @@
 
       <% if current_user.teacher? %>
         <div style="margin-bottom: 10px; display: flex; gap: 10px;">
-          <button type="button" class="template-btn" data-items='["宿題チェック", "前回の復習"]' style="background: transparent; border: 1px solid #e5e5e5; color: #1a1a1a; padding: 6px 12px; border-radius: 0; font-size: 10px; letter-spacing: 0.05em; cursor: pointer;">ベーシック</button>
-          <button type="button" class="template-btn" data-items='["テキスト", "文法講義", "リーディング"]' style="background: transparent; border: 1px solid #e5e5e5; color: #1a1a1a; padding: 6px 12px; border-radius: 0; font-size: 10px; letter-spacing: 0.05em; cursor: pointer;">座学</button>
+          <button type="button" class="template-btn" data-items='["オフ削り", "フィルイン削り", "オフの完成度"]' style="background: transparent; border: 1px solid #e5e5e5; color: #1a1a1a; padding: 6px 12px; border-radius: 0; font-size: 10px; letter-spacing: 0.05em; cursor: pointer;">オフ</button>
+          <button type="button" class="template-btn" data-items='["整爪", "プッシュアップ", "ニッパー", "ケアの完成度"]' style="background: transparent; border: 1px solid #e5e5e5; color: #1a1a1a; padding: 6px 12px; border-radius: 0; font-size: 10px; letter-spacing: 0.05em; cursor: pointer;">ケア</button>
+          <button type="button" class="template-btn" data-items='["塗布量", "ジェルの完成度"]' style="background: transparent; border: 1px solid #e5e5e5; color: #1a1a1a; padding: 6px 12px; border-radius: 0; font-size: 10px; letter-spacing: 0.05em; cursor: pointer;">ジェル</button>
         </div>
       <% end %>
 
@@ -196,29 +197,35 @@
 
 <%# JavaScript はフォームの外部（コンテナの下）に配置 %>
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
+  // 1. 'DOMContentLoaded' を 'turbo:load' に変更する
+  document.addEventListener('turbo:load', () => {
     const container = document.getElementById('check-items-container');
     const addButton = document.getElementById('add-item-button');
     const template = document.getElementById('item-template');
-    const templateBtns = document.querySelectorAll('.template-btn');
+    const contentArea = document.getElementById('feedback-content');
 
-    addButton.addEventListener('click', () => {
+    // ページ内に必要な要素がない場合は何もしない（エラー防止）
+    if (!container || !template) return;
+
+    // --- 項目の追加ボタン ---
+    addButton.onclick = () => { // addEventListenerより確実に上書きできる方法
       let content = template.innerHTML;
       const newId = new Date().getTime();
       content = content.replace(/NEW_RECORD/g, newId);
       container.insertAdjacentHTML('beforeend', content);
-    });
+    };
 
-    container.addEventListener('click', (e) => {
+    // --- イベントデリゲーション（効率的でTurboに強い書き方） ---
+    document.onclick = (e) => {
+      // 削除ボタン
       if (e.target.classList.contains('remove-item-button')) {
-        const row = e.target.closest('.check-item-row');
-        row.remove();
+        e.target.closest('.check-item-row').remove();
       }
-    });
 
-    templateBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const items = JSON.parse(btn.dataset.items);
+      // 項目別評価の「定型文を挿入」ボタン
+      const templateBtn = e.target.closest('.template-btn');
+      if (templateBtn) {
+        const items = JSON.parse(templateBtn.dataset.items);
         items.forEach(itemName => {
           let content = template.innerHTML;
           const newId = new Date().getTime() + Math.random();
@@ -229,17 +236,15 @@
           const input = lastRow.querySelector('[name*="[name]"]');
           if (input) input.value = itemName;
         });
-      });
-    });
+      }
 
-    const phraseBtns = document.querySelectorAll('.phrase-btn');
-    const contentArea = document.getElementById('feedback-content');
-    phraseBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const text = btn.dataset.text;
+      // 全体フィードバックの「定型文を挿入」ボタン
+      const phraseBtn = e.target.closest('.phrase-btn');
+      if (phraseBtn && contentArea) {
+        const text = phraseBtn.dataset.text;
         contentArea.value = contentArea.value ? contentArea.value + "\n" + text : text;
         contentArea.focus();
-      });
-    });
+      }
+    };
   });
 </script>

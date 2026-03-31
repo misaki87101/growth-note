@@ -1,8 +1,29 @@
-<div style="max-width: 900px; margin: 0 auto; padding: 40px 20px;">
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-    <h2 style="font-size: 18px; letter-spacing: 0.2em;">DAILY REPORTS</h2>
-    <%= link_to "NEW REPORT", new_daily_report_path, style: "background: #1a1a1a; color: #fff; padding: 10px 30px; text-decoration: none; font-size: 11px; letter-spacing: 0.1em;" %>
+<div style="max-width: 800px; margin: 60px auto; padding: 0 20px; font-family: 'Helvetica Neue', Arial, sans-serif; color: #1a1a1a;">
+  
+  <%# 1. タイトル部分（フィードバック側と統一） %>
+  <div style="text-align: center; margin-bottom: 60px;">
+    <h1 style="font-size: 22px; font-weight: 300; letter-spacing: 0.15em; margin-bottom: 10px; text-transform: uppercase;">My Growth Note</h1>
+    <div style="font-size: 10px; color: #999; letter-spacing: 0.2em;">DAILY REPORTS</div>
   </div>
+
+  <%# ナビゲーションメニュー app/views/shared/_nav.html.erb%>
+  <%= render 'shared/nav' %>
+  
+  
+  <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 40px; border-bottom: 1px solid #1a1a1a; padding-bottom: 15px;">
+    <h2 style="font-size: 22px; font-weight: 300; letter-spacing: 0.15em; margin: 0;">REPORT</h2>
+    <%= link_to "NEW REPORT", new_daily_report_path, style: "font-size: 11px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em; border: 1px solid #1a1a1a; padding: 8px 20px;" %>
+  </div>
+
+
+  <%# レポート月を選択 %>
+  <div style="margin-bottom: 30px; text-align: center;">
+  <%= form_with url: daily_reports_path, method: :get, local: true, class: "month-filter" do |f| %>
+    <%= f.month_field :month, value: @display_month.strftime("%Y-%m"), onchange: "this.form.submit();", 
+        style: "padding: 10px; border: 1px solid #eee; border-radius: 4px; font-family: inherit; color: #1a1a1a;" %>
+  <% end %>
+</div>
+
 
     <%# 1. 上部の集計エリア(月間売上目標、目標まであと○円、月間生産性) %>
 <div style="display: flex; gap: 20px; margin-bottom: 40px; background: #fafafa; padding: 25px; border-radius: 8px;">
@@ -35,14 +56,6 @@
   </div>
 <% end %>
 
-
-  <%# レポート月を選択 %>
-  <div style="margin-bottom: 30px; text-align: center;">
-  <%= form_with url: daily_reports_path, method: :get, local: true, class: "month-filter" do |f| %>
-    <%= f.month_field :month, value: @display_month.strftime("%Y-%m"), onchange: "this.form.submit();", 
-        style: "padding: 10px; border: 1px solid #eee; border-radius: 4px; font-family: inherit; color: #1a1a1a;" %>
-  <% end %>
-</div>
 
 <%# 3. テーブルの装飾 %>
 <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
@@ -121,3 +134,4 @@
 </div>
 
 </div>
+
