@@ -3,17 +3,6 @@
 class BoardsController < ApplicationController
   # cleanup_users を before_action の対象から外す（重要）
   before_action :set_board, only: %i[show edit update destroy]
-  
-  # ログインなしで実行できるように設定
-  skip_before_action :authenticate_user!, only: [:cleanup_users]
-
-  def cleanup_users
-    # 削除前の人数を数えておく
-    user_count = User.count
-    # 全削除を実行
-    User.destroy_all
-    render plain: "#{user_count}人のユーザーをすべて削除しました。実行後はこのコードを削除して再デプロイしてください。"
-  end
 
   def index
     @boards = Board.where(group_id: current_user.groups.pluck(:id)).order(created_at: :desc)

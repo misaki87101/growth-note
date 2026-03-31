@@ -87,9 +87,6 @@ end
   get 'terms', to: 'static_pages#terms'
   get 'privacy', to: 'static_pages#privacy'
 
-  # データクリーンアップ用（デプロイ後にすぐ消す！）
-  get 'cleanup_users', to: 'dashboards#cleanup_users'
-
   # トップページ（ログインしていなければログイン画面へ）
   root 'application#top'
 
