@@ -133,8 +133,7 @@ class DailyReportsController < ApplicationController
       :date, :tech_sales, :item_sales, :new_customers, :repeat_customers,
       :staff_count, :total_working_hours, :tech_target, :item_target, :memo,
       staff_sales_attributes: %i[id user_id tech_target tech_sales item_sales working_hours _destroy],
-      # ↓ 来店動機のハッシュを丸ごと許可する設定を追加
-      referral_data: %i[HPB Instagram ミニモ ネイリー Google 紹介 その他]
+      :referral_data
     )
   end
 end
