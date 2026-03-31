@@ -79,8 +79,45 @@
       </div>
     </div>
 
-    <%# 4. 客数・動機などはそのまま ... (省略せずに適宜配置してください) %>
-    <%# （中略：既存の客数セクション、来店動機セクション、店舗状況セクションをここに移動） %>
+    <%# 4. 来店動機（ハッシュ形式での保存用） %>
+    <div style="margin-bottom: 35px; border: 1px solid #eee; border-radius: 8px; overflow: hidden;">
+      <div style="background: #f9f9f9; padding: 10px 15px; border-bottom: 1px solid #eee; font-size: 11px; font-weight: bold; color: #666;">
+        新規来店動機
+      </div>
+      <div style="padding: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px;">
+        <% DailyReport::REFERRAL_SOURCES.each do |source| %>
+          <div>
+            <label style="display: block; font-size: 10px; color: #999; margin-bottom: 4px;"><%= source %></label>
+            <%= f.number_field "referral_data[#{source}]", 
+                value: @daily_report.referral_data&.fetch(source, 0),
+                style: "width: 100%; padding: 8px; border: 1px solid #eee; border-radius: 4px;" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <%# 5. 店舗状況（生産性計算に必要な総労働時間） %>
+    <div style="margin-bottom: 35px; border: 1px solid #eee; border-radius: 8px; overflow: hidden;">
+      <div style="background: #f9f9f9; padding: 10px 15px; border-bottom: 1px solid #eee; font-size: 11px; font-weight: bold; color: #666;">
+        店舗状況
+      </div>
+      <div style="padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div>
+          <label style="display: block; font-size: 11px; font-weight: bold; margin-bottom: 8px;">総実労働時間 (h)</label>
+          <%= f.number_field :total_working_hours, 
+              id: "daily_report_total_working_hours", 
+              step: "0.01", 
+              readonly: true,
+              style: "width: 100%; padding: 12px; background: #eef2f7; border: 1px solid #ddd; border-radius: 4px; font-weight: bold;" %>
+          <p style="font-size: 9px; color: #999; margin-top: 5px;">※各スタッフの労働時間から自動計算されます</p>
+        </div>
+        <div>
+          <label style="display: block; font-size: 11px; font-weight: bold; margin-bottom: 8px;">出勤スタッフ数</label>
+          <%= f.number_field :staff_count, style: "width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px;" %>
+        </div>
+      </div>
+    </div>
+    
 
     <div style="text-align: center; margin-top: 40px; padding-bottom: 60px;">
       <%= f.submit "SAVE REPORT", style: "background: #1a1a1a; color: #fff; padding: 15px 80px; border: none; font-size: 12px; letter-spacing: 0.2em; cursor: pointer; border-radius: 4px;" %>

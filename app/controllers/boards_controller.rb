@@ -21,9 +21,9 @@ class BoardsController < ApplicationController
 
   def create
     @board = current_user.boards.build(board_params)
-    
+
     if current_user.student? && @board.group_id.blank? && current_user.groups.any?
-      @board.group_id = current_user.groups.first.id 
+      @board.group_id = current_user.groups.first.id
     end
 
     if @board.save
@@ -34,6 +34,7 @@ class BoardsController < ApplicationController
       render :new, status: :unprocessable_content
     end
   end
+
   def update
     if @board.update(board_params)
       redirect_to board_path(@board), notice: "掲示板を更新しました"
