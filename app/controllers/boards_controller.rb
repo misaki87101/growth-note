@@ -1,19 +1,22 @@
 # frozen_string_literal: true
 
 class BoardsController < ApplicationController
+  # cleanup_users を before_action の対象から外す（重要）
   before_action :set_board, only: %i[show edit update destroy]
+  
+  # ログインなしで実行できるように設定
+  skip_before_action :authenticate_user!, only: [:cleanup_users]
 
-  skip_before_action :authenticate_user!, if: -> { action_name == 'cleanup_users' }
-def cleanup_users
-    # 名前が「テスト」または特定の条件のユーザーを探して削除
-    # もし不安なら、User.destroy_all ですべてリセットしてもOKです
+  def cleanup_users
+    # 削除前の人数を数えておく
+    user_count = User.count
+    # 全削除を実行
     User.destroy_all
-    render plain: "#{count}人のテストユーザーを削除しました。"
+    render plain: "#{user_count}人のユーザーをすべて削除しました。実行後はこのコードを削除して再デプロイしてください。"
   end
-end
 
   def index
-    @boards = Board.where(group_id: current_user.group_ids).order(created_at: :desc)
+    @boards = Board.where(group_id: current_user.groups.pluck(:id)).order(created_at: :desc)
   end
 
   def show; end
@@ -23,17 +26,21 @@ end
     @user_groups = current_user.groups
   end
 
-  def edit; end
+  def edit
+    @user_groups = current_user.groups # 編集画面でもグループ選択が必要な場合
+  end
 
   def create
     @board = current_user.boards.build(board_params)
-    # もし生徒で、所属グループが1つだけなら、パラメータを無視して強制的にそのグループに紐付ける（安全策）
-    @board.group_id = current_user.groups.first.id if current_user.student? && current_user.groups.one?
+    # 生徒の場合の安全策
+    if current_user.student? && current_user.groups.one?
+      @board.group_id = current_user.groups.first.id 
+    end
 
     if @board.save
       redirect_to @board, notice: "投稿しました"
     else
-      @user_groups = current_user.groups # 再表示用に必要
+      @user_groups = current_user.groups
       render :new, status: :unprocessable_content
     end
   end
@@ -42,6 +49,7 @@ end
     if @board.update(board_params)
       redirect_to board_path(@board), notice: "掲示板を更新しました"
     else
+      @user_groups = current_user.groups # バリデーションエラー時の再表示用
       render :edit, status: :unprocessable_content
     end
   end
@@ -54,7 +62,7 @@ end
   def purge_image
     @board = Board.find(params[:id])
     image = @board.images.find(params[:image_id])
-    image.purge # Active Storageの画像を物理削除
+    image.purge
     redirect_to edit_board_path(@board), notice: "画像を削除しました"
   end
 
@@ -65,6 +73,7 @@ end
   end
 
   def board_params
+    # category は enum なので、必要に応じて permit に含める
     params.require(:board).permit(:title, :content, :category, :group_id, images: [])
   end
 end
