@@ -53,7 +53,7 @@ class DailyReportsController < ApplicationController
     # 【重要】もしスタッフ入力欄が空（過去に保存されていなかった）の場合のケア
     return unless group
 
-    @nailists = group.users.where(role: :student)
+    @nailists = group.users.where(role: User.roles[:student])
     @nailists.each do |nailist|
       # 既にデータがあるか確認し、なければ空の入力欄を作る
       @daily_report.staff_sales.build(user_id: nailist.id) unless @daily_report.staff_sales.exists?(user_id: nailist.id)

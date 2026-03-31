@@ -31,7 +31,7 @@
           <div style="margin-bottom: 30px; border-bottom: 2px solid #f0f0f0; padding-bottom: 25px;">
             <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
               <span style="background: #1a1a1a; color: #fff; font-size: 9px; padding: 2px 6px; border-radius: 2px;">STAFF</span>
-              <span style="font-size: 14px; font-weight: bold;"><%= s.object.user.name %></span>
+              <span style="font-size: 14px; font-weight: bold;"><%= s.object.user&.name || "名称未設定" %></span>
               <%= s.hidden_field :user_id %>
             </div>
 
@@ -67,7 +67,11 @@
               </div>
               <div>
                 <label style="display: block; font-size: 9px; color: #999; margin-bottom: 4px;">実労働(h)</label>
-                <%= s.number_field :working_hours, class: "working-hours-result", readonly: true, step: "0.01", style: "width:100%; padding:8px; background:#eef2f7; border: 1px solid #ddd; border-radius: 4px; font-weight: bold;" %>
+                <%= s.number_field :working_hours, 
+                    class: "working-hours-result", 
+                    readonly: true, 
+                    step: "0.01", 
+                    style: "width:100%; padding:8px; background:#eef2f7; border: 1px solid #ddd; border-radius: 4px; font-weight: bold;" %>
               </div>
             </div>
           </div>
