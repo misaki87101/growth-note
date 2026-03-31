@@ -26,7 +26,15 @@ class DailyReportsController < ApplicationController
 
     return unless group
 
-    @nailists = group.users.where(role: :student)
+    # --- 前回の店舗目標を取得 ---
+    last_report = group.daily_reports.where.not(tech_target: nil).order(date: :desc).first
+    if last_report
+      @daily_report.tech_target = last_report.tech_target
+      @daily_report.item_target = last_report.item_target
+    end
+
+    @nailists = group.users.where(role: User.roles[:student])
+
     # 1. 最後に「スタッフ別目標」が入力された日報を特定する
     last_report_with_staff_targets = group.daily_reports
                                           .joins(:staff_sales)
@@ -63,9 +71,6 @@ class DailyReportsController < ApplicationController
   def create
     @daily_report = DailyReport.new(daily_report_params)
     @daily_report.group = current_user.groups.first
-
-    # 明示的に来店動機をセット
-    @daily_report.referral_data = params[:daily_report][:referral_data] if params[:daily_report][:referral_data]
 
     if @daily_report.save
       redirect_to daily_reports_path, notice: "保存しました"
@@ -131,9 +136,9 @@ class DailyReportsController < ApplicationController
   def daily_report_params
     params.require(:daily_report).permit(
       :date, :tech_sales, :item_sales, :new_customers, :repeat_customers,
-      :staff_count, :total_working_hours, :tech_target, :item_target, :memo, # ←このコンマが大事！
-      :referral_data,
-      staff_sales_attributes: %i[id user_id tech_target tech_sales item_sales working_hours _destroy]
+      :staff_count, :total_working_hours, :tech_target, :item_target, :memo,
+      staff_sales_attributes: %i[id user_id tech_target tech_sales item_sales working_hours _destroy],
+      referral_data: {}
     )
   end
 end

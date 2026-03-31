@@ -66,12 +66,12 @@
                 <input type="number" class="break-time" value="60" style="width:100%; padding:8px; border: 1px solid #eee; border-radius: 4px;">
               </div>
               <div>
-                <label style="display: block; font-size: 9px; color: #999; margin-bottom: 4px;">実労働(h)</label>
-                <%= s.number_field :working_hours, 
-                    class: "working-hours-result", 
-                    readonly: true, 
-                    step: "0.01", 
-                    style: "width:100%; padding:8px; background:#eef2f7; border: 1px solid #ddd; border-radius: 4px; font-weight: bold;" %>
+                <label style="display: block; font-size: 9px; color: #999; margin-bottom: 4px;">勤務時間(h)</label>
+<%= s.number_field :working_hours, 
+    class: "working-hours-result", # ← ここが JS と一致している必要があります
+    readonly: true, 
+    step: "0.01", 
+    style: "width:100%; padding:8px; background:#eef2f7; border: 1px solid #ddd; border-radius: 4px; font-weight: bold;" %>
               </div>
             </div>
           </div>
@@ -79,6 +79,17 @@
       </div>
     </div>
 
+<%# ---  客数 --- %>
+    <div style="display: flex; gap: 20px; margin-bottom: 25px;">
+      <div style="flex: 1;">
+        <%= f.label :new_customers, "新規客数 (名)", style: "display: block; font-size: 11px; font-weight: bold; margin-bottom: 8px;" %>
+        <%= f.number_field :new_customers, placeholder: "0", style: "width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;" %>
+      </div>
+      <div style="flex: 1;">
+        <%= f.label :repeat_customers, "再来客数 (名)", style: "display: block; font-size: 11px; font-weight: bold; margin-bottom: 8px;" %>
+        <%= f.number_field :repeat_customers, placeholder: "0", style: "width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;" %>
+      </div>
+    </div>
     <%# 4. 来店動機（ハッシュ形式での保存用） %>
     <div style="margin-bottom: 35px; border: 1px solid #eee; border-radius: 8px; overflow: hidden;">
       <div style="background: #f9f9f9; padding: 10px 15px; border-bottom: 1px solid #eee; font-size: 11px; font-weight: bold; color: #666;">
@@ -88,9 +99,9 @@
         <% DailyReport::REFERRAL_SOURCES.each do |source| %>
           <div>
             <label style="display: block; font-size: 10px; color: #999; margin-bottom: 4px;"><%= source %></label>
-            <%= f.number_field "referral_data[#{source}]", 
-                value: @daily_report.referral_data&.fetch(source, 0),
-                style: "width: 100%; padding: 8px; border: 1px solid #eee; border-radius: 4px;" %>
+            <%= number_field_tag "daily_report[referral_data][#{source}]", 
+    @daily_report.referral_data&.fetch(source, 0),
+    style: "width: 100%; padding: 8px; border: 1px solid #eee; border-radius: 4px;" %>
           </div>
         <% end %>
       </div>
@@ -105,16 +116,28 @@
         <div>
           <label style="display: block; font-size: 11px; font-weight: bold; margin-bottom: 8px;">総実労働時間 (h)</label>
           <%= f.number_field :total_working_hours, 
-              id: "daily_report_total_working_hours", 
-              step: "0.01", 
-              readonly: true,
-              style: "width: 100%; padding: 12px; background: #eef2f7; border: 1px solid #ddd; border-radius: 4px; font-weight: bold;" %>
+    id: "daily_report_total_working_hours", # ← JS はこの ID を探しています
+    step: "0.01", 
+    readonly: true,
+    style: "width: 100%; padding: 12px; background: #eef2f7; border: 1px solid #ddd; border-radius: 4px; font-weight: bold;" %>
           <p style="font-size: 9px; color: #999; margin-top: 5px;">※各スタッフの労働時間から自動計算されます</p>
         </div>
         <div>
           <label style="display: block; font-size: 11px; font-weight: bold; margin-bottom: 8px;">出勤スタッフ数</label>
           <%= f.number_field :staff_count, style: "width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px;" %>
         </div>
+      </div>
+    </div>
+
+    <%# --- 店舗全体の目標 --- %>
+    <div style="display: flex; gap: 20px; margin-bottom: 25px;">
+      <div style="flex: 1;">
+        <%= f.label :tech_target, "店舗技術目標 (¥)", style: "display: block; font-size: 11px; font-weight: bold; margin-bottom: 8px;" %>
+        <%= f.number_field :tech_target, placeholder: "0", style: "width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;" %>
+      </div>
+      <div style="flex: 1;">
+        <%= f.label :item_target, "店舗店販売上目標 (¥)", style: "display: block; font-size: 11px; font-weight: bold; margin-bottom: 8px;" %>
+        <%= f.number_field :item_target, placeholder: "0", style: "width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;" %>
       </div>
     </div>
     
@@ -126,38 +149,74 @@
 </div>
 
 <script>
-// Turbo遷移でも動くように修正
-document.addEventListener('turbo:load', function() {
-  const form = document.querySelector('form');
-  if (!form) return;
+(function() {
+  // 二重登録を防ぐための関数
+  const setupLaborCalculation = () => {
+    console.log("🐣 監視を開始します");
+    const form = document.querySelector('form');
+    if (!form) return;
 
-  form.addEventListener('input', function(e) {
-    if (e.target.classList.contains('start-time') || e.target.classList.contains('end-time') || e.target.classList.contains('break-time')) {
-      const row = e.target.closest('.staff-row');
-      const start = row.querySelector('.start-time').value;
-      const end = row.querySelector('.end-time').value;
-      const breakMin = parseInt(row.querySelector('.break-time').value) || 0;
+    // inputイベントに加えて、changeイベントも監視（ブラウザの時計マークからの入力を確実に拾うため）
+    form.addEventListener('input', handleInputChange);
+    form.addEventListener('change', handleInputChange);
 
-      if (start && end) {
-        const startTime = new Date(`2000-01-01T${start}`);
-        const endTime = new Date(`2000-01-01T${end}`);
-        let diffMs = endTime - startTime;
-        if (diffMs < 0) diffMs += 24 * 60 * 60 * 1000;
+    function handleInputChange(e) {
+      const t = e.target;
+      // 監視対象のクラスかチェック
+      if (t.classList.contains('start-time') || 
+          t.classList.contains('end-time') || 
+          t.classList.contains('break-time')) {
         
-        const totalHours = (diffMs / (1000 * 60 * 60)) - (breakMin / 60);
-        row.querySelector('.working-hours-result').value = Math.max(0, totalHours).toFixed(2);
-        
-        calculateGrandTotal();
+        const row = t.closest('.staff-row');
+        if (!row) return;
+
+        const start = row.querySelector('.start-time').value;
+        const end = row.querySelector('.end-time').value;
+        const breakMin = parseInt(row.querySelector('.break-time').value) || 0;
+
+        if (start && end) {
+          const startTime = new Date(`2000-01-01T${start}:00`);
+          const endTime = new Date(`2000-01-01T${end}:00`);
+          let diffMs = endTime - startTime;
+          
+          // 日またぎ（24時間）対応
+          if (diffMs < 0) diffMs += 24 * 60 * 60 * 1000;
+          
+          const totalHours = (diffMs / (1000 * 60 * 60)) - (breakMin / 60);
+          const resultInput = row.querySelector('.working-hours-result');
+          
+          if (resultInput) {
+            resultInput.value = Math.max(0, totalHours).toFixed(2);
+            // 合計を更新
+            calculateGrandTotal();
+          }
+        }
       }
     }
-  });
 
-  function calculateGrandTotal() {
-    const allHours = Array.from(document.querySelectorAll('.working-hours-result'))
-                          .map(el => parseFloat(el.value) || 0);
-    const grandTotal = allHours.reduce((a, b) => a + b, 0);
-    const totalInput = document.querySelector('#daily_report_total_working_hours');
-    if (totalInput) totalInput.value = grandTotal.toFixed(2);
+    function calculateGrandTotal() {
+      const allResults = document.querySelectorAll('.working-hours-result');
+      let grandTotal = 0;
+      allResults.forEach(input => {
+        grandTotal += parseFloat(input.value) || 0;
+      });
+      
+      const totalDisplay = document.querySelector('#daily_report_total_working_hours');
+      if (totalDisplay) {
+        totalDisplay.value = grandTotal.toFixed(2);
+      }
+    }
+    
+    // 初期計算（ページを開いた時にすでに値があれば計算）
+    calculateGrandTotal();
+  };
+
+  // Rails (Turbo) と 通常の読み込み両方に対応
+  document.addEventListener('turbo:load', setupLaborCalculation);
+  
+  // 念のため即時実行（ページ内に直接書いている場合に有効）
+  if (document.readyState !== 'loading') {
+    setupLaborCalculation();
   }
-});
+})();
 </script>

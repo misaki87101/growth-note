@@ -9,11 +9,13 @@
 #   end
 
 # db/seeds.rb
+StaffSale.destroy_all
+DailyReport.destroy_all
+MonthlyNote.destroy_all  # ← これが抜けているか、順番が後回しなのが原因です！
 
-# 既存データを念のため全削除
-GroupUser.delete_all
-Group.delete_all
-User.delete_all
+# 2. 次に「親」を消す
+Group.destroy_all
+User.destroy_all
 
 # 1. グループ（クラス）作成
 group_a = Group.create!(name: "○クラス")

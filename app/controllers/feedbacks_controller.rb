@@ -62,13 +62,21 @@ class FeedbacksController < ApplicationController
 
   def edit
     @feedback = Feedback.find(params[:id])
-    @students = User.where(role: :student) # フォームの再表示用
-    # 編集時、項目が空なら1つ追加しておく
+
+    # 【追加】編集画面でも「クラス一覧」が必要な場合に備えて定義
+    @groups = current_user.groups
+
+    # 【改善】全生徒ではなく、先生が担当している生徒に絞る（newと同じにするとバグが減ります）
+    @students = current_user.teacher? ? current_user.students : []
+
+    # 項目が空なら1つ追加しておく（既存のロジック）
     @feedback.check_items.build if @feedback.check_items.blank?
-    # セキュリティ：自分宛のフィードバックじゃない生徒が編集しようとしたら追い返す
+
+    # 生徒が他人のフィードバックを編集しようとした時だけガードする
     return unless current_user.student? && @feedback.student_id != current_user.id
 
     redirect_to mypage_path, alert: "権限がありません"
+    nil
   end
 
   def create
