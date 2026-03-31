@@ -127,13 +127,13 @@ class DailyReportsController < ApplicationController
   end
 
   private
-
-  def daily_report_params
-    params.require(:daily_report).permit(
-      :date, :tech_sales, :item_sales, :new_customers, :repeat_customers,
-      :staff_count, :total_working_hours, :tech_target, :item_target, :memo,
-      staff_sales_attributes: %i[id user_id tech_target tech_sales item_sales working_hours _destroy],
-      :referral_data
-    )
+  
+def daily_report_params
+  params.require(:daily_report).permit(
+    :date, :tech_sales, :item_sales, :new_customers, :repeat_customers,
+    :staff_count, :total_working_hours, :tech_target, :item_target, :memo, # ←このコンマが大事！
+    :referral_data,
+    staff_sales_attributes: [:id, :user_id, :tech_target, :tech_sales, :item_sales, :working_hours, :_destroy]
+  )
   end
 end
