@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_30_141357) do
+ActiveRecord::Schema[7.2].define(version: 2026_04_01_075652) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -85,10 +85,12 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_30_141357) do
   create_table "comments", force: :cascade do |t|
     t.text "content"
     t.bigint "user_id", null: false
-    t.bigint "feedback_id", null: false
+    t.bigint "feedback_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "homework_id", null: false
     t.index ["feedback_id"], name: "index_comments_on_feedback_id"
+    t.index ["homework_id"], name: "index_comments_on_homework_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
@@ -162,10 +164,12 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_30_141357) do
 
   create_table "likes", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.bigint "feedback_id", null: false
+    t.bigint "feedback_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "homework_id", null: false
     t.index ["feedback_id"], name: "index_likes_on_feedback_id"
+    t.index ["homework_id"], name: "index_likes_on_homework_id"
     t.index ["user_id"], name: "index_likes_on_user_id"
   end
 
@@ -229,6 +233,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_30_141357) do
   add_foreign_key "boards", "users"
   add_foreign_key "check_items", "feedbacks"
   add_foreign_key "comments", "feedbacks"
+  add_foreign_key "comments", "homeworks"
   add_foreign_key "comments", "users"
   add_foreign_key "feedbacks", "users", column: "student_id"
   add_foreign_key "feedbacks", "users", column: "teacher_id"
@@ -237,6 +242,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_30_141357) do
   add_foreign_key "homeworks", "feedbacks"
   add_foreign_key "homeworks", "users"
   add_foreign_key "likes", "feedbacks"
+  add_foreign_key "likes", "homeworks"
   add_foreign_key "likes", "users"
   add_foreign_key "monthly_notes", "groups"
   add_foreign_key "staff_sales", "daily_reports"

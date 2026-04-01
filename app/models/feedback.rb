@@ -29,16 +29,16 @@ class Feedback < ApplicationRecord
   end
 
   def display_images
-  return [] unless images.attached?
+    return [] unless images.attached?
 
-  images.map do |image|
-    # ファイル名やタイプに heic が含まれるか、大文字小文字を問わずチェック
-    if image.content_type.downcase.include?("heic") || image.filename.to_s.downcase.end_with?(".heic")
-      # ここで強制的にJPG変換をかける
-      image.variant(format: :jpg)
-    else
-      image
+    images.map do |image|
+      # ファイル名やタイプに heic が含まれるか、大文字小文字を問わずチェック
+      if image.content_type.downcase.include?("heic") || image.filename.to_s.downcase.end_with?(".heic")
+        # ここで強制的にJPG変換をかける
+        image.variant(format: :jpg)
+      else
+        image
+      end
     end
   end
-end
 end

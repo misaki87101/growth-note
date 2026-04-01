@@ -2,5 +2,6 @@
 
 class Like < ApplicationRecord
   belongs_to :user
-  belongs_to :feedback
+  belongs_to :feedback, optional: true
+  belongs_to :homework, optional: true
 end

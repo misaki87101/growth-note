@@ -30,7 +30,7 @@
       <div style="font-size: 10px; color: #999; letter-spacing: 0.1em; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 20px; text-transform: uppercase;">Progress Photos</div>
       
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-        <% @feedback.display_images.each do |image| %>
+        <% @homework.display_images.each do |image| %>
   <div style="background: #fff; padding: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-radius: 2px;">
     <%= image_tag image, style: "width: 100%; height: auto; display: block; object-fit: cover;" %>
   </div>
@@ -39,10 +39,78 @@
     </div>
   <% end %>
 
-  <%# アクションボタン %>
-  <div style="display: flex; justify-content: center; gap: 20px; margin-top: 80px; border-top: 1px solid #eee; padding-top: 40px;">
-    <%= link_to "EDIT", edit_homework_path(@homework), style: "font-size: 10px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.2em; border: 1px solid #1a1a1a; padding: 12px 30px;" %>
-    <%= link_to "BACK TO LIST", homeworks_path, style: "font-size: 10px; color: #999; text-decoration: none; letter-spacing: 0.2em; padding: 12px 30px;" %>
+<%# いいねセクション %>
+<div id="like-section" style="margin-top: 20px; text-align: center;">
+  <% if @homework.liked_by?(current_user) %>
+    <%= button_to homework_like_path(@homework), method: :delete, style: "background: none; border: none; cursor: pointer; font-size: 18px;" do %>
+      <span style="color: #ff4b5c;">🖤</span>
+    <% end %>
+  <% else %>
+    <%= button_to homework_likes_path(@homework), method: :post, style: "background: none; border: none; cursor: pointer; font-size: 18px;" do %>
+      <span style="color: #ccc;">🤍</span>
+    <% end %>
+  <% end %>
+  <div style="margin-top: 10px;">
+    <p style="font-size: 11px; color: #1a1a1a; letter-spacing: 0.1em; font-weight: bold;"><%= @homework.likes.count %> LIKES</p>
+    <% if @homework.likes.any? %>
+      <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 8px;">
+        <% @homework.likes.each do |like| %>
+          <span style="font-size: 9px; color: #999; border: 1px solid #eee; padding: 2px 6px; border-radius: 10px;"><%= like.user.name %></span>
+        <% end %>
+      </div>
+    <% end %>
   </div>
+</div>
+
+<%# コメントセクション %>
+<div style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px;">
+  <h3 style="font-size: 14px; letter-spacing: 0.1em; color: #666; text-align: center; margin-bottom: 30px;">COMMENTS</h3>
+
+  <div style="margin-bottom: 30px;">
+    <% @homework.comments.each do |comment| %>
+      <%# 保存されている（IDがある）コメントのみ表示 %>
+      <% if comment.persisted? %>
+        <div style="margin-bottom: 20px; padding: 15px; background: #fdfdfd; border: 1px solid #f5f5f5;">
+          <p style="font-size: 11px; font-weight: bold; margin-bottom: 8px; display: flex; justify-content: space-between;">
+            <span><%= comment.user.name %></span>
+            <span style="font-weight: normal; color: #bbb;"><%= comment.created_at.strftime("%Y/%m/%d %H:%M") %></span>
+          </p>
+          <p style="font-size: 13px; line-height: 1.6; color: #444;"><%= comment.content %></p>
+          
+          <% if comment.user == current_user %>
+            <div style="display: flex; gap: 10px; margin-top: 12px; align-items: center; border-top: 1px solid #f0f0f0; padding-top: 8px;">
+              <%# homeworksディレクトリ内のコントローラーを参照するよう修正 %>
+              <%= link_to "EDIT", edit_homework_comment_path(@homework, comment), style: "color: #bbb; font-size: 10px; text-decoration: none; letter-spacing: 0.1em;" %>
+              <span style="color: #eee; font-size: 10px;">|</span>
+              <%= button_to "DELETE", [@homework, comment], method: :delete, onclick: "return confirm('このコメントを削除しますか？');", style: "background: none; border: none; color: #bbb; font-size: 10px; cursor: pointer; padding: 0; letter-spacing: 0.1em; font-family: inherit;", form: { style: "display: inline; line-height: 1;" } %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+
+  <%# コメントフォーム %>
+  <%= form_with(model: [@homework, @homework.comments.build], local: true) do |f| %>
+    <div style="margin-bottom: 15px;">
+      <%= f.text_area :content, placeholder: "コメントを入力...", style: "width: 100%; height: 80px; padding: 12px; border: 1px solid #eee; outline: none; font-size: 13px;" %>
+    </div>
+    <div style="text-align: center;">
+      <%= f.submit "コメントする", style: "background: #1a1a1a; color: #fff; border: none; padding: 10px 40px; font-size: 12px; cursor: pointer; letter-spacing: 0.1em;" %>
+    </div>
+  <% end %>
+</div>
+
+<%# フッターアクション %>
+<div style="margin-top: 60px; border-top: 1px solid #eee; padding-top: 40px; display: flex; justify-content: center; gap: 30px; align-items: center;">
+  <% if current_user.teacher? %>
+    <%= link_to "EDIT", edit_homework_path(@homework), style: "font-size: 11px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em; border-bottom: 1px solid #1a1a1a;" %>
+    <%= button_to "DELETE", homework_path(@homework), method: :delete, onclick: "return confirm('削除しますか？');", style: "background: none; border: none; color: #999; font-size: 11px; cursor: pointer; padding: 0; letter-spacing: 0.1em;", form: { style: "display: inline;" } %>
+    <%= link_to "BACK TO LIST", homeworks_path, style: "font-size: 11px; color: #999; text-decoration: none;" %>
+  <% else %>
+    <%# 生徒向けマイページへのリンク。mypage_pathが定義されている前提 %>
+    <%= link_to "BACK TO MYPAGE", mypage_path, style: "font-size: 11px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.2em;" %>
+  <% end %>
+</div>
 
 </div>

@@ -78,6 +78,13 @@ end
 
   resources :group_users, only: [:update, :destroy] do
   get :pending, on: :collection # 承認待ち一覧用
+  end
+
+resources :homeworks do
+  # scopeモジュールを使うことで、URLは /homeworks/:id/likes のまま、
+  # 使うコントローラーを Homeworks::LikesController に指定できます
+  resources :likes, only: [:create, :destroy], module: :homeworks
+  resources :comments, module: :homeworks
 end
 
   # 生徒用：マイページ
