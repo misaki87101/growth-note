@@ -125,10 +125,10 @@ class DailyReportsController < ApplicationController
     @staff_summary = StaffSale.where(daily_report_id: @reports.pluck(:id))
                               .group(:user_id)
                               .select("user_id,
-                                     SUM(tech_sales) as total_tech,
-                                     SUM(item_sales) as total_item,
-                                     SUM(working_hours) as total_hours,
-                                     MAX(tech_target) as tech_target")
+                                 SUM(COALESCE(tech_sales, 0)) as total_tech,
+                                 SUM(COALESCE(item_sales, 0)) as total_item,
+                                 SUM(COALESCE(working_hours, 0)) as total_hours,
+                                 MAX(COALESCE(tech_target, 0)) as tech_target")
   end
 
   private
@@ -137,7 +137,10 @@ class DailyReportsController < ApplicationController
     params.require(:daily_report).permit(
       :date, :tech_sales, :item_sales, :new_customers, :repeat_customers,
       :staff_count, :total_working_hours, :tech_target, :item_target, :memo,
-      staff_sales_attributes: %i[id user_id tech_target tech_sales item_sales working_hours _destroy],
+      staff_sales_attributes: [
+        :id, :user_id, :tech_target, :tech_sales, :item_sales,
+        :working_hours, :start_time, :end_time, :break_time, :_destroy # ←ここに追加
+      ],
       referral_data: {}
     )
   end

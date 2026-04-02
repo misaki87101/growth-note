@@ -55,23 +55,24 @@
             <div class="staff-row" style="background: #fafafa; padding: 10px; border-radius: 4px; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; align-items: end;">
               <div>
                 <label style="display: block; font-size: 9px; color: #999; margin-bottom: 4px;">始業</label>
-                <input type="time" class="start-time" style="width:100%; padding:8px; border: 1px solid #eee; border-radius: 4px;">
+                <%# inputタグではなく s.time_field を使うことで Rails に値が飛びます %>
+                <%= s.time_field :start_time, class: "start-time", style: "width:100%; padding:8px; border: 1px solid #eee; border-radius: 4px;" %>
               </div>
               <div>
                 <label style="display: block; font-size: 9px; color: #999; margin-bottom: 4px;">終業</label>
-                <input type="time" class="end-time" style="width:100%; padding:8px; border: 1px solid #eee; border-radius: 4px;">
+                <%= s.time_field :end_time, class: "end-time", style: "width:100%; padding:8px; border: 1px solid #eee; border-radius: 4px;" %>
               </div>
               <div>
                 <label style="display: block; font-size: 9px; color: #999; margin-bottom: 4px;">休憩(分)</label>
-                <input type="number" class="break-time" value="60" style="width:100%; padding:8px; border: 1px solid #eee; border-radius: 4px;">
+                <%= s.number_field :break_time, class: "break-time", value: s.object.break_time || 60, style: "width:100%; padding:8px; border: 1px solid #eee; border-radius: 4px;" %>
               </div>
               <div>
                 <label style="display: block; font-size: 9px; color: #999; margin-bottom: 4px;">勤務時間(h)</label>
-<%= s.number_field :working_hours, 
-    class: "working-hours-result", # ← ここが JS と一致している必要があります
-    readonly: true, 
-    step: "0.01", 
-    style: "width:100%; padding:8px; background:#eef2f7; border: 1px solid #ddd; border-radius: 4px; font-weight: bold;" %>
+                <%= s.number_field :working_hours, 
+                    class: "working-hours-result", 
+                    readonly: true, 
+                    step: "0.01", 
+                    style: "width:100%; padding:8px; background:#eef2f7; border: 1px solid #ddd; border-radius: 4px; font-weight: bold;" %>
               </div>
             </div>
           </div>
@@ -150,73 +151,54 @@
 
 <script>
 (function() {
-  // 二重登録を防ぐための関数
-  const setupLaborCalculation = () => {
-    console.log("🐣 監視を開始します");
-    const form = document.querySelector('form');
-    if (!form) return;
+  const calculateStaffHours = (row) => {
+    const start = row.querySelector('.start-time').value;
+    const end = row.querySelector('.end-time').value;
+    const breakMin = parseInt(row.querySelector('.break-time').value) || 0;
+    const resultInput = row.querySelector('.working-hours-result');
 
-    // inputイベントに加えて、changeイベントも監視（ブラウザの時計マークからの入力を確実に拾うため）
-    form.addEventListener('input', handleInputChange);
-    form.addEventListener('change', handleInputChange);
-
-    function handleInputChange(e) {
-      const t = e.target;
-      // 監視対象のクラスかチェック
-      if (t.classList.contains('start-time') || 
-          t.classList.contains('end-time') || 
-          t.classList.contains('break-time')) {
-        
-        const row = t.closest('.staff-row');
-        if (!row) return;
-
-        const start = row.querySelector('.start-time').value;
-        const end = row.querySelector('.end-time').value;
-        const breakMin = parseInt(row.querySelector('.break-time').value) || 0;
-
-        if (start && end) {
-          const startTime = new Date(`2000-01-01T${start}:00`);
-          const endTime = new Date(`2000-01-01T${end}:00`);
-          let diffMs = endTime - startTime;
-          
-          // 日またぎ（24時間）対応
-          if (diffMs < 0) diffMs += 24 * 60 * 60 * 1000;
-          
-          const totalHours = (diffMs / (1000 * 60 * 60)) - (breakMin / 60);
-          const resultInput = row.querySelector('.working-hours-result');
-          
-          if (resultInput) {
-            resultInput.value = Math.max(0, totalHours).toFixed(2);
-            // 合計を更新
-            calculateGrandTotal();
-          }
-        }
-      }
-    }
-
-    function calculateGrandTotal() {
-      const allResults = document.querySelectorAll('.working-hours-result');
-      let grandTotal = 0;
-      allResults.forEach(input => {
-        grandTotal += parseFloat(input.value) || 0;
-      });
+    if (start && end && resultInput) {
+      const startTime = new Date(`2000-01-01T${start}:00`);
+      let endTime = new Date(`2000-01-01T${end}:00`);
       
-      const totalDisplay = document.querySelector('#daily_report_total_working_hours');
-      if (totalDisplay) {
-        totalDisplay.value = grandTotal.toFixed(2);
-      }
+      let diffMs = endTime - startTime;
+      if (diffMs < 0) diffMs += 24 * 60 * 60 * 1000; // 日またぎ対応
+      
+      const totalHours = (diffMs / (1000 * 60 * 60)) - (breakMin / 60);
+      resultInput.value = Math.max(0, totalHours).toFixed(2);
+      
+      calculateGrandTotal();
     }
-    
-    // 初期計算（ページを開いた時にすでに値があれば計算）
-    calculateGrandTotal();
   };
 
-  // Rails (Turbo) と 通常の読み込み両方に対応
-  document.addEventListener('turbo:load', setupLaborCalculation);
-  
-  // 念のため即時実行（ページ内に直接書いている場合に有効）
-  if (document.readyState !== 'loading') {
-    setupLaborCalculation();
-  }
+  const calculateGrandTotal = () => {
+    const allResults = document.querySelectorAll('.working-hours-result');
+    let grandTotal = 0;
+    allResults.forEach(input => {
+      grandTotal += parseFloat(input.value) || 0;
+    });
+    
+    const totalDisplay = document.querySelector('#daily_report_total_working_hours');
+    if (totalDisplay) {
+      totalDisplay.value = grandTotal.toFixed(2);
+    }
+  };
+
+  const init = () => {
+    document.querySelectorAll('.staff-row').forEach(row => {
+      // 既存の入力値がある場合、初期計算を実行
+      calculateStaffHours(row);
+
+      row.addEventListener('input', (e) => {
+        if (e.target.matches('.start-time, .end-time, .break-time')) {
+          calculateStaffHours(row);
+        }
+      });
+    });
+  };
+
+  // Turboと通常読み込みの両方で初期化
+  document.addEventListener('turbo:load', init);
+  if (document.readyState !== 'loading') init();
 })();
 </script>

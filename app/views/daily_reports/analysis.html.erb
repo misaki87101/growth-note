@@ -52,8 +52,10 @@
           <%= summary.tech_target.to_i > 0 ? (summary.total_tech.to_f / summary.tech_target * 100).round(1) : 0 %>%
         </td>
         <td>
-  <% if summary.total_hours.to_f > 0 %>
-    ¥<%= number_with_delimiter((summary.total_tech.to_f / summary.total_hours).round(0)) %>/h
+  <%# total_hours を数値として評価 %>
+  <% total_h = summary.total_hours.to_f %>
+  <% if total_h > 0 %>
+    ¥<%= number_with_delimiter((summary.total_tech.to_f / total_h).round(0)) %>/h
   <% else %>
     ¥0/h
   <% end %>
@@ -116,36 +118,57 @@
 </div>
   
   <%# --- 印刷ボタン --- %>
-    <%# 印刷ボタンセクション（中央寄せ） %>
-  <div style="padding-top: 30px; display: flex; justify-content: center;">
-    <button onclick="window.print()" style="background: none; color: #1a1a1a; border: 1px solid #1a1a1a; padding: 10px 40px; font-size: 10px; letter-spacing: 0.2em; cursor: pointer; font-family: inherit;">
-      PRINT / PDF
-    </button>
-  </div>
-</div>
+  <%# --- 印刷ボタン（右下に固定） --- %>
+<button onclick="window.print()" class="no-print floating-print-btn">
+  <span style="font-size: 16px; margin-right: 5px;">🖨</span> PRINT / PDF
+</button>
 
 <style>
+  /* 画面上での見た目（右下にひょっこり固定） */
+  .floating-print-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: #1a1a1a;
+    color: #fff;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 50px; /* 丸みをつけて可愛く */
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    z-index: 1000;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+  }
+
+  .floating-print-btn:hover {
+    background: #444;
+    transform: translateY(-3px); /* 浮き上がるアニメーション */
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  }
+
+  /* 印刷時の設定 */
   @media print {
-    /* 1. 印刷時に「入力フォーム」や「ボタン」を隠す */
-    button, a, .no-print {
+    .no-print, .floating-print-btn {
       display: none !important;
     }
-
-    /* 2. 【重要】印刷時に「隠していたテキスト（div）」を表示させる */
+    
     .only-print {
       display: block !important;
       page-break-inside: avoid;
     }
     
-    /* 印刷時の背景と余白の調整 */
     body {
       background: white !important;
-      -webkit-print-color-adjust: exact; /* 背景色を強制的に印刷する設定 */
     }
-    div[style*="margin: 0 auto"] {
+    
+    div[style*="max-width: 1000px"] {
       margin: 0 !important;
-      border: none !important;
-      box-shadow: none !important;
+      padding: 0 !important;
       width: 100% !important;
       max-width: 100% !important;
     }
