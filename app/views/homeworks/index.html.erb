@@ -15,7 +15,7 @@
     <h2 style="font-size: 22px; font-weight: 300; letter-spacing: 0.15em; margin: 0;">HOMEWORKS</h2>
     
     <%# 生徒の時だけ投稿ボタンを表示 %>
-    <% unless current_user.teacher? %>
+    <% if current_user.student? %>
       <%= link_to "New Post", new_homework_path, style: "font-size: 11px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em; border: 1px solid #1a1a1a; padding: 8px 20px;" %>
     <% end %>
   </div>

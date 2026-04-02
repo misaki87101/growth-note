@@ -28,7 +28,7 @@
   <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 40px; border-bottom: 1px solid #1a1a1a; padding-bottom: 15px;">
     <h2 style="font-size: 22px; font-weight: 300; letter-spacing: 0.15em; margin: 0;">FEEDBACKS</h2>
     <%# 先生の時だけ投稿ボタンを表示 %>
-    <% unless current_user.student? %>
+    <% if current_user.teacher? %>
       <%= link_to "New Post", new_feedback_path, style: "font-size: 11px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em; border: 1px solid #1a1a1a; padding: 8px 20px;" %>
     <% end %>
   </div>

@@ -15,6 +15,10 @@ class GroupsController < ApplicationController
     @group = Group.new
   end
 
+  def edit
+    @group = Group.find(params[:id])
+  end
+
   def create
     @group = Group.new(group_params)
     if @group.save
@@ -26,18 +30,14 @@ class GroupsController < ApplicationController
     end
   end
 
-  def edit
-  @group = Group.find(params[:id])
-end
-
-def update
-  @group = Group.find(params[:id])
-  if @group.update(group_params)
-    redirect_to groups_path, notice: "クラス名を更新しました"
-  else
-    render :edit
+  def update
+    @group = Group.find(params[:id])
+    if @group.update(group_params)
+      redirect_to groups_path, notice: "クラス名を更新しました"
+    else
+      render :edit
+    end
   end
-end
 
   private
 

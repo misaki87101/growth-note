@@ -7,21 +7,21 @@ class UsersController < ApplicationController
 
   # ユーザー一覧
   def index
-  unless current_user.teacher?
-    redirect_to mypage_path, alert: "権限がありません"
-    return
-  end
+    unless current_user.teacher?
+      redirect_to mypage_path, alert: "権限がありません"
+      return
+    end
 
-  # 1. まずベースの生徒一覧（role: :student）を取得
-  @students = User.where(role: :student).order(:name)
+    # 1. まずベースの生徒一覧（role: :student）を取得
+    @students = User.where(role: :student).order(:name)
 
-  # 2. クラスが選択されている場合、中間テーブルを通して絞り込む
-  if params[:group_id].present?
+    # 2. クラスが選択されている場合、中間テーブルを通して絞り込む
+    return if params[:group_id].blank?
+
     @current_group = Group.find(params[:group_id])
     # 中間テーブル経由でそのクラスのユーザーだけを抽出
     @students = @current_group.users.where(role: :student).order(:name)
   end
-end
 
   # プロフィール表示
   def show
