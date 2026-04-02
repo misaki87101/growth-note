@@ -47,11 +47,12 @@
   <% end %>
 
   <%# 項目別チェック %>
-  <% if @feedback.check_items.any? %>
+  <% if @feedback.check_items.reject(&:new_record?).any? %>
     <div style="margin-bottom: 50px;">
       <div style="font-size: 11px; color: #999; letter-spacing: 0.1em; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 20px;">CHECK POINTS</div>
-      <% @feedback.check_items.each do |item| %>
-        <div style="display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid #f9f9f9;">
+        <% @feedback.check_items.each do |item| %>
+          <% next if item.new_record? && item.name.blank? %>
+          <div style="display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid #f9f9f9;">
           <% if item.timestamp.present? %>
             <span style="font-size: 10px; color: #999; font-family: 'Georgia', serif; width: 50px;"><%= item.timestamp %></span>
           <% end %>

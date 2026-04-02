@@ -6,18 +6,16 @@ class FeedbacksController < ApplicationController
 
   def index
     if current_user.teacher?
-      # 先生：自分が担当している生徒の分だけ
+      # 先生：担当生徒の分
       @feedbacks = Feedback.where(student_id: current_user.students.ids).order(lesson_date: :desc)
       @students = current_user.students
     else
-      # 生徒：自分宛、かつ自分が所属しているクラスの分だけ
-      # これで「他クラスのデータ」は一切混ざらなくなります！
-      @feedbacks = Feedback.where(student_id: current_user.id, group_id: current_user.group_ids)
-                           .order(lesson_date: :desc)
-      @students = [] # 生徒には空のリストを渡す
+      # 💡 修正：group_id の条件を削除し、シンプルに「自分宛」だけにする
+      @feedbacks = Feedback.where(student_id: current_user.id).order(lesson_date: :desc)
+      @students = []
     end
 
-    # 生徒絞り込み検索（先生用）
+    # 先生用の絞り込み（ここはそのまま）
     return if params[:student_id].blank?
 
     @feedbacks = @feedbacks.where(student_id: params[:student_id])
@@ -60,23 +58,28 @@ class FeedbacksController < ApplicationController
     end
   end
 
+  # app/controllers/feedbacks_controller.rb
+
   def edit
     @feedback = Feedback.find(params[:id])
 
-    # 【追加】編集画面でも「クラス一覧」が必要な場合に備えて定義
+    # 権限チェック：生徒が他人のものを編集しようとしたらガード
+    if current_user.student? && @feedback.student_id != current_user.id
+      redirect_to mypage_path, alert: "権限がありません" and return
+    end
+
+    # 💡 @students の作り方を修正
+    @students = if current_user.teacher?
+                  # 先生の場合：自分が担当している全生徒（または今のグループの生徒）
+                  current_user.students
+                else
+                  # 生徒の場合：自分自身をリストに入れる（これでプルダウンに名前が出るようになります）
+                  User.where(id: current_user.id)
+                end
+
     @groups = current_user.groups
-
-    # 【改善】全生徒ではなく、先生が担当している生徒に絞る（newと同じにするとバグが減ります）
-    @students = current_user.teacher? ? current_user.students : []
-
-    # 項目が空なら1つ追加しておく（既存のロジック）
     @feedback.check_items.build if @feedback.check_items.blank?
-
-    # 生徒が他人のフィードバックを編集しようとした時だけガードする
-    return unless current_user.student? && @feedback.student_id != current_user.id
-
-    redirect_to mypage_path, alert: "権限がありません"
-    nil
+    @check_items = @feedback.check_items
   end
 
   def create
@@ -136,11 +139,14 @@ class FeedbacksController < ApplicationController
     if current_user.teacher?
       params.require(:feedback).permit(
         :student_id, :lesson_date, :content, :rating, :title, :hour, :minute,
-        images: [], # 画像の複数アップロードに対応
+        images: [],
         check_items_attributes: %i[id name result timestamp _destroy]
       )
     else
-      params.require(:feedback).permit(:hour, :minute)
+      params.require(:feedback).permit(
+        :hour, :minute,
+        check_items_attributes: %i[id timestamp] # 生徒はタイムスタンプだけ更新する想定
+      )
     end
   end
 

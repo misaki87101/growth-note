@@ -23,24 +23,29 @@
 
   <%# クラス選択（先生だけに表示） %>
   <div>
-    <%= f.label :title, style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" do%>
-        クラス <span style="color: #d1d1d1; margin-left: 5px;">*入力必須</span>
-      <% end %>
-    <%= select_tag :group_id, options_from_collection_for_select(@groups, :id, :name), 
-        prompt: "クラスを選択してください",
-        data: { action: "change->feedback-form#updateStudents" },
-        style: "width: 100%; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff; font-size: 12px; -webkit-appearance: none;" %>
-  </div>
+  <%= f.label :group_id, style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" do %>
+    クラス <span style="color: #d1d1d1; margin-left: 5px;">*入力必須</span>
+  <% end %>
+
+  <%# 初期値として、そのフィードバックに保存されている group_id を直接指定します %>
+  <%= select_tag :group_id,
+      options_from_collection_for_select(@groups, :id, :name, @feedback.group_id), 
+      include_blank: "クラスを選択してください",
+      data: { action: "change->feedback-form#updateStudents" },
+      style: "width: 100%; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff; font-size: 12px; -webkit-appearance: none;" %>
+</div>
 <%# クラスを選択したら、そのクラスの生徒だけが表示されるセレクトボックス %>
   <div id="student_select_container">
-    <%= f.label :title, style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" do%>
-        生徒 <span style="color: #d1d1d1; margin-left: 5px;">*入力必須</span>
-      <% end %>
-    <%= select_tag "feedback[student_id]", options_for_select([]), 
-        prompt: "先にクラスを選んでください", 
-        required: true,
-        style: "width: 100%; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff; font-size: 12px; -webkit-appearance: none;" %>
-  </div>
+  <%= f.label :student_id, style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" do %>
+    生徒 <span style="color: #d1d1d1; margin-left: 5px;">*入力必須</span>
+  <% end %>
+
+  <%# select_tag ではなく f.collection_select を使うのがコツです %>
+  <%= f.collection_select :student_id, @students, :id, :name, 
+      { prompt: "選択してください" }, 
+      { required: true,
+        style: "width: 100%; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff; font-size: 12px; -webkit-appearance: none;" } %>
+</div>
 </div>
 
 <br>
@@ -114,6 +119,7 @@
       <div id="check-items-container">
         <%= f.fields_for :check_items do |item_f| %>
           <div class="check-item-row" style="display: flex; gap: 10px; margin-bottom: 12px; align-items: center;">
+          <%= item_f.hidden_field :id if item_f.object.persisted? %>
             <%# タイム入力欄 %>
             <%= item_f.text_field :timestamp, placeholder: "00:00", style: "width: 60px; padding: 10px; border: 1px solid #e5e5e5; font-size: 12px; text-align: center;" %>
             <%= item_f.text_field :name, readonly: current_user.student?, placeholder: "項目名 (例: あいさつ)", style: "flex: 2; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff; font-size: 12px;"  %>
@@ -208,12 +214,13 @@
     if (!container || !template) return;
 
     // --- 項目の追加ボタン ---
-    addButton.onclick = () => { // addEventListenerより確実に上書きできる方法
-      let content = template.innerHTML;
-      const newId = new Date().getTime();
-      content = content.replace(/NEW_RECORD/g, newId);
-      container.insertAdjacentHTML('beforeend', content);
-    };
+    addButton.onclick = () => {
+  let content = template.innerHTML;
+  // 💡 小数点を含まない「整数」のIDを生成するように修正
+  const newId = new Date().getTime(); 
+  content = content.replace(/NEW_RECORD/g, newId);
+  container.insertAdjacentHTML('beforeend', content);
+};
 
     // --- イベントデリゲーション（効率的でTurboに強い書き方） ---
     document.onclick = (e) => {
@@ -224,19 +231,20 @@
 
       // 項目別評価の「定型文を挿入」ボタン
       const templateBtn = e.target.closest('.template-btn');
-      if (templateBtn) {
-        const items = JSON.parse(templateBtn.dataset.items);
-        items.forEach(itemName => {
-          let content = template.innerHTML;
-          const newId = new Date().getTime() + Math.random();
-          content = content.replace(/NEW_RECORD/g, newId);
-          container.insertAdjacentHTML('beforeend', content);
+if (templateBtn) {
+  const items = JSON.parse(templateBtn.dataset.items);
+  items.forEach((itemName, index) => { // indexを追加
+    let content = template.innerHTML;
+    // 💡 ここも「整数」になるように修正
+    const newId = new Date().getTime() + index; 
+    content = content.replace(/NEW_RECORD/g, newId);
+    container.insertAdjacentHTML('beforeend', content);
 
-          const lastRow = container.lastElementChild;
-          const input = lastRow.querySelector('[name*="[name]"]');
-          if (input) input.value = itemName;
-        });
-      }
+    const lastRow = container.lastElementChild;
+    const input = lastRow.querySelector('[name*="[name]"]');
+    if (input) input.value = itemName;
+  });
+}
 
       // 全体フィードバックの「定型文を挿入」ボタン
       const phraseBtn = e.target.closest('.phrase-btn');
