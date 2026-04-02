@@ -74,7 +74,7 @@ Rails.application.routes.draw do
 end
 
   # グループ（生徒のクラス）管理
-  resources :groups, only: [:new, :create, :index, :show]
+  resources :groups, only: [:new, :create, :index, :show, :edit, :update] 
 
   resources :group_users, only: [:update, :destroy] do
   get :pending, on: :collection # 承認待ち一覧用

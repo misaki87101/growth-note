@@ -9,86 +9,108 @@
     <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
 
     <style>
-      body {
-        background-color: #fcfcfc;
-        margin: 0;
-        padding: 0;
-        font-family: 'Helvetica Neue', Arial, sans-serif;
-        color: #1a1a1a;
-      }
-      
-      /* 印刷時にヘッダーとフラッシュメッセージを隠す */
-      @media print {
-        nav, .flash-message {
-          display: none !important;
-        }
-      }
-    </style>
+  body {
+    background-color: #fcfcfc;
+    margin: 0;
+    padding: 0;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: #1a1a1a;
+  }
+
+  /* ナビバー全体のゆとり */
+  .main-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 40px; /* 上下のパディングを少し増やしてゆとりを */
+    background-color: #ffffff;
+    border-bottom: 1px solid #eee;
+    flex-wrap: wrap; /* 要素が入り切らない時に折り返す設定 */
+    gap: 20px;
+  }
+
+  /* スマホ向けのメディアクエリ */
+  @media (max-width: 768px) {
+    .main-nav {
+      padding: 15px 20px;
+      justify-content: center; /* 中央寄せで整列 */
+      text-align: center;
+    }
+    .nav-left, .nav-right {
+      width: 100%; /* スマホでは横幅いっぱいに広げて上下2段にする */
+      justify-content: center !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+    }
+    .nav-right {
+      gap: 15px !important; /* スマホでのボタン同士の距離を確保 */
+    }
+  }
+
+  @media print {
+    nav, .flash-message { display: none !important; }
+  }
+</style>
   </head>
 
   <body>
     <%# --- ヘッダー（ナビバー） --- %>
-    <nav style="display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background-color: #ffffff; border-bottom: 1px solid #eee; letter-spacing: 0.1em;">
-      
-      <%# ロゴ部分 %>
-      <div style="font-size: 14px; letter-spacing: 0.2em; color: #1a1a1a; font-weight: 300;">
-        <%= link_to "GROWTH NOTE", root_path, style: "text-decoration: none; color: inherit;" %>
-      </div>
+    <nav class="main-nav">
+  <%# --- 左側：ロゴとクラス選択 --- %>
+  <div class="nav-left" style="display: flex; align-items: center; gap: 25px;">
+    <div style="font-size: 16px; letter-spacing: 0.25em; color: #1a1a1a; font-weight: 300;">
+      <%= link_to "GROWTH NOTE", root_path, style: "text-decoration: none; color: inherit;" %>
+    </div>
 
-<%# --- ナビバーの中（ロゴの直後あたり）に追加 --- %>
-<div style="display: flex; align-items: center; gap: 15px; margin-left: 20px; border-left: 1px solid #eee; padding-left: 20px;">
-  <% if logged_in? %>
-    <% if current_user.teacher? %>
-      <%# 先生：クラス切り替え用の簡易フォーム %>
-      <%= form_with url: users_path, method: :get, local: true, style: "display: flex; align-items: center; gap: 8px;" do |f| %>
-        <span style="font-size: 9px; color: #ccc; letter-spacing: 0.1em;">CURRENT CLASS :</span>
-        <%= f.select :group_id, 
-            options_from_collection_for_select(Group.all, :id, :name, params[:group_id]), 
-            { include_blank: "ALL STUDENTS" }, 
-            { onchange: "this.form.submit();", 
-              style: "background: none; border: none; border-bottom: 1px solid #eee; font-size: 11px; color: #1a1a1a; cursor: pointer; outline: none; padding: 2px;" } 
-        %>
-      <% end %>
-    <% elsif current_user.group.present? %>
-      <%# 生徒：所属クラスをテキスト表示 %>
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="font-size: 9px; color: #ccc; letter-spacing: 0.1em;">CLASS :</span>
-        <span style="font-size: 11px; color: #1a1a1a;"><%= current_user.group.name %></span>
-      </div>
-    <% end %>
-  <% end %>
-</div>
-
-      <div style="display: flex; align-items: center; gap: 30px;">
-        <% if logged_in? %>
-          <div style="display: flex; align-items: center; gap: 20px;">
-            <% if current_user.teacher? %>
-              <%= link_to "+ NEW CLASS", new_group_path, style: "font-size: 10px; color: #1a1a1a; text-decoration: none; border-bottom: 1px solid #1a1a1a; padding-bottom: 2px; letter-spacing: 0.1em;" %>
-              </div>
-              <%= link_to "STUDENT LIST", users_path, style: "font-size: 10px; color: #1a1a1a; text-decoration: none; border-bottom: 1px solid #1a1a1a; padding-bottom: 2px; letter-spacing: 0.1em;" %>
-
-            <% else %>
-              <%= link_to "MY PAGE", mypage_path, style: "text-decoration: none; color: #1a1a1a; font-size: 11px; border-bottom: 1px solid #1a1a1a;" %>
+    <% if logged_in? %>
+      <div style="border-left: 1px solid #eee; padding-left: 20px; display: flex; align-items: center;">
+        <% if current_user.teacher? %>
+          <%= form_with url: users_path, method: :get, local: true, style: "display: flex; align-items: center; gap: 8px;" do |f| %>
+            <span style="font-size: 9px; color: #ccc; letter-spacing: 0.1em;">CLASS:</span>
+            <%= f.select :group_id, 
+                options_from_collection_for_select(Group.all, :id, :name, params[:group_id]), 
+                { include_blank: "ALL" }, 
+                { onchange: "this.form.submit();", 
+                  style: "background: none; border: none; border-bottom: 1px solid #eee; font-size: 11px; color: #1a1a1a; cursor: pointer; outline: none; padding: 2px;" } 
+            %>
+            <% if params[:group_id].present? %>
+              <%= link_to "EDIT", edit_group_path(params[:group_id]), style: "text-decoration: none; font-size: 9px; color: #999; border: 1px solid #eee; padding: 2px 6px; border-radius: 2px;" %>
             <% end %>
-          </div>
-
-
-          <div style="display: flex; align-items: center; gap: 15px; margin-left: 20px; border-left: 1px solid #eee; padding-left: 20px;">
-            <%# 名前をクリックすると自分のプロフィール詳細(show)へ %>
-            <%= link_to user_path(current_user), style: "text-decoration: none; font-size: 10px; color: #1a1a1a; letter-spacing: 0.1em;" do %>
-              👤 <%= current_user.name.upcase %>
-            <% end %>
-
-            <%= button_to "LOGOUT", logout_path, 
-                method: :delete, 
-                form: { data: { turbo: false }, style: "display: inline;" }, 
-                style: "background: none; border: 1px solid #eee; color: #999; font-size: 9px; padding: 4px 8px; cursor: pointer; font-family: inherit;" %>
-          </div>
-        <% else %>
-          <%= link_to "LOGIN", login_path, style: "text-decoration: none; color: #1a1a1a; font-size: 11px; letter-spacing: 0.1em;" %>
+          <% end %>
+        <% elsif current_user.group.present? %>
+          <span style="font-size: 9px; color: #ccc; letter-spacing: 0.1em; margin-right: 8px;">CLASS:</span>
+          <span style="font-size: 11px; color: #1a1a1a;"><%= current_user.group.name %></span>
         <% end %>
       </div>
-    </nav>
+    <% end %>
+  </div>
+
+  <%# --- 右側：各種アクション --- %>
+  <div class="nav-right" style="display: flex; align-items: center; gap: 25px;">
+    <% if logged_in? %>
+      <div style="display: flex; align-items: center; gap: 20px;">
+        <% if current_user.teacher? %>
+          <%= link_to "+ CLASS", new_group_path, style: "font-size: 10px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em;" %>
+          <%= link_to "STUDENTS", users_path, style: "font-size: 10px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em;" %>
+        <% else %>
+          <%= link_to "MY PAGE", mypage_path, style: "text-decoration: none; color: #1a1a1a; font-size: 10px; letter-spacing: 0.1em;" %>
+        <% end %>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 15px; border-left: 1px solid #eee; padding-left: 20px;">
+        <%= link_to user_path(current_user), style: "text-decoration: none; font-size: 10px; color: #1a1a1a; letter-spacing: 0.1em;" do %>
+          👤 <%= current_user.name.truncate(10).upcase %>
+        <% end %>
+
+        <%= button_to "LOGOUT", logout_path, method: :delete, form: { data: { turbo: false } }, 
+            style: "background: none; border: 1px solid #eee; color: #999; font-size: 9px; padding: 5px 10px; cursor: pointer;" %>
+      </div>
+    <% else %>
+      <%= link_to "LOGIN", login_path, style: "text-decoration: none; color: #1a1a1a; font-size: 11px; letter-spacing: 0.2em;" %>
+    <% end %>
+  </div>
+</nav>
 
     <%# --- Flashメッセージ --- %>
     <div class="flash-message" style="max-width: 600px; margin: 20px auto; text-align: center;">
