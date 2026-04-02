@@ -15,8 +15,8 @@
   <%# 投稿画像 %>
   <% if @board.images.attached? %>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 40px;">
-      <% @board.images.each do |image| %>
-        <%= image_tag image, style: "width: 100%; height: auto; border: 1px solid #eee;" %>
+      <% @board.display_images.each do |image| %>
+        <%= image_tag image, class: "img-fluid", style: "width: 100%; height: auto; border: 1px solid #eee;" %>
       <% end %>
     </div>
   <% end %>

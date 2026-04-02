@@ -32,13 +32,18 @@ class Feedback < ApplicationRecord
     return [] unless images.attached?
 
     images.map do |image|
-      # ファイル名やタイプに heic が含まれるか、大文字小文字を問わずチェック
-      if image.content_type.downcase.include?("heic") || image.filename.to_s.downcase.end_with?(".heic")
-        # ここで強制的にJPG変換をかける
-        image.variant(format: :jpg)
+      # image.variable? は「その画像がリサイズや変換可能か」を判定するRailsのメソッドです
+      if image.variable?
+        # HEICかどうかに関わらず、表示用にリサイズ + JPG固定にしておくと表示が安定します
+        # (元のHEICデータはそのまま残り、表示用だけJPGが生成されます)
+        image.variant(resize_to_limit: [800, 800], format: :jpg).processed
       else
+        # 動画やPDFなど、変換できないファイルが混じった場合の予備
         image
       end
     end
+  rescue StandardError
+    # 万が一変換エラーが起きても画面が真っ白にならないためのガード
+    images
   end
 end
