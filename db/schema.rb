@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_04_01_075652) do
+ActiveRecord::Schema[7.2].define(version: 2026_04_01_082458) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -221,7 +221,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_01_075652) do
     t.string "reset_digest"
     t.datetime "reset_sent_at"
     t.date "birthday"
+    t.bigint "group_id"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["group_id"], name: "index_users_on_group_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -248,4 +250,5 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_01_075652) do
   add_foreign_key "staff_sales", "daily_reports"
   add_foreign_key "staff_sales", "users"
   add_foreign_key "students", "users"
+  add_foreign_key "users", "groups"
 end

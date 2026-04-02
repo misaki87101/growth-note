@@ -35,6 +35,30 @@
         <%= link_to "GROWTH NOTE", root_path, style: "text-decoration: none; color: inherit;" %>
       </div>
 
+<%# --- ナビバーの中（ロゴの直後あたり）に追加 --- %>
+<div style="display: flex; align-items: center; gap: 15px; margin-left: 20px; border-left: 1px solid #eee; padding-left: 20px;">
+  <% if logged_in? %>
+    <% if current_user.teacher? %>
+      <%# 先生：クラス切り替え用の簡易フォーム %>
+      <%= form_with url: users_path, method: :get, local: true, style: "display: flex; align-items: center; gap: 8px;" do |f| %>
+        <span style="font-size: 9px; color: #ccc; letter-spacing: 0.1em;">CURRENT CLASS :</span>
+        <%= f.select :group_id, 
+            options_from_collection_for_select(Group.all, :id, :name, params[:group_id]), 
+            { include_blank: "ALL STUDENTS" }, 
+            { onchange: "this.form.submit();", 
+              style: "background: none; border: none; border-bottom: 1px solid #eee; font-size: 11px; color: #1a1a1a; cursor: pointer; outline: none; padding: 2px;" } 
+        %>
+      <% end %>
+    <% elsif current_user.group.present? %>
+      <%# 生徒：所属クラスをテキスト表示 %>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 9px; color: #ccc; letter-spacing: 0.1em;">CLASS :</span>
+        <span style="font-size: 11px; color: #1a1a1a;"><%= current_user.group.name %></span>
+      </div>
+    <% end %>
+  <% end %>
+</div>
+
       <div style="display: flex; align-items: center; gap: 30px;">
         <% if logged_in? %>
           <div style="display: flex; align-items: center; gap: 20px;">

@@ -5,13 +5,23 @@ class UsersController < ApplicationController
   # 講師以外はユーザー一覧にアクセスできないようにする
   before_action :ensure_teacher_user, only: [:index]
 
-  # ユーザー一覧（講師のみアクセス可能）
+  # ユーザー一覧
   def index
-    @students = User.where(role: :student).order(:name)
-    return if current_user.teacher?
-
+  unless current_user.teacher?
     redirect_to mypage_path, alert: "権限がありません"
+    return
   end
+
+  # 1. まずベースの生徒一覧（role: :student）を取得
+  @students = User.where(role: :student).order(:name)
+
+  # 2. クラスが選択されている場合、中間テーブルを通して絞り込む
+  if params[:group_id].present?
+    @current_group = Group.find(params[:group_id])
+    # 中間テーブル経由でそのクラスのユーザーだけを抽出
+    @students = @current_group.users.where(role: :student).order(:name)
+  end
+end
 
   # プロフィール表示
   def show

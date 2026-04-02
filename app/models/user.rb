@@ -3,6 +3,8 @@
 class User < ApplicationRecord
   attr_accessor :reset_token
 
+  belongs_to :group, optional: true
+
   # フォームから送られてくる「招待コード」を一時的に受け取るための窓口
   attr_accessor :invitation_code
 
