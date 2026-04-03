@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 // ↓ これを追加！
-import { Turbo } from "@hotwired/turbo-rails" 
+import { Turbo } from "@hotwired/turbo" 
 
 export default class extends Controller {
   connect() {
@@ -15,7 +15,9 @@ export default class extends Controller {
 
     fetch(`/feedbacks/select_group?group_id=${groupId}`, {
       headers: {
-        "Accept": "text/vnd.turbo-stream.html"
+        "Accept": "text/vnd.turbo-stream.html",
+        // ↓ これを追加！Railsのセキュリティチェックを通すために必要です
+        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
       }
     })
     .then(response => response.text())

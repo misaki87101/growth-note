@@ -19,17 +19,18 @@
       </div>
     <% end %>
     
-    <div style="display: flex; flex-direction: column; gap: 25px;" data-controller="feedback-form">
-
-    <%# クラス選択（先生だけに表示） %>
-      <div>
-        <%= f.label :group_id, "クラス *入力必須", style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" %>
-        <%= select_tag :group_id,
-            options_from_collection_for_select(@groups, :id, :name, @feedback.group_id), 
-            include_blank: "クラスを選択してください",
-            data: { action: "change->feedback-form#updateStudents" },
-            style: "width: 100%; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff; font-size: 12px; -webkit-appearance: none;" %>
-      </div>
+    <div style="display: flex; flex-direction: column; gap: 25px;">
+      <%# クラス選択（先生だけに表示） %>
+      <% if current_user.teacher? %>
+        <div>
+          <%= f.label :group_id, "クラス *入力必須", style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" %>
+          <%= select_tag :group_id,
+              options_from_collection_for_select(@groups, :id, :name, @feedback.group_id), 
+              include_blank: "クラスを選択してください",
+              data: { action: "change->feedback-form#updateStudents" },
+              style: "width: 100%; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff; font-size: 12px; -webkit-appearance: none;" %>
+        </div>
+      <% end %>
 
       <%# クラスを選択したら、そのクラスの生徒だけが表示されるセレクトボックス %>
       <div id="student_select_container">
@@ -42,7 +43,7 @@
       <%# レッスン日 %>
       <div>
         <%= f.label :lesson_date, "レッスン日 *入力必須", style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" %>
-        <%= f.date_field :lesson_date, readonly: current_user.student?, style: "font-size: 12px; width: 100%; #{'background: #f5f5f5;' if current_user.student?}" %>
+        <%= f.date_field :lesson_date, readonly: current_user.student?, style: "font-size: 12px; width: 100%; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff;" %>
       </div>
 
       <%# 講習名 %>
