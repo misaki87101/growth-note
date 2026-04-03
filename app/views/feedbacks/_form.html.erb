@@ -6,7 +6,7 @@
     <%= action_name == 'new' ? 'New Feedback' : 'Edit Feedback' %>
   </h2>
   
-  <%= form_with(model: feedback, local: true, data: { turbo: false }) do |f| %>
+  <%= form_with(model: feedback) do |f| %>
     <%# エラーメッセージの表示 %>
     <% if @feedback.errors.any? %>
       <div style="color: red; font-size: 12px; margin-bottom: 20px; padding: 10px; border: 1px solid red;">
@@ -27,6 +27,7 @@
           <%= select_tag :group_id,
               options_from_collection_for_select(@groups, :id, :name, @feedback.group_id), 
               include_blank: "クラスを選択してください",
+              id: "feedback_group_id",
               data: { action: "change->feedback-form#updateStudents" },
               style: "width: 100%; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff; font-size: 12px; -webkit-appearance: none;" %>
         </div>
