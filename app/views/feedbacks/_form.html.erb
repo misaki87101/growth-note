@@ -33,12 +33,7 @@
       <% end %>
 
       <%# 生徒選択コンテナ %>
-      <div id="student_select_container">
-        <%= f.label :student_id, "生徒 *入力必須", for: "feedback_student_id", style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" %>
-        <%= f.collection_select :student_id, @students, :id, :name, 
-            { prompt: "選択してください" }, 
-            { id: "feedback_student_id", required: true, style: "width: 100%; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff; font-size: 12px; -webkit-appearance: none;" } %>
-      </div>
+        <%= render "feedbacks/student_select", students: @students %>
 
       <%# レッスン日 %>
       <div>
