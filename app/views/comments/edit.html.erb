@@ -1,8 +1,7 @@
 <div style="max-width: 600px; margin: 60px auto; padding: 0 20px;">
   <h2 style="font-size: 18px; font-weight: 300; letter-spacing: 0.2em; margin-bottom: 40px; text-align: center;">EDIT COMMENT</h2>
-
+  
   <div style="background: #fff; border: 1px solid #eee; padding: 30px;">
-    <%# 以前作成したエラーメッセージ表示用のパーシャルやコードがあればここに追加 %>
     <% if @comment.errors.any? %>
       <div style="color: #ff4b5c; font-size: 12px; margin-bottom: 20px;">
         <% @comment.errors.full_messages.each do |message| %>
@@ -11,21 +10,17 @@
       </div>
     <% end %>
 
+    <%# フォーム開始 %>
     <%= form_with(model: [@comment.feedback, @comment], local: true) do |f| %>
-      <div style="margin-bottom: 15px;">
-        <%= f.text_area :content, placeholder: "コメントを入力...", style: "width: 100%; height: 80px; padding: 12px; border: 1px solid #eee; outline: none; font-size: 13px;" %>
+      <div style="margin-bottom: 20px;">
+        <%= f.text_area :content, placeholder: "コメントを入力...", style: "width: 100%; height: 120px; padding: 12px; border: 1px solid #eee; outline: none; font-size: 13px;" %>
       </div>
-      <%# ボタンを中央に配置 %>
-      <div style="text-align: center;">
-        <%= f.submit "コメントする", style: "background: #1a1a1a; color: #fff; border: none; padding: 10px 40px; font-size: 12px; cursor: pointer; letter-spacing: 0.1em;" %>
-      </div>
-    <% end %>
-  </div>
 
-      <div style="display: flex; gap: 15px; align-items: center;">
+      <div style="display: flex; gap: 15px; align-items: center; justify-content: center;">
         <%= f.submit "更新する", style: "background: #1a1a1a; color: #fff; border: none; padding: 12px 30px; font-size: 12px; letter-spacing: 0.1em; cursor: pointer;" %>
         <%= link_to "キャンセル", feedback_path(@comment.feedback), style: "font-size: 11px; color: #999; text-decoration: none;" %>
       </div>
     <% end %>
+    <%# フォーム終了 %>
   </div>
 </div>
