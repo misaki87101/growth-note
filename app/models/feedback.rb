@@ -28,6 +28,12 @@ class Feedback < ApplicationRecord
     likes.exists?(user_id: user.id)
   end
 
+  # フォームから送られてきた images の中身から空文字を取り除く
+  def images=(attachables)
+    attachables = attachables.compact_blank if attachables.is_a?(Array)
+    super
+  end
+
   def display_images
     return [] unless images.attached?
 

@@ -121,8 +121,10 @@ class FeedbacksController < ApplicationController
     end
 
     if @feedback.update(feedback_params)
-      redirect_to feedback_path(@feedback), notice: "更新しました！"
+      # 💡 status: :see_other を追加！
+      redirect_to feedback_path(@feedback), notice: "更新しました！", status: :see_other
     else
+      # 💡 ここも Rails 7 の標準的な書き方に合わせて :unprocessable_entity に
       render :edit, status: :unprocessable_content
     end
   end

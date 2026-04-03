@@ -46,6 +46,14 @@ class Board < ApplicationRecord
     created_at > 24.hours.ago
   end
 
+  def images=(attachables)
+    if attachables.is_a?(Array)
+      # 空文字（""）や nil を取り除く
+      attachables = attachables.compact_blank
+    end
+    super
+  end
+
   validates :title, presence: true, length: { maximum: 255 }
   validates :content, presence: true
 end
