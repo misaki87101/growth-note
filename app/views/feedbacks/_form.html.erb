@@ -21,76 +21,50 @@
     
     <div style="display: flex; flex-direction: column; gap: 25px;" data-controller="feedback-form">
 
-  <%# クラス選択（先生だけに表示） %>
-  <div>
-  <%= f.label :group_id, style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" do %>
-    クラス <span style="color: #d1d1d1; margin-left: 5px;">*入力必須</span>
-  <% end %>
+    <%# クラス選択（先生だけに表示） %>
+      <div>
+        <%= f.label :group_id, "クラス *入力必須", style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" %>
+        <%= select_tag :group_id,
+            options_from_collection_for_select(@groups, :id, :name, @feedback.group_id), 
+            include_blank: "クラスを選択してください",
+            data: { action: "change->feedback-form#updateStudents" },
+            style: "width: 100%; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff; font-size: 12px; -webkit-appearance: none;" %>
+      </div>
 
-  <%# 初期値として、そのフィードバックに保存されている group_id を直接指定します %>
-  <%= select_tag :group_id,
-      options_from_collection_for_select(@groups, :id, :name, @feedback.group_id), 
-      include_blank: "クラスを選択してください",
-      data: { action: "change->feedback-form#updateStudents" },
-      style: "width: 100%; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff; font-size: 12px; -webkit-appearance: none;" %>
-</div>
-<%# クラスを選択したら、そのクラスの生徒だけが表示されるセレクトボックス %>
-  <div id="student_select_container">
-  <%= f.label :student_id, style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" do %>
-    生徒 <span style="color: #d1d1d1; margin-left: 5px;">*入力必須</span>
-  <% end %>
+      <%# クラスを選択したら、そのクラスの生徒だけが表示されるセレクトボックス %>
+      <div id="student_select_container">
+        <%= f.label :student_id, "生徒 *入力必須", style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" %>
+        <%= f.collection_select :student_id, @students, :id, :name, 
+            { prompt: "選択してください" }, 
+            { required: true, style: "width: 100%; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff; font-size: 12px; -webkit-appearance: none;" } %>
+      </div>
 
-  <%# select_tag ではなく f.collection_select を使うのがコツです %>
-  <%= f.collection_select :student_id, @students, :id, :name, 
-      { prompt: "選択してください" }, 
-      { required: true,
-        style: "width: 100%; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff; font-size: 12px; -webkit-appearance: none;" } %>
-</div>
-</div>
+      <%# レッスン日 %>
+      <div>
+        <%= f.label :lesson_date, "レッスン日 *入力必須", style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" %>
+        <%= f.date_field :lesson_date, readonly: current_user.student?, style: "font-size: 12px; width: 100%; #{'background: #f5f5f5;' if current_user.student?}" %>
+      </div>
 
-<br>
-    <%# レッスン日 %>
-    <div style="margin-bottom: 15px;">
-      <%= f.label :lesson_date, style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" do%>
-        レッスン日 <span style="color: #d1d1d1; margin-left: 5px;">*入力必須</span>
-      <% end %>
-      <%= f.date_field :lesson_date, readonly: current_user.student?, 
-          style: "font-size: 12px; width: 100%; #{'background: #f5f5f5;' if current_user.student?}" %>
-    </div>
+      <%# 講習名 %>
+      <div>
+        <%= f.label :title, "講習名 *入力必須", style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" %>
+        <%= f.text_field :title, readonly: current_user.student?, placeholder: "例：夏期講習 第1回", style: "width: 100%; padding: 12px; border: 1px solid #e5e5e5; font-size: 12px;" %>
+      </div>
 
-    <%# 講習名（タイトル） %>
-    <div style="margin-bottom: 25px;">
-      <%= f.label :title, style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" do%>
-        講習名 <span style="color: #d1d1d1; margin-left: 5px;">*入力必須</span>
-      <% end %>
-      <%= f.text_field :title, readonly: current_user.student?, placeholder: "例：夏期講習 第1回 / TOEIC対策", style: "width: 100%; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff; font-size: 12px; color: #1a1a1a; outline: none;" %>
-    </div>
-
-    <%# 講習時間 %>
-    <div style="margin-bottom: 25px;">
-      <%= f.label :time, "講習時間", style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" %>
-      <div style="display: flex; align-items: center; gap: 15px;">
-        <%# HOURの入力 %>
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <%= f.number_field :hour, readonly: current_user.student?, placeholder: "0", min: 0, style: "width: 70px; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff; font-size: 12px; color: #1a1a1a; outline: none;" %>
-          <span style="font-size: 11px; color: #999;">HR</span>
-        </div>
-
-        <%# MINUTEの入力 %>
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <%= f.number_field :minute, readonly: current_user.student?, placeholder: "0", min: 0, max: 59, style: "width: 70px; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff; font-size: 12px; color: #1a1a1a; outline: none;" %>
-          <span style="font-size: 11px; color: #999;">MIN</span>
+      <%# 講習時間 %>
+      <div>
+        <%= f.label :time, "講習時間", style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" %>
+        <div style="display: flex; gap: 15px;">
+          <%= f.number_field :hour, readonly: current_user.student?, style: "width: 70px; padding: 12px; border: 1px solid #e5e5e5;" %> <span style="font-size: 11px;">HR</span>
+          <%= f.number_field :minute, readonly: current_user.student?, style: "width: 70px; padding: 12px; border: 1px solid #e5e5e5;" %> <span style="font-size: 11px;">MIN</span>
         </div>
       </div>
-    </div>
 
-    <%# 理解度（星評価） %>
-    <div style="margin-bottom: 15px;">
-      <%= f.label :rating, "本日の理解度", style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;"  %>
-      <div style="font-size: 20px; color: #030200;">
-        <%= f.select :rating, [["★★★★★", 5], ["★★★★", 4], ["★★★", 3], ["★★", 2], ["★", 1]], { prompt: "評価を選択" }, { disabled: current_user.student?, style: "width: 100%; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff; font-size: 12px; -webkit-appearance: none;" } %>
+      <%# 理解度 %>
+      <div>
+        <%= f.label :rating, "本日の理解度", style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" %>
+        <%= f.select :rating, [["★★★★★", 5], ["★★★★", 4], ["★★★", 3], ["★★", 2], ["★", 1]], { prompt: "評価を選択" }, { disabled: current_user.student?, style: "width: 100%; padding: 12px; border: 1px solid #e5e5e5; -webkit-appearance: none;" } %>
       </div>
-    </div>
 
     <%# 項目別評価（○△×） %>
     <div style="margin: 40px 0; padding: 25px 0; border-top: 1px solid #eee; border-bottom: 1px solid #eee;">
@@ -149,13 +123,12 @@
 
     <%# --- 写真投稿 一旦コメントアウト--- %>
     <% if false %>
-    <div style="margin-bottom: 25px; padding: 20px; border: 1px dashed #e5e5e5;">
-      <%= f.label :images, style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" do %>
-        <%= current_user.teacher? ? "フィードバック写真" : "宿題の写真を添付" %>
-      <% end %>
-  
-      <%= f.file_field :images, multiple: true, style: "font-size: 12px;" %>
-    </div> 
+        <div style="margin-bottom: 25px; padding: 20px; border: 1px dashed #e5e5e5;">
+          <label style="display: block; font-size: 11px; color: #666; margin-bottom: 8px;">
+            <%= current_user.teacher? ? "フィードバック写真" : "宿題の写真を添付" %>
+          </label>
+          <%= f.file_field :images, multiple: true, style: "font-size: 12px;" %>
+        </div>
     <% end %>
 
     <%# --- 全体フィードバック --- %>
@@ -182,34 +155,21 @@
 
         <%# 現在の写真 一旦コメントアウト%>
         <% if false %>
-     <% if feedback.images.attached? && feedback.persisted? %>
+    <% if feedback.images.attached? && feedback.persisted? %>
       <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
-        <div style="font-size: 10px; color: #999; margin-bottom: 15px; text-align: center;">ATTACHED PHOTOS (REMOVE)</div>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px;">
           <% @feedback.images.each do |image_attachment| %>
-          <div style="background: #fff; padding: 5px; border: 1px solid #eee; text-align: center;">
-          <%# 💡 表示するときだけ、モデルの変換メソッド(variant)を呼び出す %>
-          <%= image_tag @feedback.process_image(image_attachment), style: "width: 100px; height: 100px; object-fit: cover; display: block;" %>
-    
-          <% if @feedback.persisted? %>
-        <%= button_to purge_image_feedback_path(@feedback, image_id: image_attachment.id), 
-            method: :delete, 
-            form: { 
-            data: { turbo_confirm: "この画像を削除しますか？" }, 
-            style: "display: inline;" 
-          },
-            style: "color: #ff4b5c; font-size: 9px; background: none; border: none; cursor: pointer; text-decoration: underline; margin-top: 5px; font-family: inherit; padding: 0;" do %>
-           削除
-         <% end %>
-     <% end %>
+            <div style="text-align: center;">
+              <%= image_tag @feedback.process_image(image_attachment), style: "width: 100px; height: 100px; object-fit: cover;" %>
+            </div>
+          <% end %>
         </div>
-<% end %>
       </div>
-    </div>
+    <% end %>
   <% end %>
 
-    </div>
-
+  </div>
+  
 <%# JavaScript はフォームの外部（コンテナの下）に配置 %>
 <script>
   // 1. 'DOMContentLoaded' を 'turbo:load' に変更する
