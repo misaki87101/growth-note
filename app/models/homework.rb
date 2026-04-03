@@ -19,10 +19,7 @@ class Homework < ApplicationRecord
   end
 
   def images=(attachables)
-    if attachables.is_a?(Array)
-      # 空文字（""）や nil を取り除く
-      attachables = attachables.compact_blank
-    end
+    attachables = attachables.compact_blank if attachables.is_a?(Array)
     super
   end
 

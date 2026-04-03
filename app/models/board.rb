@@ -17,7 +17,6 @@ class Board < ApplicationRecord
 
     images.map do |image|
       if image.variable?
-        # リサイズ(800px) + JPG変換 + 即時生成(.processed)
         image.variant(resize_to_limit: [300, 300], format: :jpg)
       else
         image
@@ -47,10 +46,7 @@ class Board < ApplicationRecord
   end
 
   def images=(attachables)
-    if attachables.is_a?(Array)
-      # 空文字（""）や nil を取り除く
-      attachables = attachables.compact_blank
-    end
+    attachables = attachables.compact_blank if attachables.is_a?(Array)
     super
   end
 
