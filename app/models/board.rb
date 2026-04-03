@@ -18,7 +18,7 @@ class Board < ApplicationRecord
     images.map do |image|
       if image.variable?
         # リサイズ(800px) + JPG変換 + 即時生成(.processed)
-        image.variant(resize_to_limit: [800, 800], format: :jpg).processed
+        image.variant(resize_to_limit: [300, 300], format: :jpg)
       else
         image
       end

@@ -27,7 +27,7 @@ class Homework < ApplicationRecord
         # 💡 .processed を付けることで、表示する瞬間に画像生成を完了させます
         # 💡 format: :jpg でHEICも確実にJPGとして出力
         # 💡 resize_to_limit で表示速度（パフォーマンス）も向上させます
-        image.variant(resize_to_limit: [800, 800], format: :jpg).processed
+        image.variant(resize_to_limit: [300, 300], format: :jpg)
       else
         # 動画やPDFなど、リサイズできないファイルが混ざった場合の安全策
         image

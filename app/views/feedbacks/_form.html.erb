@@ -162,7 +162,7 @@
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; padding: 10px; background: #fafafa; border: 1px solid #eee;">
             <% @feedback.images.each do |image| %>
               <div style="text-align: center;">
-                <%= image_tag image.variant(resize_to_limit: [200, 200]), style: "width: 100%; height: auto; display: block; border: 1px solid #eee;" %>
+                <%= image_tag image.variant(resize_to_limit: [300, 300]), style: "width: 100%; height: auto; display: block; border: 1px solid #eee;" %>
                 <% if current_user.teacher? %>
                   <%# Turbo対応のため、button_toかdata-turbo-methodを使います %>
                   <%= button_to "REMOVE", purge_image_feedback_path(@feedback, image_id: image.id), 

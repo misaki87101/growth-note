@@ -82,7 +82,11 @@
               <%# homeworksディレクトリ内のコントローラーを参照するよう修正 %>
               <%= link_to "EDIT", edit_homework_comment_path(@homework, comment), style: "color: #bbb; font-size: 10px; text-decoration: none; letter-spacing: 0.1em;" %>
               <span style="color: #eee; font-size: 10px;">|</span>
-              <%= button_to "DELETE", [@homework, comment], method: :delete, onclick: "return confirm('このコメントを削除しますか？');", style: "background: none; border: none; color: #bbb; font-size: 10px; cursor: pointer; padding: 0; letter-spacing: 0.1em; font-family: inherit;", form: { style: "display: inline; line-height: 1;" } %>
+              <%= button_to "DELETE", [@homework, comment], 
+                  method: :delete, 
+                  form: { data: { turbo_confirm: 'このコメントを削除しますか？' }, style: "display: inline;" }, 
+                  data: { turbo_method: :delete }, 
+                  style: "background: none; border: none; color: #bbb; font-size: 10px; cursor: pointer; padding: 0; letter-spacing: 0.1em; font-family: inherit;" %>
             </div>
           <% end %>
         </div>
@@ -103,14 +107,24 @@
 
 <%# フッターアクション %>
 <div style="margin-top: 60px; border-top: 1px solid #eee; padding-top: 40px; display: flex; justify-content: center; gap: 30px; align-items: center;">
-  <% if current_user.teacher? %>
+  <% if current_user.teacher? || @homework.user == current_user %>
     <%= link_to "EDIT", edit_homework_path(@homework), style: "font-size: 11px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em; border-bottom: 1px solid #1a1a1a;" %>
-    <%= button_to "DELETE", homework_path(@homework), method: :delete, onclick: "return confirm('削除しますか？');", style: "background: none; border: none; color: #999; font-size: 11px; cursor: pointer; padding: 0; letter-spacing: 0.1em;", form: { style: "display: inline;" } %>
+    
+    <%# 💡 修正：ここも Turbo 対応の DELETE ボタンに変更 %>
+    <%= button_to "DELETE", homework_path(@homework), 
+        method: :delete, 
+        form: { data: { turbo_confirm: '練習記録を削除しますか？' }, style: "display: inline;" }, 
+        data: { turbo_method: :delete },
+        style: "background: none; border: none; color: #999; font-size: 11px; cursor: pointer; padding: 0; letter-spacing: 0.1em;" %>
+  <% end %>
+
+  <%# 戻るボタンの出し分け %>
+  <% if current_user.teacher? %>
     <%= link_to "BACK TO LIST", homeworks_path, style: "font-size: 11px; color: #999; text-decoration: none;" %>
   <% else %>
-    <%# 生徒向けマイページへのリンク。mypage_pathが定義されている前提 %>
     <%= link_to "BACK TO MYPAGE", mypage_path, style: "font-size: 11px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.2em;" %>
   <% end %>
+</div>
 </div>
 
 </div>
