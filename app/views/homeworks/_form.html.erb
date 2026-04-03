@@ -1,0 +1,60 @@
+<%# app/views/homeworks/_form.html.erb %>
+<div style="max-width: 600px; margin: 60px auto; padding: 0 20px; font-family: 'Helvetica Neue', Arial, sans-serif;">
+  
+  <div style="text-align: center; margin-bottom: 40px;">
+    <div style="font-size: 10px; color: #999; letter-spacing: 0.2em; margin-bottom: 10px;">
+      <%= homework.new_record? ? 'SUBMIT YOUR PROGRESS' : 'EDIT YOUR PROGRESS' %>
+    </div>
+    <h1 style="font-size: 20px; font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase;">Homework Record</h1>
+  </div>
+
+  <%= form_with(model: homework, local: true) do |f| %>
+    <div style="display: flex; flex-direction: column; gap: 30px;">
+      <div>
+        <%= f.label :lesson_date, "DATE", style: "display: block; font-size: 10px; color: #999; margin-bottom: 10px;" %>
+        <%= f.date_field :lesson_date, style: "width: 100%; padding: 12px; border: 1px solid #eee; font-size: 14px;" %>
+      </div>
+
+      <div style="display: flex; gap: 20px;">
+        <div style="flex: 1;">
+          <%= f.label :hour, "HOUR", style: "display: block; font-size: 10px; color: #999; margin-bottom: 10px;" %>
+          <%= f.number_field :hour, style: "width: 100%; padding: 12px; border: 1px solid #eee; font-size: 14px;" %>
+        </div>
+        <div style="flex: 1;">
+          <%= f.label :minute, "MINUTE", style: "display: block; font-size: 10px; color: #999; margin-bottom: 10px;" %>
+          <%= f.number_field :minute, style: "width: 100%; padding: 12px; border: 1px solid #eee; font-size: 14px;" %>
+        </div>
+      </div>
+
+      <div>
+        <%= f.label :content, "NOTE / MESSAGE", style: "display: block; font-size: 10px; color: #999; margin-bottom: 10px;" %>
+        <%= f.text_area :content, style: "width: 100%; min-height: 120px; padding: 12px; border: 1px solid #eee; font-size: 14px; line-height: 1.6;" %>
+      </div>
+
+      <div>
+        <%= f.label :images, "NEW PHOTOS", style: "display: block; font-size: 10px; color: #999; margin-bottom: 10px;" %>
+        <%= f.file_field :images, multiple: true, style: "font-size: 12px;" %>
+      </div>
+
+      <%= f.submit homework.new_record? ? "SUBMIT RECORD" : "UPDATE RECORD", style: "width: 100%; background: #1a1a1a; color: #fff; border: none; padding: 18px; font-size: 12px; letter-spacing: 0.2em; cursor: pointer;" %>
+    </div>
+  <% end %>
+
+  <%# 🌟 画像削除エリア（編集時のみ表示・メインフォームの外） 🌟 %>
+  <% if homework.images.attached? && homework.persisted? %>
+    <div style="margin-top: 40px; padding: 20px; border: 1px solid #eee;">
+      <div style="font-size: 10px; color: #999; margin-bottom: 15px; text-align: center;">ATTACHED PHOTOS (REMOVE)</div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px;">
+        <% homework.images.each do |image| %>
+          <div style="text-align: center;">
+            <%= image_tag image.variant(resize_to_limit: [200, 200]), style: "width: 100%; height: auto; border: 1px solid #eee;" %>
+            <%= button_to "REMOVE", purge_image_homework_path(homework, image_id: image.id), 
+                        method: :delete, 
+                        data: { turbo_confirm: "この画像を削除しますか？" }, 
+                        style: "color: #ff4b5c; font-size: 9px; background: none; border: none; cursor: pointer; text-decoration: underline; margin-top: 8px;" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

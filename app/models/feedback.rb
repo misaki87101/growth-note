@@ -34,22 +34,33 @@ class Feedback < ApplicationRecord
     super
   end
 
+  def process_image(image)
+    image.variant(
+      resize_to_limit: [300, 300],
+      format: :jpg,
+      saver: { strip: true }
+    ).processed
+  rescue StandardError => e
+    Rails.logger.error "Image processing failed: #{e.message}"
+    image # 失敗した場合は加工前の画像を返す
+  end
+
   def display_images
     return [] unless images.attached?
 
     images.map do |image|
-      # image.variable? は「その画像がリサイズや変換可能か」を判定するRailsのメソッドです
-      if image.variable?
-        # HEICかどうかに関わらず、表示用にリサイズ + JPG固定にしておくと表示が安定します
-        # (元のHEICデータはそのまま残り、表示用だけJPGが生成されます)
-        image.variant(resize_to_limit: [300, 300], format: :jpg)
+      # 💡 heic/heif を条件に加えることで、変換対象として強制的に認識させます
+      if image.variable? || image.content_type == 'image/heic' || image.content_type == 'image/heif'
+        # .processed を付けることでリサイズ画像をキャッシュし、
+        # saver: { strip: true } で不要なメタデータを削除して軽量化します
+        image.variant(resize_to_limit: [300, 300], format: :jpg, saver: { strip: true }).processed
       else
-        # 動画やPDFなど、変換できないファイルが混じった場合の予備
+        # 変換できないファイル（PDFなど）はそのまま返す
         image
       end
+    rescue StandardError => e
+      Rails.logger.error "Feedback Image processing error: #{e.message}"
+      image
     end
-  rescue StandardError
-    # 万が一変換エラーが起きても画面が真っ白にならないためのガード
-    images
   end
 end

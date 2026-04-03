@@ -27,20 +27,17 @@ class Homework < ApplicationRecord
     return [] unless images.attached?
 
     images.map do |image|
-      # image.variable? でHEICやJPGなど「変換可能か」を一括判定
-      if image.variable?
-        # 💡 .processed を付けることで、表示する瞬間に画像生成を完了させます
-        # 💡 format: :jpg でHEICも確実にJPGとして出力
-        # 💡 resize_to_limit で表示速度（パフォーマンス）も向上させます
-        image.variant(resize_to_limit: [300, 300], format: :jpg)
+      # image.variable? だけでなく、contentType もチェック対象に含めるとより確実です
+      if image.variable? || image.content_type == 'image/heic' || image.content_type == 'image/heif'
+        # HEICを強制的に jpg に変換してリサイズ
+        image.variant(resize_to_limit: [300, 300], format: :jpg, saver: { strip: true }).processed
       else
-        # 動画やPDFなど、リサイズできないファイルが混ざった場合の安全策
         image
       end
     end
   rescue StandardError => e
-    # 万が一、libvipsの変換でエラーが起きても画面が止まらないようにログを出して元の画像を返す
-    Rails.logger.error "Image processing error: #{e.message}"
+    Rails.logger.error "Feedback Image processing error: #{e.message}"
+    # 壊れた時のために、元の画像をそのまま返す
     images
   end
 end

@@ -3,6 +3,7 @@
 class FeedbacksController < ApplicationController
   before_action :logged_in_user
   before_action :ensure_teacher_user, except: %i[index show edit update]
+  before_action :set_feedback, only: %i[show edit update destroy]
 
   def index
     if current_user.teacher?
@@ -22,10 +23,11 @@ class FeedbacksController < ApplicationController
   end
 
   def purge_image
+    # Homeworksと同じく、メソッド内でfindする
     @feedback = Feedback.find(params[:id])
     image = @feedback.images.find(params[:image_id])
     image.purge
-    redirect_to edit_feedback_path(@feedback), notice: "画像を削除しました"
+    redirect_to edit_feedback_path(@feedback), notice: "画像を削除しました", status: :see_other
   end
 
   def show
@@ -114,17 +116,14 @@ class FeedbacksController < ApplicationController
 
   def update
     @feedback = Feedback.find(params[:id])
-    # update内でも同様のチェックを入れる
-    if current_user.student? && @feedback.student_id != current_user.id
-      redirect_to mypage_path, alert: "権限がありません"
-      return
-    end
 
+    # 2. Homeworksと同じく、一括更新の形にシンプルにする
+    # ※ images: [] を feedback_params で許可しているため、これで動きます
     if @feedback.update(feedback_params)
-      # 💡 status: :see_other を追加！
-      redirect_to feedback_path(@feedback), notice: "更新しました！", status: :see_other
+      redirect_to @feedback, notice: "更新しました！"
     else
-      # 💡 ここも Rails 7 の標準的な書き方に合わせて :unprocessable_entity に
+      @groups = current_user.groups
+      @students = current_user.teacher? ? current_user.students : User.where(id: current_user.id)
       render :edit, status: :unprocessable_content
     end
   end
@@ -136,6 +135,10 @@ class FeedbacksController < ApplicationController
   end
 
   private
+
+  def set_feedback
+    @feedback = Feedback.find(params[:id])
+  end
 
   def feedback_params
     if current_user.teacher?

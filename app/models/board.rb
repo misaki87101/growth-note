@@ -17,13 +17,13 @@ class Board < ApplicationRecord
 
     images.map do |image|
       if image.variable?
-        image.variant(resize_to_limit: [300, 300], format: :jpg)
+        image.variant(resize_to_limit: [300, 300], format: :jpg).processed
       else
         image
       end
     end
   rescue StandardError => e
-    Rails.logger.error "Board Image processing error: #{e.message}"
+    Rails.logger.error "Image processing error: #{e.message}"
     images
   end
 
