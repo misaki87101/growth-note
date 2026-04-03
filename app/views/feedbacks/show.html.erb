@@ -55,7 +55,8 @@
     </div>
   </div>
 
-  <%# 写真ギャラリー %>
+  <%# 写真ギャラリー 一旦すべてコメントアウトする%>
+  <% if false %>
   <% if @feedback.display_images.any? %>
   <div style="margin-bottom: 60px;">
     <div style="font-size: 10px; color: #999; letter-spacing: 0.1em; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 20px; text-transform: uppercase;">Photos</div>
@@ -70,11 +71,12 @@
     </div>
   </div>
 <% end %>
+<% end %>
 
   <%# いいねセクション %>
   <div id="like-section" style="margin-top: 20px; text-align: center;">
     <% if @feedback.liked_by?(current_user) %>
-      <%= button_to feedback_like_path(@feedback), method: :delete, style: "background: none; border: none; cursor: pointer; font-size: 18px;" do %>
+      <%= button_to feedback_likes_path(@feedback), method: :delete, style: "background: none; border: none; cursor: pointer; font-size: 18px;" do %>
         <span style="color: #ff4b5c;">🖤</span>
       <% end %>
     <% else %>

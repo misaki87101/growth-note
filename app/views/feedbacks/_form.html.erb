@@ -147,14 +147,16 @@
     </div>
 
 
-    <%# --- 写真投稿 --- %>
+    <%# --- 写真投稿 一旦コメントアウト--- %>
+    <% if false %>
     <div style="margin-bottom: 25px; padding: 20px; border: 1px dashed #e5e5e5;">
       <%= f.label :images, style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" do %>
         <%= current_user.teacher? ? "フィードバック写真" : "宿題の写真を添付" %>
       <% end %>
   
       <%= f.file_field :images, multiple: true, style: "font-size: 12px;" %>
-    </div> <%# 💡 ここで点線ボックスを閉じます！ %>
+    </div> 
+    <% end %>
 
     <%# --- 全体フィードバック --- %>
     <div style="margin-top: 25px;">
@@ -178,34 +180,35 @@
     <%= f.submit f.object.new_record? ? "CREATE FEEDBACK" : "UPDATE FEEDBACK", style: "width: 100%; padding: 16px; background-color: #1a1a1a; color: #fff; border: none; border-radius: 0; font-weight: 300; font-size: 12px; letter-spacing: 0.2em; cursor: pointer; margin-top: 10px;" %>
   <% end %> <%# 💡 保存フォーム終了 %>
 
-        <%# 現在の写真 %>
+        <%# 現在の写真 一旦コメントアウト%>
+        <% if false %>
      <% if feedback.images.attached? && feedback.persisted? %>
-    <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
-      <div style="font-size: 10px; color: #999; margin-bottom: 15px; text-align: center;">ATTACHED PHOTOS (REMOVE)</div>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px;">
-        <% @feedback.images.each do |image_attachment| %>
-  <div style="background: #fff; padding: 5px; border: 1px solid #eee; text-align: center;">
-    <%# 💡 表示するときだけ、モデルの変換メソッド(variant)を呼び出す %>
-    <%= image_tag @feedback.process_image(image_attachment), style: "width: 100px; height: 100px; object-fit: cover; display: block;" %>
+      <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
+        <div style="font-size: 10px; color: #999; margin-bottom: 15px; text-align: center;">ATTACHED PHOTOS (REMOVE)</div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px;">
+          <% @feedback.images.each do |image_attachment| %>
+          <div style="background: #fff; padding: 5px; border: 1px solid #eee; text-align: center;">
+          <%# 💡 表示するときだけ、モデルの変換メソッド(variant)を呼び出す %>
+          <%= image_tag @feedback.process_image(image_attachment), style: "width: 100px; height: 100px; object-fit: cover; display: block;" %>
     
-    <% if @feedback.persisted? %>
-  <%= button_to purge_image_feedback_path(@feedback, image_id: image_attachment.id), 
-      method: :delete, 
-      form: { 
-        data: { turbo_confirm: "この画像を削除しますか？" }, 
-        style: "display: inline;" 
-      },
-      style: "color: #ff4b5c; font-size: 9px; background: none; border: none; cursor: pointer; text-decoration: underline; margin-top: 5px; font-family: inherit; padding: 0;" do %>
-    削除
-  <% end %>
-<% end %>
-  </div>
+          <% if @feedback.persisted? %>
+        <%= button_to purge_image_feedback_path(@feedback, image_id: image_attachment.id), 
+            method: :delete, 
+            form: { 
+            data: { turbo_confirm: "この画像を削除しますか？" }, 
+            style: "display: inline;" 
+          },
+            style: "color: #ff4b5c; font-size: 9px; background: none; border: none; cursor: pointer; text-decoration: underline; margin-top: 5px; font-family: inherit; padding: 0;" do %>
+           削除
+         <% end %>
+     <% end %>
+        </div>
 <% end %>
       </div>
     </div>
   <% end %>
+
     </div>
-</div> 
 
 <%# JavaScript はフォームの外部（コンテナの下）に配置 %>
 <script>
