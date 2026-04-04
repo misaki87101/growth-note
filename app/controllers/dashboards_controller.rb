@@ -12,7 +12,7 @@ class DashboardsController < ApplicationController
   def show
     if current_user.teacher?
       # 先生：全生徒のフィードバックを取得
-      @feedbacks = Feedback.all.with_attached_images.order(lesson_date: :desc)
+      @feedbacks = Feedback.order(lesson_date: :desc)
       @students = User.where(role: :student)
     else
       # 💡 修正：student_id が自分のIDであるものを取得するように変更
