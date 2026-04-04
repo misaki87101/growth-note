@@ -41,27 +41,31 @@
   </div>
 
   <%# --- 5. 画像管理（編集時：既存画像の表示と削除） --- %>
-  <% if @board.images.attached? %>
-    <div style="margin-top: 10px; border: 1px solid #eee; padding: 20px;">
-      <div style="font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 15px;">ATTACHED PHOTOS</div>
-      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 15px;">
-        <% @board.images.each do |image| %>
-          <div style="text-align: center;">
-            <%= image_tag image.variant(resize_to_limit: [300, 300]), style: "width: 100%; height: 80px; object-fit: cover; border: 1px solid #f0f0f0;" %>
-            <%= link_to 'REMOVE', purge_image_board_path(@board, image_id: image.id), 
-                      data: { turbo_method: :delete, turbo_confirm: '削除しますか？' }, 
-                      style: "display: block; background: #f4f4f4; color: #666; font-size: 9px; padding: 4px 0; text-decoration: none; margin-top: 5px;" %>
-          </div>
-        <% end %>
-      </div>
+<% if @board.persisted? && @board.images.attached? %>
+  <div style="margin-top: 10px; border: 1px solid #eee; padding: 20px;">
+    <div style="font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 15px;">ATTACHED PHOTOS</div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 15px;">
+      <% @board.images.each do |image| %>
+        <div style="text-align: center;">
+          <%= image_tag image.variant(resize_to_limit: [300, 300]), style: "width: 100%; height: 80px; object-fit: cover; border: 1px solid #f0f0f0;" %>
+          <%= link_to 'REMOVE', purge_image_board_path(@board, image_id: image.id), 
+                    data: { turbo_method: :delete, turbo_confirm: '削除しますか？' }, 
+                    style: "display: block; background: #f4f4f4; color: #666; font-size: 9px; padding: 4px 0; text-decoration: none; margin-top: 5px;" %>
+        </div>
+      <% end %>
     </div>
-  <% end %>
+  </div>
+<% end %>
 
   <%# --- 6. 画像追加（新規・編集共通） --- %>
-  <div>
-    <%= f.label :images, "ADD PHOTOS", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;" %>
-    <%= f.file_field :images, multiple: true, accept: "image/jpeg,image/png,image/heic,image/heif", style: "font-size: 11px;" %>
-  </div>
+  <div data-controller="image-converter"> <%# 💡 ここで囲む %>
+  <%= f.label :images, "ADD PHOTOS", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;" %>
+  <%= f.file_field :images, 
+      multiple: true, 
+      accept: 'image/*,.heic', 
+      style: "font-size: 11px;",
+      data: { action: "change->image-converter#convert" } %> <%# 💡 アクションを紐付け %>
+</div>
 
   <%# --- 7. 送信ボタン --- %>
   <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">

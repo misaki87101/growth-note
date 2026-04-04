@@ -9,3 +9,6 @@ application.register("feedback-form", FeedbackFormController)
 
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
+
+import ImageConverterController from "./image_converter_controller"
+application.register("image-converter", ImageConverterController)

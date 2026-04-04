@@ -31,10 +31,14 @@
         <%= f.text_area :content, style: "width: 100%; min-height: 120px; padding: 12px; border: 1px solid #eee; font-size: 14px; line-height: 1.6;" %>
       </div>
 
-      <div>
-        <%= f.label :images, "NEW PHOTOS", style: "display: block; font-size: 10px; color: #999; margin-bottom: 10px;" %>
-        <%= f.file_field :images, multiple: true, style: "font-size: 12px;" %>
-      </div>
+      <div data-controller="image-converter"> <%# 💡 ここで囲む %>
+  <%= f.label :images, "ADD PHOTOS", style: "display: block; font-size: 10px; color: #999; margin-bottom: 10px;" %>
+  <%= f.file_field :images, 
+      multiple: true, 
+      accept: 'image/*,.heic', 
+      style: "font-size: 12px;",
+      data: { action: "change->image-converter#convert" } %> <%# 💡 アクションを紐付け %>
+</div>
 
       <%= f.submit homework.new_record? ? "SUBMIT RECORD" : "UPDATE RECORD", style: "width: 100%; background: #1a1a1a; color: #fff; border: none; padding: 18px; font-size: 12px; letter-spacing: 0.2em; cursor: pointer;" %>
     </div>

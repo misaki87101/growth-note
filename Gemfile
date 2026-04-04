@@ -51,6 +51,9 @@ group :development, :test do
   gem 'factory_bot_rails' # テスト用のデータ（インスタンス）を簡単に作るツール
   gem 'faker' # テストデータに使う名前やメールアドレスをランダム生成するツール
   gem 'rspec-rails' # RSpec本体
+
+  gem 'cloudinary'
+  gem 'dotenv-rails', groups: %i[development test]
 end
 
 group :development do
