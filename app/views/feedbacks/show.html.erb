@@ -55,23 +55,7 @@
     </div>
   </div>
 
-  <%# 写真ギャラリー 一旦すべてコメントアウトする%>
-  <% if false %>
-  <% if @feedback.display_images.any? %>
-  <div style="margin-bottom: 60px;">
-    <div style="font-size: 10px; color: #999; letter-spacing: 0.1em; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 20px; text-transform: uppercase;">Photos</div>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-      <%# 💡 display_images をループさせる %>
-      <% @feedback.display_images.each do |processed_image| %>
-        <div style="background: #fff; padding: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-radius: 2px;">
-          <%# 💡 モデル側でリサイズ済みなので、そのまま image_tag に渡す %>
-          <%= image_tag processed_image, style: "width: 100%; height: auto; display: block; object-fit: cover;" %>
-        </div>
-      <% end %>
-    </div>
-  </div>
-<% end %>
-<% end %>
+  <%# 写真ギャラリー もしまた作り直すならここに入れる%>
 
   <%# いいねセクション %>
   <div id="like-section" style="margin-top: 20px; text-align: center;">

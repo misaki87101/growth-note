@@ -118,16 +118,8 @@
     </div>
 
 
-    <%# --- 写真投稿 一旦コメントアウト--- %>
-    <% if false %>
-        <div style="margin-bottom: 25px; padding: 20px; border: 1px dashed #e5e5e5;">
-          <label style="display: block; font-size: 11px; color: #666; margin-bottom: 8px;">
-            <%= current_user.teacher? ? "フィードバック写真" : "宿題の写真を添付" %>
-          </label>
-          <%= f.file_field :images, multiple: true, style: "font-size: 12px;" %>
-        </div>
-    <% end %>
-
+    <%# --- 写真投稿 もしまた作り直すならここに入れる--- %>
+    
     <%# --- 全体フィードバック --- %>
     <div style="margin-top: 25px;">
       <%= f.label :content_label, "◎ 全体フィードバック", style: "display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" %>
@@ -150,20 +142,7 @@
     <%= f.submit f.object.new_record? ? "CREATE FEEDBACK" : "UPDATE FEEDBACK", style: "width: 100%; padding: 16px; background-color: #1a1a1a; color: #fff; border: none; border-radius: 0; font-weight: 300; font-size: 12px; letter-spacing: 0.2em; cursor: pointer; margin-top: 10px;" %>
   <% end %> <%# 💡 保存フォーム終了 %>
 
-        <%# 現在の写真 一旦コメントアウト%>
-        <% if false %>
-    <% if feedback.images.attached? && feedback.persisted? %>
-      <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px;">
-          <% @feedback.images.each do |image_attachment| %>
-            <div style="text-align: center;">
-              <%= image_tag @feedback.process_image(image_attachment), style: "width: 100px; height: 100px; object-fit: cover;" %>
-            </div>
-          <% end %>
-        </div>
-      </div>
-    <% end %>
-  <% end %>
+        <%# 現在の写真 もし作り直すならここに入れる%>
 
   </div>
   

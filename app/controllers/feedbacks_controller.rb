@@ -22,14 +22,6 @@ class FeedbacksController < ApplicationController
     @feedbacks = @feedbacks.where(student_id: params[:student_id])
   end
 
-  def purge_image
-    # Homeworksと同じく、メソッド内でfindする
-    @feedback = Feedback.find(params[:id])
-    image = @feedback.images.find(params[:image_id])
-    image.purge
-    redirect_to edit_feedback_path(@feedback), notice: "画像を削除しました", status: :see_other
-  end
-
   def show
     @feedback = Feedback.find(params[:id])
 
@@ -144,7 +136,6 @@ class FeedbacksController < ApplicationController
     if current_user.teacher?
       params.require(:feedback).permit(
         :student_id, :lesson_date, :content, :rating, :title, :hour, :minute,
-        images: [],
         check_items_attributes: %i[id name result timestamp _destroy]
       )
     else
