@@ -17,7 +17,7 @@ class DashboardsController < ApplicationController
     else
       # 💡 修正：student_id が自分のIDであるものを取得するように変更
       # current_user.feedbacks だと teacher_id を見に行ってしまうため
-      @feedbacks = Feedback.where(student_id: current_user.id).with_attached_images.order(lesson_date: :desc)
+      @feedbacks = Feedback.where(student_id: current_user.id).order(lesson_date: :desc)
     end
   end
 end

@@ -136,6 +136,7 @@ class FeedbacksController < ApplicationController
     if current_user.teacher?
       params.require(:feedback).permit(
         :student_id, :lesson_date, :content, :rating, :title, :hour, :minute,
+        :secret,
         check_items_attributes: %i[id name result timestamp _destroy]
       )
     else

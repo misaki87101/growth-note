@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_04_03_031717) do
+ActiveRecord::Schema[7.2].define(version: 2026_04_04_041413) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -128,6 +128,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_03_031717) do
     t.integer "hour"
     t.integer "minute"
     t.integer "group_id"
+    t.text "secret"
     t.index ["student_id"], name: "index_feedbacks_on_student_id"
     t.index ["teacher_id"], name: "index_feedbacks_on_teacher_id"
   end

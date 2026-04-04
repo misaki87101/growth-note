@@ -119,6 +119,19 @@
 
 
     <%# --- 写真投稿 もしまた作り直すならここに入れる--- %>
+
+    <%# 🔒 講師専用メモ（生徒には絶対に見せない） %>
+<% if current_user.teacher? %>
+  <div style="margin-top: 30px; padding: 20px; background-color: #fff9f9; border: 1px solid #ffe5e5; border-radius: 4px;">
+    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+      <span style="font-size: 14px;">🔒</span>
+      <%= f.label :secret, "講師間共有メモ（生徒には非表示）", style: "font-size: 11px; font-weight: bold; color: #d9534f; text-transform: uppercase; letter-spacing: 0.1em;" %>
+    </div>
+    <%= f.text_area :secret, placeholder: "次回の注意点や、講師間だけで共有したい内容を入力してください...", 
+        style: "width: 100%; height: 120px; padding: 12px; font-size: 12px; border: 1px solid #ffcccc; background-color: #fff; line-height: 1.6;" %>
+    <p style="font-size: 10px; color: #999; margin-top: 8px;">※この欄に入力した内容は、生徒側の画面には一切表示されません。</p>
+  </div>
+<% end %>
     
     <%# --- 全体フィードバック --- %>
     <div style="margin-top: 25px;">
