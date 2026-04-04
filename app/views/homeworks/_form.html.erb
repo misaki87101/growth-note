@@ -51,7 +51,7 @@
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px;">
         <% homework.images.each do |image| %>
           <div style="text-align: center;">
-            <%= image_tag image.variant(resize_to_limit: [200, 200]), style: "width: 100%; height: auto; border: 1px solid #eee;" %>
+            <%= image_tag image, style: "width: 100%; height: auto; border: 1px solid #eee;" %>
             <%= button_to "REMOVE", purge_image_homework_path(homework, image_id: image.id), 
                         method: :delete, 
                         data: { turbo_confirm: "この画像を削除しますか？" }, 
