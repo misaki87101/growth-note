@@ -52,8 +52,6 @@ class FeedbacksController < ApplicationController
     end
   end
 
-  # app/controllers/feedbacks_controller.rb
-
   def edit
     @feedback = Feedback.find(params[:id])
 
@@ -110,7 +108,6 @@ class FeedbacksController < ApplicationController
     @feedback = Feedback.find(params[:id])
 
     # 2. Homeworksと同じく、一括更新の形にシンプルにする
-    # ※ images: [] を feedback_params で許可しているため、これで動きます
     if @feedback.update(feedback_params)
       redirect_to @feedback, notice: "更新しました！"
     else

@@ -6,7 +6,7 @@
     <%= action_name == 'new' ? 'New Feedback' : 'Edit Feedback' %>
   </h2>
   
-  <%= form_with(model: feedback) do |f| %>
+  <%= form_with(model: feedback, data: { turbo: false }) do |f| %>
     <%# エラーメッセージの表示 %>
     <% if @feedback.errors.any? %>
       <div style="color: red; font-size: 12px; margin-bottom: 20px; padding: 10px; border: 1px solid red;">
@@ -163,50 +163,47 @@
   
 <%# JavaScript はフォームの外部（コンテナの下）に配置 %>
 <script>
-  // 1. 'DOMContentLoaded' を 'turbo:load' に変更する
   document.addEventListener('turbo:load', () => {
     const container = document.getElementById('check-items-container');
-    const addButton = document.getElementById('add-item-button');
     const template = document.getElementById('item-template');
     const contentArea = document.getElementById('feedback-content');
 
     // ページ内に必要な要素がない場合は何もしない（エラー防止）
     if (!container || !template) return;
 
-    // --- 項目の追加ボタン ---
-    addButton.onclick = () => {
-  let content = template.innerHTML;
-  // 💡 小数点を含まない「整数」のIDを生成するように修正
-  const newId = new Date().getTime(); 
-  content = content.replace(/NEW_RECORD/g, newId);
-  container.insertAdjacentHTML('beforeend', content);
-};
-
-    // --- イベントデリゲーション（効率的でTurboに強い書き方） ---
+    // --- 全てのクリックイベントをここで一括管理（イベントデリゲーション） ---
     document.onclick = (e) => {
-      // 削除ボタン
+      
+      // 1. 「+」ボタン（項目の追加）
+      if (e.target && e.target.id === 'add-item-button') {
+        let content = template.innerHTML;
+        const newId = new Date().getTime(); 
+        content = content.replace(/NEW_RECORD/g, newId);
+        container.insertAdjacentHTML('beforeend', content);
+      }
+
+      // 2. 削除ボタン（×）
       if (e.target.classList.contains('remove-item-button')) {
         e.target.closest('.check-item-row').remove();
       }
 
-      // 項目別評価の「定型文を挿入」ボタン
+      // 3. 項目別評価の「定型文を挿入」ボタン（オフ・ケア・ジェル）
       const templateBtn = e.target.closest('.template-btn');
-if (templateBtn) {
-  const items = JSON.parse(templateBtn.dataset.items);
-  items.forEach((itemName, index) => { // indexを追加
-    let content = template.innerHTML;
-    // 💡 ここも「整数」になるように修正
-    const newId = new Date().getTime() + index; 
-    content = content.replace(/NEW_RECORD/g, newId);
-    container.insertAdjacentHTML('beforeend', content);
+      if (templateBtn) {
+        const items = JSON.parse(templateBtn.dataset.items);
+        items.forEach((itemName, index) => {
+          let content = template.innerHTML;
+          const newId = new Date().getTime() + index; 
+          content = content.replace(/NEW_RECORD/g, newId);
+          container.insertAdjacentHTML('beforeend', content);
 
-    const lastRow = container.lastElementChild;
-    const input = lastRow.querySelector('[name*="[name]"]');
-    if (input) input.value = itemName;
-  });
-}
+          const lastRow = container.lastElementChild;
+          const input = lastRow.querySelector('[name*="[name]"]');
+          if (input) input.value = itemName;
+        });
+      }
 
-      // 全体フィードバックの「定型文を挿入」ボタン
+      // 4. 全体フィードバックの「定型文を挿入」ボタン
       const phraseBtn = e.target.closest('.phrase-btn');
       if (phraseBtn && contentArea) {
         const text = phraseBtn.dataset.text;

@@ -2,9 +2,9 @@
 <div id="student_select_container">
   <label for="feedback_student_id" style="display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;">生徒 *入力必須</label>
   
-  <%# f.collection_select が使えない場所（部分テンプレート）なので、select_tag 等を使います %>
   <select name="feedback[student_id]" id="feedback_student_id" required="required" style="width: 100%; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff; font-size: 12px; -webkit-appearance: none;">
     <option value="">選択してください</option>
-    <%= options_from_collection_for_select(students, :id, :name) %>
+    <%# 💡 第4引数に @feedback.student_id を追加することで、編集時に名前が自動で入ります %>
+    <%= options_from_collection_for_select(students, :id, :name, @feedback.student_id) %>
   </select>
 </div>

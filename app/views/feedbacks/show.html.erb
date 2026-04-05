@@ -131,7 +131,7 @@
 
   <%# フッターアクション %>
   <div style="margin-top: 60px; border-top: 1px solid #eee; padding-top: 40px; display: flex; justify-content: center; gap: 30px; align-items: center;">
-    <% if current_user.teacher? || @feedback.student_id == current_user.id %>
+    <% if current_user.teacher? %>
       <%= link_to "EDIT", edit_feedback_path(@feedback), style: "font-size: 11px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em; border-bottom: 1px solid #1a1a1a;" %>
       
       <% if current_user.teacher? %>
