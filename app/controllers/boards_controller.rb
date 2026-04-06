@@ -3,7 +3,6 @@
 require 'open-uri'
 
 class BoardsController < ApplicationController
-  # cleanup_users を before_action の対象から外す（重要）
   before_action :set_board, only: %i[show edit update destroy]
 
   def index
@@ -18,14 +17,18 @@ class BoardsController < ApplicationController
   end
 
   def edit
-    @user_groups = current_user.groups # 編集画面でもグループ選択が必要な場合
+    @user_groups = current_user.groups
   end
 
   def create
     @board = current_user.boards.build(board_params.except(:images))
 
-    if params[:image_urls].present?
-      params[:image_urls].each do |url|
+    image_urls = params[:image_urls] ||
+                 params.dig(:board, :image_urls) ||
+                 params.dig(:homework, :image_urls)
+
+    if image_urls.present?
+      image_urls.each do |url|
         file = URI.open(url)
         file_name = File.basename(url)
         @board.images.attach(io: file, filename: file_name)
@@ -34,7 +37,7 @@ class BoardsController < ApplicationController
       end
     end
 
-    # 生徒が投稿した際、グループが未選択なら最初のグループを自動セット
+    # 生徒の投稿時のグループ補完
     if current_user.student? && @board.group_id.blank? && current_user.groups.any?
       @board.group_id = current_user.groups.first.id
     end
@@ -48,11 +51,14 @@ class BoardsController < ApplicationController
   end
 
   def update
-    if params[:image_urls].present?
-      params[:image_urls].each do |url|
+    image_urls = params[:image_urls] ||
+                 params.dig(:board, :image_urls) ||
+                 params.dig(:homework, :image_urls)
+
+    if image_urls.present?
+      image_urls.each do |url|
         file = URI.open(url)
         file_name = File.basename(url)
-        # 💡 ここを @board に修正しました！
         @board.images.attach(io: file, filename: file_name)
       rescue StandardError => e
         logger.error "Image attach error: #{e.message}"
@@ -86,7 +92,6 @@ class BoardsController < ApplicationController
   end
 
   def board_params
-    # category は enum なので、必要に応じて permit に含める
-    params.require(:board).permit(:title, :content, :category, :group_id, images: [])
+    params.require(:board).permit(:title, :content, :category, :group_id, images: [], image_urls: [])
   end
 end

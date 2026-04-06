@@ -9,7 +9,7 @@
   </div>
 
   <%# 💡 ここでコントローラーを開始 %>
-  <div data-controller="image-converter">
+  <div data-controller="image-converter" data-image-converter-model-name-value="homework">
     <%= form_with(model: homework, local: true, data: { turbo: false }) do |f| %>
       <div style="display: flex; flex-direction: column; gap: 30px;">
         

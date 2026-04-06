@@ -1,6 +1,12 @@
 <%# app/views/boards/_form.html.erb %>
 <div style="display: flex; flex-direction: column; gap: 30px;">
   
+  <div data-controller="image-converter" 
+     data-image-converter-model-name-value="board" 
+     style="max-width: 600px; margin: 0 auto;">
+  <%= form_with(model: @board, local: true, data: { turbo: false }) do |f| %>
+    <div style="display: flex; flex-direction: column; gap: 30px;">
+
   <%# --- 1. グループ選択（新規作成時のみ、または先生のみ） --- %>
   <% if @board.new_record? %>
     <% if current_user.teacher? %>
@@ -58,26 +64,28 @@
 <% end %>
 
   <%# --- 6. 画像追加（新規・編集共通） --- %>
-  <div data-controller="image-converter"> <%# 💡 ここで囲む %>
-  <%= f.label :images, "ADD PHOTOS", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;" %>
-  <%= f.file_field :images, 
-      multiple: true, 
-      accept: 'image/*,.heic', 
-      name: nil, 
-      data: { 
-        image_converter_target: "input", 
-        action: "change->image-converter#convert" 
-      } %>
+<div>
+        <%= f.label :images, "ADD PHOTOS", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 10px;" %>
+        <%= f.file_field :images, 
+            multiple: true, 
+            accept: 'image/*,.heic', 
+            name: nil, # 💡 Railsの標準アップロードを無効化
+            data: { 
+              image_converter_target: "input", 
+              action: "change->image-converter#convert" 
+            } %>
 
-  <div data-image-converter-target="status" style="display:none; font-size: 11px; margin-top: 5px;"></div>
-  <div data-image-converter-target="preview" style="margin-top: 10px; display: flex; flex-wrap: wrap;"></div>
-</div>
+        <div data-image-converter-target="status" style="display:none; font-size: 11px; margin-top: 5px; color: #666;"></div>
+        <div data-image-converter-target="preview" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 10px;"></div>
+      </div>
 
   <%# --- 7. 送信ボタン --- %>
   <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
-    <%= f.submit (@board.new_record? ? "POST TO BOARD" : "UPDATE POST"), 
-        style: "background: #1a1a1a; color: #fff; border: none; padding: 18px; min-height: 55px; font-size: 13px; letter-spacing: 0.2em; cursor: pointer; width: 100%;" %>
-    <%= link_to "CANCEL", (@board.new_record? ? boards_path : board_path(@board)), 
-        style: "text-align: center; text-decoration: none; color: #999; font-size: 11px; letter-spacing: 0.1em; padding: 10px;" %>
-  </div>
+        <%= f.submit (@board.new_record? ? "POST TO BOARD" : "UPDATE POST"), 
+            style: "background: #1a1a1a; color: #fff; border: none; padding: 18px; min-height: 55px; font-size: 13px; letter-spacing: 0.2em; cursor: pointer; width: 100%;" %>
+        <%= link_to "CANCEL", (@board.new_record? ? boards_path : board_path(@board)), 
+            style: "text-align: center; text-decoration: none; color: #999; font-size: 11px; letter-spacing: 0.1em; padding: 10px;" %>
+      </div>
+    </div>
+  <% end %>
 </div>
