@@ -47,6 +47,8 @@ class FeedbacksController < ApplicationController
     @group = Group.find(params[:group_id])
     @students = @group.users.where(role: :student)
 
+    @feedback = Feedback.new
+
     respond_to do |format|
       format.turbo_stream # select_group.turbo_stream.erb を探しにいく
     end
