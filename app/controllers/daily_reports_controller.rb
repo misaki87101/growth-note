@@ -95,39 +95,36 @@ class DailyReportsController < ApplicationController
     redirect_to daily_reports_path, notice: "日報を削除しました。"
   end
 
-  
   def analysis
-  # 1. 講師が担当グループを持っていない、または生徒がグループに所属していない場合のチェック
-  @group = current_user.groups.first
+    # 1. 講師が担当グループを持っていない、または生徒がグループに所属していない場合のチェック
+    @group = current_user.groups.first
 
-  if @group.nil?
-    redirect_to mypage_path, alert: "所属しているクラスがないため、分析ページを閲覧できません"
-    return # 処理をここで終了させる
-  end
-
-  # --- 以降、@group が存在することを前提とした処理 ---
-  @display_month = params[:month].present? ? Date.parse("#{params[:month]}-01") : Date.current.beginning_of_month
-  range = @display_month..@display_month.end_of_month
-  
-  # group ではなく @group を使用
-  @reports = @group.daily_reports.where(date: range)
-  @monthly_note = @group.monthly_notes.find_or_initialize_by(month: @display_month)
-
-  # --- 来店動機の集計ロジック ---
-  @referral_summary = Hash.new(0)
-  @reports.each do |report|
-    next if report.referral_data.blank?
-    report.referral_data.each do |source, count|
-      @referral_summary[source] += count.to_i
+    if @group.nil?
+      redirect_to mypage_path, alert: "所属していないクラスのため、分析ページを閲覧できません"
+      return # 処理をここで終了させる
     end
-  end
-end
 
-    # ----------------------------------------------
+    # --- 以降、@group が存在することを前提とした処理 ---
+    @display_month = params[:month].present? ? Date.parse("#{params[:month]}-01") : Date.current.beginning_of_month
+    range = @display_month..@display_month.end_of_month
+
+    # group ではなく @group を使用
+    @reports = @group.daily_reports.where(date: range)
+    @monthly_note = @group.monthly_notes.find_or_initialize_by(month: @display_month)
+
+    # --- 来店動機の集計ロジック ---
+    @referral_summary = Hash.new(0)
+    @reports.each do |report|
+      next if report.referral_data.blank?
+
+      report.referral_data.each do |source, count|
+        @referral_summary[source] += count.to_i
+      end
+    end
 
     # --- 1年前のデータを取得 ---
     last_year_range = (@display_month - 1.year)..(@display_month - 1.year).end_of_month
-    @last_year_reports = group.daily_reports.where(date: last_year_range)
+    @last_year_reports = @group.daily_reports.where(date: last_year_range)
 
     # スタッフ別集計
     @staff_summary = StaffSale.where(daily_report_id: @reports.pluck(:id))
