@@ -8,7 +8,7 @@
     <h1 style="font-size: 20px; font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase;">Homework Record</h1>
   </div>
 
-  <%# 💡 ここでコントローラーを開始 %>
+  <%# 💡 form_with の外側全体を囲むようにします %>
   <div data-controller="image-converter" data-image-converter-model-name-value="homework">
     <%= form_with(model: homework, local: true, data: { turbo: false }) do |f| %>
       <div style="display: flex; flex-direction: column; gap: 30px;">
@@ -39,16 +39,16 @@
 
         <%# 4. 画像アップロード部分 %>
         <div>
-          <%= f.label :images, "ADD PHOTOS", for: "homework_images_input", style: "display: block; font-size: 10px; color: #999; margin-bottom: 10px;" %>
+          <%= f.label :images, "ADD PHOTOS", style: "display: block; font-size: 10px; color: #999; margin-bottom: 10px;" %>
           <%= f.file_field :images, 
-              id: "homework_images_input",
               multiple: true, 
               accept: 'image/*,.heic', 
-              name: nil, # 💡 ここをコメントアウトせず有効にします（JS側でURLを送るため）
+              name: nil, 
               data: { 
                 image_converter_target: "input", 
                 action: "change->image-converter#convert" 
               } %>
+          <%# JSからのメッセージとプレビューを表示する場所 %>
           <div data-image-converter-target="status" style="display:none; font-size: 11px; margin-top: 5px; color: #666;"></div>
           <div data-image-converter-target="preview" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 10px;"></div>
         </div>
@@ -58,7 +58,7 @@
             style: "width: 100%; background: #1a1a1a; color: #fff; border: none; padding: 18px; font-size: 12px; letter-spacing: 0.2em; cursor: pointer;" %>
       </div>
     <% end %>
-  </div> <%# 💡 data-controller の閉じタグ %>
+  </div> <%# 💡 data-controller の閉じタグを form_with の直後に %>
 
   <%# --- 既存画像の表示（編集時のみ） --- %>
   <% if homework.images.attached? && homework.persisted? %>
