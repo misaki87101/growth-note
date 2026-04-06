@@ -8,43 +8,59 @@
     <h1 style="font-size: 20px; font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase;">Homework Record</h1>
   </div>
 
-  <%= form_with(model: homework, local: true) do |f| %>
-    <div style="display: flex; flex-direction: column; gap: 30px;">
-      <div>
-        <%= f.label :lesson_date, "DATE", style: "display: block; font-size: 10px; color: #999; margin-bottom: 10px;" %>
-        <%= f.date_field :lesson_date, style: "width: 100%; padding: 12px; border: 1px solid #eee; font-size: 14px;" %>
-      </div>
-
-      <div style="display: flex; gap: 20px;">
-        <div style="flex: 1;">
-          <%= f.label :hour, "HOUR", style: "display: block; font-size: 10px; color: #999; margin-bottom: 10px;" %>
-          <%= f.number_field :hour, style: "width: 100%; padding: 12px; border: 1px solid #eee; font-size: 14px;" %>
+  <%# 💡 ここでコントローラーを開始 %>
+  <div data-controller="image-converter">
+    <%= form_with(model: homework, local: true, data: { turbo: false }) do |f| %>
+      <div style="display: flex; flex-direction: column; gap: 30px;">
+        
+        <%# 1. 日付 %>
+        <div>
+          <%= f.label :lesson_date, "DATE", style: "display: block; font-size: 10px; color: #999; margin-bottom: 10px;" %>
+          <%= f.date_field :lesson_date, style: "width: 100%; padding: 12px; border: 1px solid #eee; font-size: 14px;" %>
         </div>
-        <div style="flex: 1;">
-          <%= f.label :minute, "MINUTE", style: "display: block; font-size: 10px; color: #999; margin-bottom: 10px;" %>
-          <%= f.number_field :minute, style: "width: 100%; padding: 12px; border: 1px solid #eee; font-size: 14px;" %>
+
+        <%# 2. 時間 %>
+        <div style="display: flex; gap: 20px;">
+          <div style="flex: 1;">
+            <%= f.label :hour, "HOUR", style: "display: block; font-size: 10px; color: #999; margin-bottom: 10px;" %>
+            <%= f.number_field :hour, style: "width: 100%; padding: 12px; border: 1px solid #eee; font-size: 14px;" %>
+          </div>
+          <div style="flex: 1;">
+            <%= f.label :minute, "MINUTE", style: "display: block; font-size: 10px; color: #999; margin-bottom: 10px;" %>
+            <%= f.number_field :minute, style: "width: 100%; padding: 12px; border: 1px solid #eee; font-size: 14px;" %>
+          </div>
         </div>
+
+        <%# 3. 内容 %>
+        <div>
+          <%= f.label :content, "NOTE / MESSAGE", style: "display: block; font-size: 10px; color: #999; margin-bottom: 10px;" %>
+          <%= f.text_area :content, style: "width: 100%; min-height: 120px; padding: 12px; border: 1px solid #eee; font-size: 14px; line-height: 1.6;" %>
+        </div>
+
+        <%# 4. 画像アップロード部分 %>
+        <div>
+          <%= f.label :images, "ADD PHOTOS", for: "homework_images_input", style: "display: block; font-size: 10px; color: #999; margin-bottom: 10px;" %>
+          <%= f.file_field :images, 
+              id: "homework_images_input",
+              multiple: true, 
+              accept: 'image/*,.heic', 
+              name: nil, # 💡 ここをコメントアウトせず有効にします（JS側でURLを送るため）
+              data: { 
+                image_converter_target: "input", 
+                action: "change->image-converter#convert" 
+              } %>
+          <div data-image-converter-target="status" style="display:none; font-size: 11px; margin-top: 5px; color: #666;"></div>
+          <div data-image-converter-target="preview" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 10px;"></div>
+        </div>
+
+        <%# 5. 送信ボタン %>
+        <%= f.submit homework.new_record? ? "SUBMIT RECORD" : "UPDATE RECORD", 
+            style: "width: 100%; background: #1a1a1a; color: #fff; border: none; padding: 18px; font-size: 12px; letter-spacing: 0.2em; cursor: pointer;" %>
       </div>
+    <% end %>
+  </div> <%# 💡 data-controller の閉じタグ %>
 
-      <div>
-        <%= f.label :content, "NOTE / MESSAGE", style: "display: block; font-size: 10px; color: #999; margin-bottom: 10px;" %>
-        <%= f.text_area :content, style: "width: 100%; min-height: 120px; padding: 12px; border: 1px solid #eee; font-size: 14px; line-height: 1.6;" %>
-      </div>
-
-      <div data-controller="image-converter"> <%# 💡 ここで囲む %>
-  <%= f.label :images, "ADD PHOTOS", style: "display: block; font-size: 10px; color: #999; margin-bottom: 10px;" %>
-  <%= f.file_field :images, 
-      multiple: true, 
-      accept: 'image/*,.heic', 
-      style: "font-size: 12px;",
-      data: { action: "change->image-converter#convert" } %> <%# 💡 アクションを紐付け %>
-</div>
-
-      <%= f.submit homework.new_record? ? "SUBMIT RECORD" : "UPDATE RECORD", style: "width: 100%; background: #1a1a1a; color: #fff; border: none; padding: 18px; font-size: 12px; letter-spacing: 0.2em; cursor: pointer;" %>
-    </div>
-  <% end %>
-
-  <%# 🌟 画像削除エリア（編集時のみ表示・メインフォームの外） 🌟 %>
+  <%# --- 既存画像の表示（編集時のみ） --- %>
   <% if homework.images.attached? && homework.persisted? %>
     <div style="margin-top: 40px; padding: 20px; border: 1px solid #eee;">
       <div style="font-size: 10px; color: #999; margin-bottom: 15px; text-align: center;">ATTACHED PHOTOS (REMOVE)</div>

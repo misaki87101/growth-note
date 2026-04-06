@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'open-uri'
+
 class BoardsController < ApplicationController
   # cleanup_users を before_action の対象から外す（重要）
   before_action :set_board, only: %i[show edit update destroy]
@@ -20,26 +22,47 @@ class BoardsController < ApplicationController
   end
 
   def create
-    @board = current_user.boards.build(board_params)
+    @board = current_user.boards.build(board_params.except(:images))
 
+    if params[:image_urls].present?
+      params[:image_urls].each do |url|
+        file = URI.open(url)
+        file_name = File.basename(url)
+        @board.images.attach(io: file, filename: file_name)
+      rescue StandardError => e
+        logger.error "Image attach error: #{e.message}"
+      end
+    end
+
+    # 生徒が投稿した際、グループが未選択なら最初のグループを自動セット
     if current_user.student? && @board.group_id.blank? && current_user.groups.any?
       @board.group_id = current_user.groups.first.id
     end
 
     if @board.save
-      redirect_to @board, notice: "投稿しました"
+      redirect_to @board, notice: "掲示板を投稿しました"
     else
-      # エラー時は hidden_field などが消えないよう、ここでもセットしておくと安心
       @user_groups = current_user.groups
       render :new, status: :unprocessable_content
     end
   end
 
   def update
-    if @board.update(board_params)
+    if params[:image_urls].present?
+      params[:image_urls].each do |url|
+        file = URI.open(url)
+        file_name = File.basename(url)
+        # 💡 ここを @board に修正しました！
+        @board.images.attach(io: file, filename: file_name)
+      rescue StandardError => e
+        logger.error "Image attach error: #{e.message}"
+      end
+    end
+
+    if @board.update(board_params.except(:images))
       redirect_to board_path(@board), notice: "掲示板を更新しました"
     else
-      @user_groups = current_user.groups # バリデーションエラー時の再表示用
+      @user_groups = current_user.groups
       render :edit, status: :unprocessable_content
     end
   end

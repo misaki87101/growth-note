@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
+require 'open-uri'
+
 class HomeworksController < ApplicationController
-  # ここで指定しているアクションが下に全部存在する必要があります！
   before_action :set_homework, only: %i[show edit update destroy]
 
   def index
@@ -35,18 +36,40 @@ class HomeworksController < ApplicationController
   end
 
   def create
-    @homework = current_user.homeworks.build(homework_params)
+    # 1. パラメータから直接URLを取り出す（homework_paramsを通さないのが確実）
+    image_urls = params.dig(:homework, :image_urls)
+
+    # 2. 本体を作成
+    @homework = current_user.homeworks.new(homework_params.except(:images, :image_urls))
+
+    # 3. URLがあればアタッチ
+    if image_urls.present?
+      image_urls.each do |url|
+        file = URI.open(url)
+        @homework.images.attach(io: file, filename: File.basename(url))
+      end
+    end
+
     if @homework.save
-      redirect_to homeworks_path, notice: "宿題を提出しました！"
+      redirect_to @homework, notice: '宿題を投稿しました！'
     else
       render :new, status: :unprocessable_content
     end
   end
 
   def update
-    if @homework.update(homework_params)
+    if params.dig(:homework, :image_urls).present?
+      params[:homework][:image_urls].each do |url|
+        file = URI.open(url)
+        @homework.images.attach(io: file, filename: File.basename(url))
+      end
+    end
+
+    # 💡 images パラメータを除外してアップデート
+    if @homework.update(homework_params.except(:images, :image_urls))
       redirect_to homework_path(@homework), notice: "宿題を更新しました"
     else
+      # 💡 status を :unprocessable_entity (422) に修正
       render :edit, status: :unprocessable_content
     end
   end
@@ -69,6 +92,6 @@ class HomeworksController < ApplicationController
   end
 
   def homework_params
-    params.require(:homework).permit(:lesson_date, :content, :hour, :minute, :feedback_id, images: [])
+    params.require(:homework).permit(:lesson_date, :content, :hour, :minute, :feedback_id, image_urls: [])
   end
 end

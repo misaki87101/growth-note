@@ -63,8 +63,14 @@
   <%= f.file_field :images, 
       multiple: true, 
       accept: 'image/*,.heic', 
-      style: "font-size: 11px;",
-      data: { action: "change->image-converter#convert" } %> <%# 💡 アクションを紐付け %>
+      name: nil, 
+      data: { 
+        image_converter_target: "input", 
+        action: "change->image-converter#convert" 
+      } %>
+
+  <div data-image-converter-target="status" style="display:none; font-size: 11px; margin-top: 5px;"></div>
+  <div data-image-converter-target="preview" style="margin-top: 10px; display: flex; flex-wrap: wrap;"></div>
 </div>
 
   <%# --- 7. 送信ボタン --- %>

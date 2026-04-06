@@ -32,8 +32,11 @@ Rails.application.routes.draw do
     member do
       delete :purge_image
     end
-    resources :homeworks, except: [:destroy] # 宿題の管理（生徒が提出、講師が確認）
+    resources :likes, only: [:create, :destroy], module: :homeworks
+    resources :comments, module: :homeworks
   end
+
+
 
   # 講師用：フィードバックの管理
   # 💡 resources :feedbacks は一つにまとめます
@@ -79,13 +82,6 @@ end
   resources :group_users, only: [:update, :destroy] do
   get :pending, on: :collection # 承認待ち一覧用
   end
-
-resources :homeworks do
-  # scopeモジュールを使うことで、URLは /homeworks/:id/likes のまま、
-  # 使うコントローラーを Homeworks::LikesController に指定できます
-  resources :likes, only: [:create, :destroy], module: :homeworks
-  resources :comments, module: :homeworks
-end
 
   # 生徒用：マイページ
   get 'mypage', to: 'dashboards#show'
