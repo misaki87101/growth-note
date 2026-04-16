@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# これはFeedback / Homework のコメント管理のコントローラー
+
 class CommentsController < ApplicationController
   before_action :logged_in_user
 
@@ -11,24 +13,22 @@ class CommentsController < ApplicationController
   end
 
   def create
-    # どっちのIDが送られてきたかによって、親（@commentable）を切り替える
-    if params[:feedback_id]
-      @commentable = Feedback.find(params[:feedback_id])
-      redirect_target = @commentable
-    elsif params[:board_id]
-      @commentable = Board.find(params[:board_id])
-      # 掲示板の場合は詳細画面(show)などに戻る設定に合わせてください
-      redirect_target = @commentable
-    end
+    # 1. どの親（Feedback / Homework / Board）に対するコメントか特定する
+    @commentable = if params[:feedback_id]
+                     Feedback.find(params[:feedback_id])
+                   elsif params[:homework_id]
+                     Homework.find(params[:homework_id])
+                   end
 
+    # 2. 親に紐づくコメントを作成
     @comment = @commentable.comments.build(comment_params)
     @comment.user = current_user
 
+    # 3. 保存処理
     if @comment.save
-      flash[:success] = "コメントを投稿しました"
-      redirect_to redirect_target
+      redirect_to @commentable, notice: "コメントを投稿しました"
     else
-      # 失敗時は元の画面へ
+      # 失敗時は元の画面に戻る
       redirect_back_or_to(root_path, alert: "コメントの投稿に失敗しました")
     end
   end

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# これは BoardsController のコメント管理用コントローラー!
+
 class BoardCommentsController < ApplicationController
   def create
     @board = Board.find(params[:board_id])

@@ -24,6 +24,7 @@ class FeedbacksController < ApplicationController
 
   def show
     @feedback = Feedback.find(params[:id])
+    @members = User.where(id: [@feedback.teacher_id, @feedback.student_id])
 
     # 【セキュリティ】自分に関係ないフィードバックをURL手打ちで見られないようにする
     return if current_user.teacher? || @feedback.student_id == current_user.id
@@ -78,6 +79,7 @@ class FeedbacksController < ApplicationController
 
   def create
     @feedback = Feedback.new(feedback_params)
+    @feedback.teacher = current_user
 
     if current_user.teacher?
       @feedback.teacher_id = current_user.id

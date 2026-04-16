@@ -34,6 +34,8 @@ class User < ApplicationRecord
   has_many :board_likes, dependent: :destroy
   has_many :group_users, dependent: :destroy
   has_many :groups, through: :group_users, dependent: :destroy
+  # 自分宛の通知
+  has_many :notifications, foreign_key: :recipient_id, dependent: :destroy
   # 先生が担当している全クラスの「承認済み」生徒一覧を直接取得できるようにする
   has_many :students, -> { where(group_users: { accepted: true }, role: :student) },
            through: :groups, source: :users, dependent: :destroy

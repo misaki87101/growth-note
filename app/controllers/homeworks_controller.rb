@@ -20,7 +20,10 @@ class HomeworksController < ApplicationController
     end
   end
 
-  def show; end
+  def show
+    @homework = Homework.find(params[:id])
+    @members = User.where(id: [@homework.user_id, current_user.id]).distinct
+  end
 
   def new
     @homework = current_user.homeworks.build

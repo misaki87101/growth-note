@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
 
   helper_method :current_user, :logged_in?
 
-  # 💡 これを追加！ ユーザーをログイン状態にする魔法です
+  # ユーザーをログイン状態にする魔法
   def log_in(user)
     session[:user_id] = user.id
   end
