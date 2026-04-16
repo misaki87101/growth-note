@@ -53,6 +53,9 @@
     <div style="font-size: 15px; line-height: 2; color: #444; letter-spacing: 0.03em; white-space: pre-wrap;">
       <%= @feedback.content.present? ? @feedback.content : "No message provided." %>
     </div>
+    <div style="text-align: right; margin-top: 20px; font-size: 11px; color: #999; letter-spacing: 0.1em;">
+    SENT BY: <span style="color: #1a1a1a; font-weight: bold;"><%= @feedback.teacher&.name || "Unknown Instructor" %></span>
+  </div>
   </div>
 
   <%# 🔒 講師専用メモの表示 %>

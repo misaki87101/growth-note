@@ -71,6 +71,9 @@
               <div style="color: #666; font-size: 13px; line-height: 1.8; letter-spacing: 0.02em;">
                 <%= feedback.content.truncate(60) %>
               </div>
+              <div style="font-size: 9px; color: #aaa; letter-spacing: 0.1em; text-transform: uppercase;">
+                BY: <%= feedback.teacher&.name || "UNKNOWN" %>
+              </div>
             </div>
 
             <%# 矢印（右側） %>

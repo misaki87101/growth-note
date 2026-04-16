@@ -91,7 +91,7 @@
             </div>
             <%# 生徒名 %>
             <div style="font-size: 10px; color: #999; letter-spacing: 0.05em; text-transform: uppercase;">
-              <%= feedback.student.name %>
+              INSTRUCTOR: <%= feedback.teacher&.name || "UNKNOWN" %>
             </div>
           </div>
 
