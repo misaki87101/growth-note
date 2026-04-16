@@ -37,7 +37,19 @@ class CommentMailer < ApplicationMailer
 
     mail(
       to: @user.email,
-      subject: "【Growth Note】掲示板に新しい投稿があります：#{@board.title}"
+      subject: "【Growth Note】掲示板に新しい投稿があります"
+    )
+  end
+
+  # 宿題提出通知用
+  def homework_submitted_email
+    @user = params[:user]     # 送信先（先生）
+    @homework = params[:homework]
+    @student = @homework.user # 提出した生徒
+
+    mail(
+      to: @user.email,
+      subject: "【Growth Note】#{@student.name}さんが宿題を提出しました"
     )
   end
 end
