@@ -1,0 +1,10 @@
+<%# app/views/comment_mailer/feedback_created_email.html.erb %>
+<h2><%= @student.name %> さん</h2>
+<p><%= @teacher.name %> 先生から、新しいフィードバックが届きました！</p>
+
+<div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px;">
+  <p><strong>レッスン日:</strong> <%= @feedback.lesson_date %></p>
+  <p><strong>タイトル:</strong> <%= @feedback.title %></p>
+</div>
+
+<p>内容はGrowthnoteにログインして確認してください。</p>

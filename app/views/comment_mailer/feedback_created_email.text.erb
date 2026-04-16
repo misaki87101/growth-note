@@ -1,0 +1,11 @@
+<%# app/views/comment_mailer/feedback_created_email.text.erb %>
+<%= @student.name %> さん
+
+<%= @teacher.name %> 先生から、新しいフィードバックが届きました！
+
+----------------------------------------
+レッスン日: <%= @feedback.lesson_date %>
+タイトル: <%= @feedback.title %>
+----------------------------------------
+
+内容はGrowthnoteにログインして確認してください。

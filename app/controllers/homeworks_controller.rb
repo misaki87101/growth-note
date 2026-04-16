@@ -22,7 +22,10 @@ class HomeworksController < ApplicationController
 
   def show
     @homework = Homework.find(params[:id])
-    @members = User.where(id: [@homework.user_id, current_user.id]).distinct
+
+    # その宿題の生徒(student_id) と 講師全員(role: :teacher) を取得
+    teacher_ids = User.where(role: :teacher).ids
+    @members = User.where(id: [@homework.user_id] + teacher_ids).distinct
   end
 
   def new

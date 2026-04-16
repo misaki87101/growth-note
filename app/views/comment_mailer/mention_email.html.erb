@@ -1,0 +1,10 @@
+<%# app/views/comment_mailer/mention_email.html.erb %>
+
+<h2><%= @user.name %> さん</h2>
+<p><%= @actor.name %> さんからコメントが届きました。</p>
+
+<hr>
+<p><%= simple_format(@comment.content) %></p>
+<hr>
+
+<p>詳細はGrowthnoteにログインして確認してください。</p>
