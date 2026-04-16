@@ -12,13 +12,13 @@ class FeedbacksController < ApplicationController
       my_group_ids = current_user.groups.ids
 
       # 💡 そのグループに所属している生徒へのフィードバックだけに絞る
-    @feedbacks = Feedback.where(group_id: my_group_ids).order(lesson_date: :desc)
-    
-    # 💡 絞り込み用の生徒リストも「自分のグループの生徒」だけにする
-    @students = User.where(role: :student)
-                    .joins(:group_users)
-                    .where(group_users: { group_id: my_group_ids, accepted: true })
-                    .distinct
+      @feedbacks = Feedback.where(group_id: my_group_ids).order(lesson_date: :desc)
+
+      # 💡 絞り込み用の生徒リストも「自分のグループの生徒」だけにする
+      @students = User.where(role: :student)
+                      .joins(:group_users)
+                      .where(group_users: { group_id: my_group_ids, accepted: true })
+                      .distinct
     else
       # 生徒：自分へのフィードバックだけ
       @feedbacks = Feedback.where(student_id: current_user.id).order(lesson_date: :desc)
@@ -26,9 +26,10 @@ class FeedbacksController < ApplicationController
     end
 
     # 先生用の絞り込み
-    if params[:student_id].present?
-      @feedbacks = @feedbacks.where(student_id: params[:student_id])
-    end
+    return if params[:student_id].blank?
+
+    @feedbacks = @feedbacks.where(student_id: params[:student_id])
+  end
 
   def show
     @feedback = Feedback.find(params[:id])
