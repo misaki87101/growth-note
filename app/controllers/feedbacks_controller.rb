@@ -8,28 +8,41 @@ class FeedbacksController < ApplicationController
   def index
     if current_user.teacher?
       # 先生：担当生徒の分
-      @feedbacks = Feedback.where(student_id: current_user.students.ids).order(lesson_date: :desc)
-      @students = current_user.students
+      # 💡 自分が所属するグループのIDをすべて取得
+      my_group_ids = current_user.groups.ids
+
+      # 💡 そのグループに所属している生徒へのフィードバックだけに絞る
+    @feedbacks = Feedback.where(group_id: my_group_ids).order(lesson_date: :desc)
+    
+    # 💡 絞り込み用の生徒リストも「自分のグループの生徒」だけにする
+    @students = User.where(role: :student)
+                    .joins(:group_users)
+                    .where(group_users: { group_id: my_group_ids, accepted: true })
+                    .distinct
     else
-      # 💡 修正：group_id の条件を削除し、シンプルに「自分宛」だけにする
+      # 生徒：自分へのフィードバックだけ
       @feedbacks = Feedback.where(student_id: current_user.id).order(lesson_date: :desc)
       @students = []
     end
 
-    # 先生用の絞り込み（ここはそのまま）
-    return if params[:student_id].blank?
-
-    @feedbacks = @feedbacks.where(student_id: params[:student_id])
-  end
+    # 先生用の絞り込み
+    if params[:student_id].present?
+      @feedbacks = @feedbacks.where(student_id: params[:student_id])
+    end
 
   def show
     @feedback = Feedback.find(params[:id])
     @members = User.where(id: [@feedback.teacher_id, @feedback.student_id])
 
-    # 【セキュリティ】自分に関係ないフィードバックをURL手打ちで見られないようにする
-    return if current_user.teacher? || @feedback.student_id == current_user.id
-
-    redirect_to mypage_path, alert: "閲覧権限がありません"
+    # 💡 先生でも「自分のグループのフィードバック」じゃなければ追い出す
+    if current_user.teacher?
+      unless current_user.groups.exists?(id: @feedback.group_id)
+        redirect_to feedbacks_path, alert: "閲覧権限がありません" and return
+      end
+    elsif @feedback.student_id != current_user.id
+      # 生徒が自分宛て以外のものを見ようとした場合
+      redirect_to mypage_path, alert: "閲覧権限がありません" and return
+    end
   end
 
   def new

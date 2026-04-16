@@ -26,6 +26,16 @@ class CommentsController < ApplicationController
 
     # 3. 保存処理
     if @comment.save
+      mentioned_names = @comment.content.scan(/@([^\s　、。！？!?,]+)/).flatten
+      mentioned_users = User.where(name: mentioned_names)
+
+      # 💡 2. 特定されたユーザーにメールを送信する (Step 4の実装内容)
+      mentioned_users.each do |user|
+        next if user == current_user # 自分への通知はスキップ
+
+        CommentMailer.with(user: user, comment: @comment).mention_email.deliver_later
+      end
+
       redirect_to @commentable, notice: "コメントを投稿しました"
     else
       # 失敗時は元の画面に戻る
