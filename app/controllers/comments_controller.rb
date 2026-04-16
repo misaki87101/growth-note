@@ -13,7 +13,7 @@ class CommentsController < ApplicationController
   end
 
   def create
-    # 1. どの親（Feedback / Homework / Board）に対するコメントか特定する
+    # 1. どの親（Feedback / Homework ）に対するコメントか特定する
     @commentable = if params[:feedback_id]
                      Feedback.find(params[:feedback_id])
                    elsif params[:homework_id]

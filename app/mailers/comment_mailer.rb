@@ -28,4 +28,16 @@ class CommentMailer < ApplicationMailer
       subject: "【Growth Note】新しいフィードバックが届きました"
     )
   end
+
+  # 掲示板投稿用
+  def board_created_email
+    @user = params[:user]     # 送信先（メンバー一人ひとり）
+    @board = params[:board]   # 掲示板の投稿内容
+    @sender = @board.user     # 投稿した人
+
+    mail(
+      to: @user.email,
+      subject: "【Growth Note】掲示板に新しい投稿があります：#{@board.title}"
+    )
+  end
 end

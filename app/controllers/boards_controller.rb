@@ -9,7 +9,11 @@ class BoardsController < ApplicationController
     @boards = Board.where(group_id: current_user.groups.pluck(:id)).order(created_at: :desc)
   end
 
-  def show; end
+  def show
+    @board = Board.find(params[:id])
+    # 掲示板が所属するグループのユーザー全員を取得（プルダウン用）
+    @members = @board.group.users.distinct
+  end
 
   def new
     @board = Board.new
@@ -43,6 +47,12 @@ class BoardsController < ApplicationController
     end
 
     if @board.save
+      members = @board.group.users.where.not(id: current_user.id)
+
+      members.each do |member|
+        CommentMailer.with(user: member, board: @board).board_created_email.deliver_later
+      end
+
       redirect_to @board, notice: "掲示板を投稿しました"
     else
       @user_groups = current_user.groups

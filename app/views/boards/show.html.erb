@@ -63,12 +63,31 @@
     </div>
 
     <%= form_with(model: [@board, BoardComment.new], local: true) do |f| %>
-      <div>
-        <%= f.text_area :content, rows: 3, style: "width: 100%; padding: 12px; border: 1px solid #eee; font-size: 13px; border-radius: 0; outline: none; margin-bottom: 10px;", placeholder: "Add a comment..." %>
+      <%# 💡 メンション選択エリアを追加 %>
+      <div style="margin-bottom: 10px; display: flex; gap: 8px; align-items: center;">
+      <span style="font-size: 10px; color: #999;">メンション:</span>
+        <%= select_tag :mention_member, 
+            options_from_collection_for_select(@members, :name, :name), 
+            include_blank: "相手を選択", 
+            id: "comment-mention-select",
+            style: "font-size: 11px; padding: 5px; border: 1px solid #eee; background: #fff; outline: none; color: #666;" %>
+    
+        <button type="button" id="add-comment-mention-btn" 
+                style="background: #eee; border: none; padding: 5px 10px; font-size: 10px; cursor: pointer; color: #1a1a1a; letter-spacing: 0.05em;">
+          追加
+        </button>
       </div>
-      <%= f.submit "SEND COMMENT", style: "background: #1a1a1a; color: #fff; border: none; padding: 10px 25px; font-size: 10px; letter-spacing: 0.1em; cursor: pointer;" %>
-    <% end %>
+
+  <div>
+    <%# 💡 JavaScriptで操作するために id: "comment-textarea" を追加 %>
+    <%= f.text_area :content, 
+        id: "comment-textarea",
+        rows: 3, 
+        style: "width: 100%; padding: 12px; border: 1px solid #eee; font-size: 13px; border-radius: 0; outline: none; margin-bottom: 10px;", 
+        placeholder: "コメントを入力..." %>
   </div>
+  <%= f.submit "SEND COMMENT", style: "background: #1a1a1a; color: #fff; border: none; padding: 10px 25px; font-size: 10px; letter-spacing: 0.1em; cursor: pointer;" %>
+<% end %>
 
   <div style="text-align: center; margin-top: 40px;">
     <%= link_to "BACK TO LIST", boards_path, style: "font-size: 10px; color: #999; text-decoration: none; letter-spacing: 0.1em;" %>
@@ -78,3 +97,29 @@
     <% end %>
   </div>
 </div>
+
+
+<script>
+document.addEventListener('turbo:load', () => {
+  const addBtn = document.getElementById('add-comment-mention-btn');
+  const select = document.getElementById('comment-mention-select');
+  const textarea = document.getElementById('comment-textarea');
+
+  if (addBtn && select && textarea) {
+    addBtn.addEventListener('click', () => {
+      const name = select.value;
+      if (!name) return;
+
+      const mention = `@${name} `;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const text = textarea.value;
+
+      textarea.value = text.substring(0, start) + mention + text.substring(end);
+      
+      textarea.focus();
+      select.value = "";
+    });
+  }
+});
+</script>
