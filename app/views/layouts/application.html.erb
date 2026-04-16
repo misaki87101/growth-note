@@ -92,15 +92,18 @@
 
   <%# --- 右側：各種アクション --- %>
   <div class="nav-right" style="display: flex; align-items: center; gap: 25px;">
-    <% if logged_in? %>
-      <div style="display: flex; align-items: center; gap: 20px;">
-        <% if current_user.teacher? %>
-          <%= link_to "+ CLASS", new_group_path, style: "font-size: 10px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em;" %>
-          <%= link_to "STUDENTS", users_path, style: "font-size: 10px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em;" %>
-        <% else %>
-          <%= link_to "MY PAGE", mypage_path, style: "text-decoration: none; color: #1a1a1a; font-size: 10px; letter-spacing: 0.1em;" %>
-        <% end %>
-      </div>
+  <% if logged_in? %>
+    <div style="display: flex; align-items: center; gap: 20px;">
+      <% if current_user.teacher? %>
+        <%= link_to "+ CLASS", new_group_path, style: "font-size: 10px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em;" %>
+      <% end %>
+      <%# 💡 講師・生徒共通で MEMBERS へのリンクを表示 %>
+      <%= link_to "MEMBERS", users_path, style: "font-size: 10px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em;" %>
+      
+      <% unless current_user.teacher? %>
+        <%= link_to "MY PAGE", mypage_path, style: "text-decoration: none; color: #1a1a1a; font-size: 10px; letter-spacing: 0.1em;" %>
+      <% end %>
+    </div>
 
       <div style="display: flex; align-items: center; gap: 15px; border-left: 1px solid #eee; padding-left: 20px;">
         <%= link_to user_path(current_user), style: "text-decoration: none; font-size: 10px; color: #1a1a1a; letter-spacing: 0.1em;" do %>

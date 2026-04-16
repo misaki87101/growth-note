@@ -6,6 +6,11 @@ class FeedbacksController < ApplicationController
   before_action :set_feedback, only: %i[show edit update destroy]
 
   def index
+    if !current_user.teacher? && params[:student_id].present? && params[:student_id].to_i != current_user.id
+      redirect_to mypage_path, alert: "他人のログは閲覧できません。"
+      return
+    end
+
     if current_user.teacher?
       # 先生：担当生徒の分
       my_group_ids = current_user.groups.ids
