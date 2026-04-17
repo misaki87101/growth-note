@@ -3,8 +3,6 @@
 class User < ApplicationRecord
   attr_accessor :reset_token
 
-  belongs_to :group, optional: true
-
   # フォームから送られてくる「招待コード」を一時的に受け取るための窓口
   attr_accessor :invitation_code
 
@@ -34,11 +32,22 @@ class User < ApplicationRecord
   has_many :board_likes, dependent: :destroy
   has_many :group_users, dependent: :destroy
   has_many :groups, through: :group_users, dependent: :destroy
+
+  has_many :accepted_group_users, -> { where(accepted: true) }, class_name: 'GroupUser'
+  has_many :active_groups, through: :accepted_group_users, source: :group
+
+  def fellow_members
+    # 自分が所属する全グループの全ユーザーを取得（自分を含む）
+    User.joins(:group_users).where(group_users: { group_id: group_ids, accepted: true }).distinct
+  end
+
   # 自分宛の通知
   has_many :notifications, foreign_key: :recipient_id, dependent: :destroy
+
   # 先生が担当している全クラスの「承認済み」生徒一覧を直接取得できるようにする
-  has_many :students, -> { where(group_users: { accepted: true }, role: :student) },
-           through: :groups, source: :users, dependent: :destroy
+  has_many :active_students, -> { where(role: :student) },
+           through: :active_groups,
+           source: :users
 
   # パスワード再設定用の属性を設定する
   def create_reset_digest

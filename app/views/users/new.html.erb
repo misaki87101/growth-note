@@ -22,9 +22,9 @@
     style: "width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 0; outline: none; font-size: 14px;" %>
 </div>
 
-    <div style="margin-bottom: 25px;">
-      <%= f.label :name, "NAME / お名前", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 8px;" %>
-      <%= f.text_field :name, style: "width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 0; outline: none; font-size: 14px;" %>
+      <div style="margin-bottom: 25px;">
+        <%= label_tag :name, "NAME / お名前", style: "display: block; font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 8px;" %>
+        <%= f.text_field :name, placeholder: "半角・全角スペース使用不可", style: "width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 0; outline: none; font-size: 14px;" %>
     </div>
 
     <div style="margin-bottom: 25px;">

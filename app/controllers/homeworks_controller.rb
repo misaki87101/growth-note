@@ -23,9 +23,17 @@ class HomeworksController < ApplicationController
   def show
     @homework = Homework.find(params[:id])
 
-    # その宿題の生徒(student_id) と 講師全員(role: :teacher) を取得
-    teacher_ids = User.where(role: :teacher).ids
-    @members = User.where(id: [@homework.user_id] + teacher_ids).distinct
+    # 1. この宿題の持ち主（生徒）を取得
+    student = @homework.user
+
+    # 2. その生徒が所属しているグループの「講師」だけを取得
+    # ※生徒が複数のグループに所属している可能性を考慮して groups を経由します
+    teachers = User.joins(:group_users)
+                   .where(group_users: { group_id: student.group_ids, accepted: true })
+                   .where(role: :teacher)
+
+    # 3. 生徒本人 + 同じクラスの講師たち
+    @members = User.where(id: [student.id] + teachers.ids).distinct
   end
 
   def new
