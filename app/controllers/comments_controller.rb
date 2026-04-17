@@ -27,7 +27,13 @@ class CommentsController < ApplicationController
     # 3. 保存処理
     if @comment.save
       mentioned_names = @comment.content.scan(/@([^\s　、。！？!?,]+)/).flatten
-      User.where(name: mentioned_names)
+      mentioned_users = User.where(name: mentioned_names)
+
+      mentioned_users.each do |user|
+        next if user.id == current_user.id # 自分へのメンションは送らない
+
+        CommentMailer.with(user: user, comment: @comment).mention_email.deliver_later
+      end
 
       redirect_to @commentable, notice: "コメントを投稿しました"
     else

@@ -9,6 +9,16 @@ class BoardCommentsController < ApplicationController
     @board_comment.user_id = current_user.id
 
     if @board_comment.save
+      mentioned_names = @board_comment.content.scan(/@([^\s　、。！？!?,]+)/).flatten
+      mentioned_users = User.where(name: mentioned_names)
+
+      mentioned_users.each do |user|
+        next if user.id == current_user.id
+
+        # ボード用のコメントでも mention_email が使えるようにメイラー側で調整するか、専用メソッドを作る
+        CommentMailer.with(user: user, comment: @board_comment).mention_email.deliver_later
+      end
+
       redirect_to board_path(@board), notice: "コメントを投稿しました"
     else
       redirect_to board_path(@board), alert: "コメントの投稿に失敗しました"

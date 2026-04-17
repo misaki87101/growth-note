@@ -10,6 +10,14 @@ class CommentMailer < ApplicationMailer
     @comment = params[:comment] # コメント内容
     @actor = @comment.user      # 書いた人
 
+    @url = if @comment.is_a?(BoardComment)
+             board_url(@comment.board)
+           elsif @comment.commentable_type == 'Feedback'
+             feedback_url(@comment.commentable_id)
+           else
+             homework_url(@comment.commentable_id)
+           end
+
     mail(
       to: @user.email,
       subject: "【Growth Note】#{@actor.name}さんからメンションが届きました"
