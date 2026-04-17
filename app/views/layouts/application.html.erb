@@ -82,10 +82,10 @@
             <% end %>
           <% end %>
 
-        <% elsif current_user.group.present? %>
-          <span style="font-size: 9px; color: #ccc; letter-spacing: 0.1em; margin-right: 8px;">CLASS:</span>
-          <span style="font-size: 11px; color: #1a1a1a;"><%= current_user.group.name %></span>
-        <% end %>
+        <% if current_user.groups.any? %>
+  <span style="font-size: 9px; color: #ccc; letter-spacing: 0.1em; margin-right: 8px;">CLASS:</span>
+  <span style="font-size: 11px; color: #1a1a1a;"><%= current_user.groups.first.name %></span>
+<% end %>
       </div>
     <% end %>
   </div>
