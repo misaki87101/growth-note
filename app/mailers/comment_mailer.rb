@@ -2,8 +2,7 @@
 
 # app/mailers/comment_mailer.rb
 class CommentMailer < ApplicationMailer
-  # 送信元のメールアドレス（後で環境に合わせて設定しますが、一旦デフォルトを）
-  default from: 'notifications@growthnote.com'
+  default from: '"Growth Note" <fukumatsu@nail-box.net>'
 
   # メンション用
   def mention_email

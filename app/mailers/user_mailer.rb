@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class UserMailer < ApplicationMailer
+  default from: '"Growth Note" <fukumatsu@nail-box.net>'
+
   def password_reset(user)
     @user = user
     mail to: user.email, subject: "[Growth Note]パスワード再設定のご案内"
