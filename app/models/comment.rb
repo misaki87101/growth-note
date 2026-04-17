@@ -5,8 +5,6 @@ class Comment < ApplicationRecord
   belongs_to :feedback, optional: true
   belongs_to :homework, optional: true
 
-  after_create_commit :send_mention_email
-
   private
 
   def send_mention_email

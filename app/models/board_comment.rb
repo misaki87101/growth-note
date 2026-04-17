@@ -4,8 +4,6 @@ class BoardComment < ApplicationRecord
   belongs_to :user
   belongs_to :board
 
-  after_create_commit :send_mention_email
-
   private
 
   def send_mention_email
