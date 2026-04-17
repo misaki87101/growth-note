@@ -9,8 +9,8 @@ class BoardComment < ApplicationRecord
   private
 
   def send_mention_email
-    mentioned_names = content.scan(/@([^　、。！？!?,]+)/).flatten.map(&:strip)
-    mentioned_users = User.where(name: mentioned_names)
+    mentioned_names = content.scan(/@([^\s　、。！？!?,]+)/).flatten
+    mentioned_users = User.where("TRIM(name) IN (?)", mentioned_names)
 
     mentioned_users.each do |mentioned_user|
       next if mentioned_user == user

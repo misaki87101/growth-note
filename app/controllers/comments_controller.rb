@@ -26,8 +26,8 @@ class CommentsController < ApplicationController
 
     # 3. 保存処理
     if @comment.save
-      mentioned_names = @comment.content.scan(/@([^　、。！？!?,]+)/).flatten.map(&:strip)
-      mentioned_users = User.where(name: mentioned_names)
+      mentioned_names = @comment.content.scan(/@([^\s　、。！？!?,]+)/).flatten
+      mentioned_users = User.where("TRIM(name) IN (?)", mentioned_names)
 
       mentioned_users.each do |user|
         next if user.id == current_user.id # 自分へのメンションは送らない
@@ -52,7 +52,7 @@ class CommentsController < ApplicationController
     if @comment.update(comment_params)
       flash[:success] = "コメントを更新しました"
       # コメントが紐付いている方にリダイレクト
-      redirect_to(@comment.feedback || @comment.board || root_path)
+      @comment.feedback || @comment.homework || @comment.board || root_path
     else
       render :edit, status: :unprocessable_content
     end

@@ -56,12 +56,16 @@ class HomeworksController < ApplicationController
       end
     end
 
-    @homework = current_user.homeworks.build(homework_params)
     if @homework.save
-      teachers = User.where(role: :teacher)
+      target_group = current_user.groups.first
+      if target_group.present?
+        teachers = target_group.users.where(role: :teacher)
 
-      teachers.each do |teacher|
-        CommentMailer.with(user: teacher, homework: @homework).homework_submitted_email.deliver_later
+        teachers.each do |teacher|
+          next if teacher.id == current_user.id # 自分が先生だった場合の除外
+
+          CommentMailer.with(user: teacher, homework: @homework).homework_submitted_email.deliver_later
+        end
       end
 
       redirect_to @homework, notice: '宿題を投稿しました！'
