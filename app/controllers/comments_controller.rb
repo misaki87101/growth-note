@@ -26,7 +26,7 @@ class CommentsController < ApplicationController
 
     # 3. 保存処理
     if @comment.save
-      mentioned_names = @comment.content.scan(/@([^\s　、。！？!?,]+)/).flatten
+      mentioned_names = @comment.content.scan(/@([^　、。！？!?,]+)/).flatten.map(&:strip)
       mentioned_users = User.where(name: mentioned_names)
 
       mentioned_users.each do |user|

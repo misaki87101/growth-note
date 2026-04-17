@@ -12,10 +12,12 @@ class CommentMailer < ApplicationMailer
 
     @url = if @comment.is_a?(BoardComment)
              board_url(@comment.board)
-           elsif @comment.commentable_type == 'Feedback'
-             feedback_url(@comment.commentable_id)
+           elsif @comment.try(:feedback_id) || (@comment.try(:commentable_id) && @comment.try(:commentable_type) == 'Feedback')
+             # 💡 あなたのDB構成に合わせて、feedback_id があればそっちを優先
+             feedback_url(@comment.try(:feedback_id) || @comment.commentable_id)
            else
-             homework_url(@comment.commentable_id)
+             # 消去法で homework
+             homework_url(@comment.try(:homework_id) || @comment.commentable_id)
            end
 
     mail(

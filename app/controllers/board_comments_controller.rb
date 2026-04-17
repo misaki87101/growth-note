@@ -9,7 +9,7 @@ class BoardCommentsController < ApplicationController
     @board_comment.user_id = current_user.id
 
     if @board_comment.save
-      mentioned_names = @board_comment.content.scan(/@([^\s　、。！？!?,]+)/).flatten
+      mentioned_names = @board_comment.content.scan(/@([^　、。！？!?,]+)/).flatten.map(&:strip)
       mentioned_users = User.where(name: mentioned_names)
 
       mentioned_users.each do |user|
