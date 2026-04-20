@@ -43,7 +43,7 @@ class BoardsController < ApplicationController
 
     # 生徒の投稿時のグループ補完
     if current_user.student? && @board.group_id.blank? && current_user.groups.any?
-      @board.group_id = current_user.groups.first.id
+      @board.group_id = current_user.groups.first&.id
     end
 
     if @board.save

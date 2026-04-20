@@ -69,47 +69,43 @@
         <% if current_user.teacher? %>
           <%= form_with url: request.path, method: :get, local: true, style: "display: flex; align-items: center; gap: 8px;" do |f| %>
             <span style="font-size: 9px; color: #ccc; letter-spacing: 0.1em;">CLASS:</span>
-
             <%= f.select :group_id, 
                 options_from_collection_for_select(current_user.groups, :id, :name, params[:group_id]), 
                 { include_blank: "ALL" }, 
                 { onchange: "this.form.submit();", 
                   style: "background: none; border: none; border-bottom: 1px solid #eee; font-size: 11px; color: #1a1a1a; cursor: pointer; outline: none; padding: 2px;" } 
             %>
-            
             <% if params[:group_id].present? %>
               <%= link_to "EDIT", edit_group_path(params[:group_id]), style: "text-decoration: none; font-size: 9px; color: #999; border: 1px solid #eee; padding: 2px 6px; border-radius: 2px;" %>
             <% end %>
           <% end %>
-
-        <% if current_user.groups.any? %>
-  <span style="font-size: 9px; color: #ccc; letter-spacing: 0.1em; margin-right: 8px;">CLASS:</span>
-  <span style="font-size: 11px; color: #1a1a1a;"><%= current_user.groups.first.name %></span>
-<% end %>
+        <% else %> <%# 生徒の場合 %>
+          <% if current_user.groups.any? %>
+            <span style="font-size: 9px; color: #ccc; letter-spacing: 0.1em; margin-right: 8px;">CLASS:</span>
+            <span style="font-size: 11px; color: #1a1a1a;"><%= current_user.groups.first&.name %></span>
+          <% end %>
+        <% end %>
       </div>
     <% end %>
   </div>
 
   <%# --- 右側：各種アクション --- %>
   <div class="nav-right" style="display: flex; align-items: center; gap: 25px;">
-  <% if logged_in? %>
-    <div style="display: flex; align-items: center; gap: 20px;">
-      <% if current_user.teacher? %>
-        <%= link_to "+ CLASS", new_group_path, style: "font-size: 10px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em;" %>
-      <% end %>
-      <%# 💡 講師・生徒共通で MEMBERS へのリンクを表示 %>
-      <%= link_to "MEMBERS", users_path, style: "font-size: 10px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em;" %>
-      
-      <% unless current_user.teacher? %>
-        <%= link_to "MY PAGE", mypage_path, style: "text-decoration: none; color: #1a1a1a; font-size: 10px; letter-spacing: 0.1em;" %>
-      <% end %>
-    </div>
+    <% if logged_in? %>
+      <div style="display: flex; align-items: center; gap: 20px;">
+        <% if current_user.teacher? %>
+          <%= link_to "+ CLASS", new_group_path, style: "font-size: 10px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em;" %>
+        <% end %>
+        <%= link_to "MEMBERS", users_path, style: "font-size: 10px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em;" %>
+        <% unless current_user.teacher? %>
+          <%= link_to "MY PAGE", mypage_path, style: "text-decoration: none; color: #1a1a1a; font-size: 10px; letter-spacing: 0.1em;" %>
+        <% end %>
+      </div>
 
       <div style="display: flex; align-items: center; gap: 15px; border-left: 1px solid #eee; padding-left: 20px;">
         <%= link_to user_path(current_user), style: "text-decoration: none; font-size: 10px; color: #1a1a1a; letter-spacing: 0.1em;" do %>
-          👤 <%= current_user.name.truncate(10).upcase %>
+          👤 <%= current_user.name&.truncate(10)&.upcase %>
         <% end %>
-
         <%= button_to "LOGOUT", logout_path, method: :delete, form: { data: { turbo: false } }, 
             style: "background: none; border: 1px solid #eee; color: #999; font-size: 9px; padding: 5px 10px; cursor: pointer;" %>
       </div>
