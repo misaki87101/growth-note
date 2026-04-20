@@ -25,7 +25,7 @@ class BoardsController < ApplicationController
   end
 
   def create
-    @board = current_user.boards.build(board_params.except(:images))
+    @board = current_user.boards.build(board_params.except(:images, :image_urls))
 
     image_urls = params[:image_urls] ||
                  params.dig(:board, :image_urls) ||
