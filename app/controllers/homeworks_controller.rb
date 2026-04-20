@@ -59,7 +59,7 @@ class HomeworksController < ApplicationController
     # 3. URLがあればアタッチ
     if image_urls.present?
       image_urls.each do |url|
-        file = URI.open(url)
+        file = URI.parse(url).open
         @homework.images.attach(io: file, filename: File.basename(url))
       end
     end
@@ -85,7 +85,7 @@ class HomeworksController < ApplicationController
   def update
     if params.dig(:homework, :image_urls).present?
       params[:homework][:image_urls].each do |url|
-        file = URI.open(url)
+        file = URI.parse(url).open
         @homework.images.attach(io: file, filename: File.basename(url))
       end
     end

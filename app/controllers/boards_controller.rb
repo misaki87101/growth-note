@@ -33,7 +33,7 @@ class BoardsController < ApplicationController
 
     if image_urls.present?
       image_urls.each do |url|
-        file = URI.open(url)
+        file = URI.parse(url).open
         file_name = File.basename(url)
         @board.images.attach(io: file, filename: file_name)
       rescue StandardError => e
@@ -67,7 +67,7 @@ class BoardsController < ApplicationController
 
     if image_urls.present?
       image_urls.each do |url|
-        file = URI.open(url)
+        file = URI.parse(url).open
         file_name = File.basename(url)
         @board.images.attach(io: file, filename: file_name)
       rescue StandardError => e
