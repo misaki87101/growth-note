@@ -44,8 +44,8 @@ class DailyReportsController < ApplicationController
 
     @nailists.each do |nailist|
       # 2. その日報から、該当スタッフの目標を探す
-      prev_target = last_report_with_staff_targets&.staff_sales&.find_by(user_id: nailist.id)&.tech_target
-
+      last_staff_sales = last_report_with_staff_targets&.staff_sales
+      prev_target = last_staff_sales&.find_by(user_id: nailist.id)&.tech_target
       # 3. フォームを構築（値があればセット、なければ空にする）
       @daily_report.staff_sales.build(
         user_id: nailist.id,

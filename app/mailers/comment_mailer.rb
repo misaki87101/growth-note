@@ -12,7 +12,8 @@ class CommentMailer < ApplicationMailer
 
     @url = if @comment.is_a?(BoardComment)
              board_url(@comment.board)
-           elsif @comment.try(:feedback_id) || (@comment.try(:commentable_id) && @comment.try(:commentable_type) == 'Feedback')
+           elsif @comment.try(:feedback_id) ||
+                 (@comment.try(:commentable_id) && @comment.try(:commentable_type) == 'Feedback')
              # 💡 あなたのDB構成に合わせて、feedback_id があればそっちを優先
              feedback_url(@comment.try(:feedback_id) || @comment.commentable_id)
            else
