@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get "group_joins/new"
+  get "group_joins/create"
   get "daily_reports/index"
   get "daily_reports/new"
   #get "boards/index"
@@ -98,6 +100,9 @@ end
 
   # 売上管理
   resources :daily_reports, only: [:index, :new, :create]
+
+  # 既存アカウントでクラスに入室するためのルーティング
+  resources :group_joins, only: [:new, :create]
 
   if Rails.env.development?
     mount LetterOpenerWeb::Engine, at: "/letter_opener"

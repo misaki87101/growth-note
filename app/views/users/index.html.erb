@@ -49,6 +49,25 @@
     <% end %>
   </div>
 
+<br>
+  <%# 既存アカウントで別のクラスに入室するための案内 講師のみ表示%>
+<% if current_user.teacher? %>
+    <div style="background: #fff; border: 1px solid #1a1a1a; padding: 40px; margin-bottom: 60px; position: relative; overflow: hidden;">
+  <div style="position: absolute; top: -10px; right: -10px; font-size: 40px; color: #f9f9f9; font-weight: 900; z-index: 0; pointer-events: none;">JOIN</div>
+
+  <div style="position: relative; z-index: 1;">
+    <div style="font-size: 11px; font-weight: 600; color: #1a1a1a; letter-spacing: 0.2em; margin-bottom: 8px; text-transform: uppercase;">Register for another class</div>
+    <div style="font-size: 10px; color: #999; letter-spacing: 0.05em; margin-bottom: 25px;">すでにアカウントをお持ちの方は、招待コードを入力して新しいクラスに参加できます。</div>
+    
+    <%= link_to new_group_join_path, style: "text-decoration: none; display: inline-block;" do %>
+      <div style="background: #1a1a1a; color: #fff; padding: 15px 35px; font-size: 11px; letter-spacing: 0.15em; font-weight: 300; transition: all 0.3s ease; border: 1px solid #1a1a1a;">
+        JOIN ANOTHER CLASS / 別のクラスに入室
+      </div>
+    <% end %>
+  </div>
+</div>
+<% end %>
+
   <%# 戻るボタン %>
   <div style="margin-top: 50px; text-align: center;">
     <%= link_to "BACK TO FEEDBACKS", feedbacks_path, style: "font-size: 11px; color: #ccc; text-decoration: none; letter-spacing: 0.1em; border-bottom: 1px solid #ccc;" %>
