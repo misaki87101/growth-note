@@ -1,2 +1,32 @@
-<h1>GroupJoins#new</h1>
-<p>Find me in app/views/group_joins/new.html.erb</p>
+<div style="max-width: 400px; margin: 100px auto; padding: 0 20px; font-family: 'Helvetica Neue', Arial, sans-serif; text-align: center;">
+  
+  <%# ヘッダー %>
+  <div style="margin-bottom: 50px;">
+    <h2 style="font-size: 18px; font-weight: 300; letter-spacing: 0.2em; color: #1a1a1a; margin: 0;">JOIN CLASS</h2>
+    <p style="font-size: 9px; color: #999; letter-spacing: 0.1em; margin-top: 8px;">招待コードを入力してクラスに参加します</p>
+  </div>
+
+  <%# 入力フォーム %>
+  <%= form_with(url: group_joins_path, local: true) do |f| %>
+    <div style="margin-bottom: 40px;">
+      <div style="font-size: 10px; color: #1a1a1a; text-align: left; letter-spacing: 0.1em; margin-bottom: 10px; font-weight: 600;">INVITATION CODE</div>
+      <%= f.text_field :invitation_code, 
+          placeholder: "例: ABCD-1234", 
+          required: true,
+          style: "width: 100%; padding: 15px 0; border: none; border-bottom: 1px solid #1a1a1a; border-radius: 0; outline: none; font-size: 16px; letter-spacing: 0.1em; color: #1a1a1a;" 
+      %>
+    </div>
+    
+    <%= f.submit "ENTER CLASS", 
+        style: "width: 100%; padding: 18px; background: #1a1a1a; color: #fff; border: 1px solid #1a1a1a; letter-spacing: 0.2em; font-size: 11px; cursor: pointer; transition: all 0.3s ease;" 
+    %>
+  <% end %>
+
+  <%# 戻るリンク %>
+  <div style="margin-top: 40px;">
+    <%= link_to "BACK TO MEMBERS", users_path, 
+        style: "font-size: 10px; color: #ccc; text-decoration: none; letter-spacing: 0.1em; border-bottom: 1px solid #eee;" 
+    %>
+  </div>
+
+</div>
