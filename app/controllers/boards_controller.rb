@@ -27,28 +27,32 @@ class BoardsController < ApplicationController
   def create
     @board = current_user.boards.build(board_params.except(:images, :image_urls))
 
-    image_urls = params[:image_urls] ||
-                 params.dig(:board, :image_urls) ||
-                 params.dig(:homework, :image_urls)
-
-    if image_urls.present?
-      image_urls.each do |url|
-        file = URI.parse(url).open
-        file_name = File.basename(url)
-        @board.images.attach(io: file, filename: file_name)
-      rescue StandardError => e
-        logger.error "Image attach error: #{e.message}"
-      end
-    end
-
-    # 生徒の投稿時のグループ補完
+    # 生徒のグループ補完
     if current_user.student? && @board.group_id.blank? && current_user.groups.any?
       @board.group_id = current_user.groups.first&.id
     end
 
+    # 1. まず本体を保存！
     if @board.save
-      members = @board.group.users.where.not(id: current_user.id)
+      # 2. 保存成功後に画像URLを処理
+      image_urls = params[:image_urls] ||
+                   params.dig(:board, :image_urls) ||
+                   params.dig(:homework, :image_urls)
 
+      if image_urls.present?
+        image_urls.each do |url|
+          file = URI.open(url) # URI.parse(url).open より URI.open の方が推奨
+          @board.images.attach(io: file, filename: File.basename(url))
+        rescue StandardError => e
+          logger.error "Board image attach error: #{e.message}"
+        ensure
+          file&.close # メモリ節約のため閉じる
+        end
+        GC.start # メモリ掃除
+      end
+
+      # 3. 最後にメール
+      members = @board.group.users.where.not(id: current_user.id)
       members.each do |member|
         CommentMailer.with(user: member, board: @board).board_created_email.deliver_later
       end

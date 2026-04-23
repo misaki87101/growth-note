@@ -50,31 +50,25 @@ class HomeworksController < ApplicationController
   end
 
   def create
-    # 1. パラメータから直接URLを取り出す（homework_paramsを通さないのが確実）
-    image_urls = params.dig(:homework, :image_urls)
-
-    # 2. 本体を作成
+    # 1. まずは画像抜きで本体を作成（メモリ消費を抑える）
     @homework = current_user.homeworks.new(homework_params.except(:images, :image_urls))
 
-    # 3. URLがあればアタッチ
-    if image_urls.present?
-      image_urls.each do |url|
-        file = URI.parse(url).open
-        @homework.images.attach(io: file, filename: File.basename(url))
-      end
-    end
-
+    # 2. 本体を先に保存！
     if @homework.save
-      target_group = current_user.groups.first
-      if target_group.present?
-        teachers = target_group.users.where(role: :teacher)
-
-        teachers.each do |teacher|
-          next if teacher.id == current_user.id # 自分が先生だった場合の除外
-
-          CommentMailer.with(user: teacher, homework: @homework).homework_submitted_email.deliver_later
+      # 3. 保存成功後に画像をアタッチ（失敗しても本体は残る）
+      image_urls = params.dig(:homework, :image_urls)
+      if image_urls.present?
+        image_urls.each do |url|
+          # ここでメモリを食うので、1つずつ処理して極力負担を減らす
+          file = URI.open(url)
+          @homework.images.attach(io: file, filename: File.basename(url))
+        rescue StandardError => e
+          logger.error "Homework image attach error: #{e.message}"
         end
       end
+
+      # 4. 最後にメール送信（画像処理が終わった後なのでメモリ競合が少ない）
+      send_homework_emails(@homework)
 
       redirect_to @homework, notice: '宿題を投稿しました！'
     else
@@ -83,18 +77,22 @@ class HomeworksController < ApplicationController
   end
 
   def update
-    if params.dig(:homework, :image_urls).present?
-      params[:homework][:image_urls].each do |url|
-        file = URI.parse(url).open
-        @homework.images.attach(io: file, filename: File.basename(url))
-      end
-    end
-
-    # 💡 images パラメータを除外してアップデート
+    # 1. まずはテキスト情報などを更新（exceptで画像URLを除外）
     if @homework.update(homework_params.except(:images, :image_urls))
+
+      # 2. 更新成功後に画像を追加する（createと同じ安全ロジック）
+      image_urls = params.dig(:homework, :image_urls)
+      if image_urls.present?
+        image_urls.each do |url|
+          file = URI.open(url)
+          @homework.images.attach(io: file, filename: File.basename(url))
+        rescue StandardError => e
+          logger.error "Homework image update error: #{e.message}"
+        end
+      end
+
       redirect_to homework_path(@homework), notice: "宿題を更新しました"
     else
-      # 💡 status を :unprocessable_entity (422) に修正
       render :edit, status: :unprocessable_content
     end
   end
@@ -118,5 +116,17 @@ class HomeworksController < ApplicationController
 
   def homework_params
     params.require(:homework).permit(:lesson_date, :content, :hour, :minute, :feedback_id, image_urls: [])
+  end
+
+  def send_homework_emails(homework)
+    target_group = current_user.groups.first
+    return if target_group.blank?
+
+    teachers = target_group.users.where(role: :teacher)
+    teachers.each do |teacher|
+      next if teacher.id == current_user.id
+
+      CommentMailer.with(user: teacher, homework: homework).homework_submitted_email.deliver_later
+    end
   end
 end
