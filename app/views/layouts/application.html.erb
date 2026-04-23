@@ -59,48 +59,63 @@
     <%# --- ヘッダー（ナビバー） --- %>
     <nav class="main-nav">
   <%# --- 左側：ロゴとクラス選択 --- %>
-  <div class="nav-left" style="display: flex; align-items: center; gap: 25px;">
-    <div style="font-size: 16px; letter-spacing: 0.25em; color: #1a1a1a; font-weight: 300;">
-      <%= link_to "GROWTH NOTE", root_path, style: "text-decoration: none; color: inherit;" %>
-    </div>
-
-    <% if logged_in? %>
-      <div style="border-left: 1px solid #eee; padding-left: 20px; display: flex; align-items: center;">
-        <% if current_user.teacher? %>
-          <%= form_with url: request.path, method: :get, local: true, style: "display: flex; align-items: center; gap: 8px;" do |f| %>
-            <span style="font-size: 9px; color: #ccc; letter-spacing: 0.1em;">CLASS:</span>
-            <%= f.select :group_id, 
-                options_from_collection_for_select(current_user.groups, :id, :name, params[:group_id]), 
-                { include_blank: "ALL" }, 
-                { onchange: "this.form.submit();", 
-                  style: "background: none; border: none; border-bottom: 1px solid #eee; font-size: 11px; color: #1a1a1a; cursor: pointer; outline: none; padding: 2px;" } 
-            %>
-            <% if params[:group_id].present? %>
-              <%= link_to "EDIT", edit_group_path(params[:group_id]), style: "text-decoration: none; font-size: 9px; color: #999; border: 1px solid #eee; padding: 2px 6px; border-radius: 2px;" %>
-            <% end %>
-          <% end %>
-        <% else %> <%# 生徒の場合 %>
-          <% if current_user.groups.any? %>
-            <span style="font-size: 9px; color: #ccc; letter-spacing: 0.1em; margin-right: 8px;">CLASS:</span>
-            <span style="font-size: 11px; color: #1a1a1a;"><%= current_user.groups.first&.name %></span>
-          <% end %>
-        <% end %>
-      </div>
-    <% end %>
+<div class="nav-left" style="display: flex; align-items: center; gap: 25px;">
+  <div style="font-size: 16px; letter-spacing: 0.25em; color: #1a1a1a; font-weight: 300;">
+    <%= link_to "GROWTH NOTE", root_path, style: "text-decoration: none; color: inherit;" %>
   </div>
 
-  <%# --- 右側：各種アクション --- %>
-  <div class="nav-right" style="display: flex; align-items: center; gap: 25px;">
-    <% if logged_in? %>
-      <div style="display: flex; align-items: center; gap: 20px;">
-        <% if current_user.teacher? %>
-          <%= link_to "+ CLASS", new_group_path, style: "font-size: 10px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em;" %>
+  <% if logged_in? %>
+    <div style="border-left: 1px solid #eee; padding-left: 20px; display: flex; align-items: center;">
+      <%# --- 講師または管理者の場合、クラス選択を表示 --- %>
+      <% if current_user.teacher? || current_user.admin? %>
+        <%= form_with url: request.path, method: :get, local: true, style: "display: flex; align-items: center; gap: 8px;" do |f| %>
+          <span style="font-size: 9px; color: #ccc; letter-spacing: 0.1em;">CLASS:</span>
+          <%= f.select :group_id, 
+              options_from_collection_for_select(current_user.groups, :id, :name, params[:group_id]), 
+              { include_blank: "ALL" }, 
+              { onchange: "this.form.submit();", 
+                style: "background: none; border: none; border-bottom: 1px solid #eee; font-size: 11px; color: #1a1a1a; cursor: pointer; outline: none; padding: 2px;" } 
+          %>
+          
+          <%# --- 管理者だけが「EDIT」できる --- %>
+          <% if current_user.admin? && params[:group_id].present? %>
+            <%= link_to "EDIT", edit_group_path(params[:group_id]), style: "text-decoration: none; font-size: 9px; color: #999; border: 1px solid #eee; padding: 2px 6px; border-radius: 2px;" %>
+          <% end %>
         <% end %>
-        <%= link_to "MEMBERS", users_path, style: "font-size: 10px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em;" %>
-        <% unless current_user.teacher? %>
-          <%= link_to "MY PAGE", mypage_path, style: "text-decoration: none; color: #1a1a1a; font-size: 10px; letter-spacing: 0.1em;" %>
+        
+        <%# --- 管理者だけが見える管理ページへのリンク（⚙️アイコンなど） --- %>
+        <% if current_user.admin? %>
+          <%= link_to groups_path, style: "margin-left: 15px; text-decoration: none; font-size: 12px; color: #999;" do %>
+            ⚙️ <span style="font-size: 8px;">ADMIN</span>
+          <% end %>
         <% end %>
-      </div>
+
+      <% else %> <%# 生徒の場合 %>
+        <% if current_user.groups.any? %>
+          <span style="font-size: 9px; color: #ccc; letter-spacing: 0.1em; margin-right: 8px;">CLASS:</span>
+          <span style="font-size: 11px; color: #1a1a1a;"><%= current_user.groups.first&.name %></span>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<%# --- 右側：各種アクション --- %>
+<div class="nav-right" style="display: flex; align-items: center; gap: 25px;">
+  <% if logged_in? %>
+    <div style="display: flex; align-items: center; gap: 20px;">
+      <%# --- 管理者だけが「+ CLASS」を作れるように制限 --- %>
+      <% if current_user.admin? %>
+        <%= link_to "+ CLASS", new_group_path, style: "font-size: 10px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em;" %>
+      <% end %>
+      
+      <%= link_to "MEMBERS", users_path, style: "font-size: 10px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em;" %>
+      
+      <%# 講師（管理者含む）じゃない場合のみMY PAGEを表示 %>
+      <% unless current_user.teacher? || current_user.admin? %>
+        <%= link_to "MY PAGE", mypage_path, style: "text-decoration: none; color: #1a1a1a; font-size: 10px; letter-spacing: 0.1em;" %>
+      <% end %>
+    </div>
 
       <div style="display: flex; align-items: center; gap: 15px; border-left: 1px solid #eee; padding-left: 20px;">
         <%= link_to user_path(current_user), style: "text-decoration: none; font-size: 10px; color: #1a1a1a; letter-spacing: 0.1em;" do %>

@@ -1,0 +1,43 @@
+<div style="max-width: 800px; margin: 60px auto; padding: 0 20px;">
+  
+  <%# ヘッダーエリア %>
+  <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; border-bottom: 1px solid #1a1a1a; padding-bottom: 15px;">
+    <div>
+      <h2 style="font-size: 20px; font-weight: 300; letter-spacing: 0.15em; margin: 0;">CLASS MANAGEMENT</h2>
+      <p style="font-size: 10px; color: #999; margin-top: 5px; letter-spacing: 0.05em;">クラスの新規作成・編集・削除</p>
+    </div>
+    <%= link_to "+ NEW CLASS", new_group_path, style: "font-size: 10px; color: #1a1a1a; text-decoration: none; border: 1px solid #1a1a1a; padding: 10px 20px; letter-spacing: 0.1em; transition: 0.3s;" %>
+  </div>
+
+  <%# クラス一覧テーブル %>
+  <div style="display: flex; flex-direction: column; gap: 1px; background-color: #eee; border: 1px solid #eee;">
+    <% @groups.each do |group| %>
+      <div style="display: flex; align-items: center; justify-content: space-between; background-color: #fff; padding: 25px; transition: 0.3s;">
+        
+        <div>
+          <div style="font-size: 15px; font-weight: 600; color: #1a1a1a; letter-spacing: 0.05em;">
+            <%= group.name %>
+          </div>
+          <div style="font-size: 10px; color: #999; margin-top: 6px; letter-spacing: 0.05em;">
+            INVITATION CODE: <span style="color: #666; font-family: monospace; font-size: 12px;"><%= group.invitation_code %></span>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 25px; align-items: center;">
+          <%= link_to "EDIT", edit_group_path(group), 
+              style: "font-size: 10px; color: #1a1a1a; text-decoration: none; border-bottom: 1px solid #1a1a1a; padding-bottom: 2px;" %>
+          
+          <%= link_to "DELETE", group_path(group), 
+              data: { turbo_method: :delete, turbo_confirm: "本当にこのクラスを削除しますか？\n（所属する生徒のデータに影響が出る可能性があります）" }, 
+              style: "font-size: 10px; color: #e74c3c; text-decoration: none; letter-spacing: 0.05em;" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <%# 戻るリンク %>
+  <div style="margin-top: 50px; text-align: center;">
+    <%= link_to "← BACK TO DASHBOARD", root_path, style: "font-size: 10px; color: #ccc; text-decoration: none; letter-spacing: 0.1em;" %>
+  </div>
+
+</div>

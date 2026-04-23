@@ -2,8 +2,15 @@
 
 # app/controllers/groups_controller.rb
 class GroupsController < ApplicationController
+  # 管理者以外が index, new, create, edit, update, destroy にアクセスしたらリダイレクト
+  before_action :ensure_admin_user, only: %i[index new create edit update destroy]
+
   before_action :logged_in_user
   before_action :ensure_teacher
+
+  def index
+    @groups = Group.order(:created_at)
+  end
 
   def show
     @group = Group.find(params[:id])
@@ -39,9 +46,21 @@ class GroupsController < ApplicationController
     end
   end
 
+  def destroy
+    @group = Group.find(params[:id])
+    @group.destroy
+    redirect_to groups_path, notice: "クラスを削除しました", status: :see_other
+  end
+
   private
 
   def group_params
     params.require(:group).permit(:name)
+  end
+
+  def ensure_admin_user
+    return if current_user.admin?
+
+    redirect_to root_path, alert: "管理者権限が必要です。"
   end
 end

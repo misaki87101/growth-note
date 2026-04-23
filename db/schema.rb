@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_04_16_021735) do
+ActiveRecord::Schema[7.2].define(version: 2026_04_23_061035) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -238,6 +238,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_16_021735) do
     t.datetime "reset_sent_at"
     t.date "birthday"
     t.bigint "group_id"
+    t.boolean "admin"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["group_id"], name: "index_users_on_group_id"
   end
