@@ -19,6 +19,12 @@
   
     <%# パスワード忘れ %>
     <%= link_to "FORGOT PASSWORD? / パスワードを忘れた方はこちら", new_password_reset_path, style: "font-size: 9px; color: #999; letter-spacing: 0.05em;" %>
+
+    <%# 既存アカウントでクラスに入室 %>
+    <div class="mt-4">
+      <p>すでにアカウントをお持ちで、新しいクラスに入室する場合はこちら</p>
+      <%= link_to "既存アカウントでクラスに入室", new_group_join_path, class: "btn btn-secondary" %>
+    </div>
     
   </div>
 </div>

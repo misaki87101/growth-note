@@ -27,9 +27,9 @@ module GrowthNote
     # config.eager_load_paths << Rails.root.join("extras")
     config.i18n.default_locale = :ja
 
-    onfig.time_zone = 'Tokyo'
+    config.time_zone = 'Tokyo'
     config.active_record.default_timezone = :local
-    
+
     if Rails.env.development? || Rails.env.test?
       Faker::Config.locale = 'ja'
     end
