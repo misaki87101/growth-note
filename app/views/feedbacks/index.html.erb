@@ -89,10 +89,20 @@
             <div style="font-size: 16px; font-weight: 500; color: #1a1a1a; letter-spacing: 0.02em; margin-bottom: 4px;">
               <%= feedback.title.present? ? feedback.title : "Untitled Lesson" %>
             </div>
-            <%# 生徒名 %>
-            <div style="font-size: 10px; color: #999; letter-spacing: 0.05em; text-transform: uppercase;">
-              INSTRUCTOR: <%= feedback.teacher&.name || "UNKNOWN" %>
-            </div>
+            
+            <%# 生徒名 講師のみ表示 %>
+            <% if current_user.teacher? %>
+              <div style="font-size: 10px; color: #999; letter-spacing: 0.05em; text-transform: uppercase;">
+                STUDENT: <%= feedback.student&.name || "DELETED USER" %>
+              </div>
+            <% end %>
+
+            <%# 講師名 生徒にのみ表示%>
+            <% if current_user.student? %>
+              <div style="font-size: 10px; color: #999; letter-spacing: 0.05em; text-transform: uppercase;">
+                INSTRUCTOR: <%= feedback.teacher&.name || "UNKNOWN" %>
+              </div>
+              <% end %>
           </div>
 
           <%# 3. 補助情報（項目の数など） %>
