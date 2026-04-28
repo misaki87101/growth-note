@@ -129,13 +129,10 @@
 <% if logged_in? && (current_user.teacher? || current_user.admin?) && @current_group %>
   <div style="background-color: #1a1a1a; color: #fff; padding: 6px 40px; display: flex; align-items: center; justify-content: space-between;">
     <div style="display: flex; align-items: center; gap: 12px;">
-      <span style="font-size: 9px; letter-spacing: 0.2em; opacity: 0.6; font-weight: bold;">CURRENT CLASS</span>
+      <span style="font-size: 9px; letter-spacing: 0.2em; opacity: 0.6; font-weight: bold;">CURRENT CLASS：</span>
       <span style="font-size: 12px; letter-spacing: 0.1em; font-weight: 400;">
         <%= @current_group.name %>
       </span>
-    </div>
-    <div style="font-size: 8px; letter-spacing: 0.05em; opacity: 0.5; text-transform: uppercase;">
-      Showing data for members of this class only
     </div>
   </div>
 <% end %>
