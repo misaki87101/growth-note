@@ -6,7 +6,7 @@ class BoardsController < ApplicationController
   before_action :set_board, only: %i[show edit update destroy]
 
   def index
-    @boards = Board.where(group_id: current_user.groups.pluck(:id)).order(created_at: :desc)
+    @boards = Board.where(group_id: @current_group.id).order(created_at: :desc)
   end
 
   def show

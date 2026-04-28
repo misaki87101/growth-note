@@ -13,14 +13,11 @@ class FeedbacksController < ApplicationController
 
     if current_user.teacher?
       # 先生：担当生徒の分
-      my_group_ids = current_user.groups.ids
+      @feedbacks = Feedback.includes(:student, :teacher)
+                           .where(group_id: @current_group.id)
+                           .order(lesson_date: :desc)
 
-      @feedbacks = Feedback.where(group_id: my_group_ids).order(lesson_date: :desc)
-
-      @students = User.where(role: :student)
-                      .joins(:group_users)
-                      .where(group_users: { group_id: my_group_ids, accepted: true })
-                      .distinct
+      @students = @current_group.users.where(role: :student)
     else
       # 生徒：自分へのフィードバックだけ
       @feedbacks = Feedback.where(student_id: current_user.id).order(lesson_date: :desc)

@@ -8,10 +8,9 @@ class DailyReportsController < ApplicationController
     # 2. 中間テーブル経由で「所属している最初のグループ」を取得する
     # (もし複数グループに対応させるなら where(group_id: current_user.group_ids) にします)
     @display_month = params[:month].present? ? Date.parse("#{params[:month]}-01") : Date.current.beginning_of_month
-    group = current_user.groups.first
 
-    @daily_reports = if group
-                       DailyReport.where(group_id: group.id)
+    @daily_reports = if @current_group
+                       DailyReport.where(group_id: @current_group.id)
                                   .where(date: @display_month..@display_month.end_of_month)
                                   .order(date: :desc)
                      else

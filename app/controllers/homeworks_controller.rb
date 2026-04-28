@@ -7,13 +7,15 @@ class HomeworksController < ApplicationController
 
   def index
     if current_user.teacher?
-      @students = User.where(role: :student)
-      # 🌟 絞り込み条件（params[:student_id]）があれば適用する
-      @homeworks = if params[:student_id].present?
-                     Homework.where(user_id: params[:student_id])
-                   else
-                     Homework.all
-                   end
+      @students = @current_group.users.where(role: :student)
+      student_ids = @students.pluck(:id)
+
+      # 💡 修正：その生徒たちの宿題だけに絞る
+      @homeworks = Homework.where(user_id: student_ids)
+
+      # 個別絞り込みがあればさらに絞る
+      @homeworks = @homeworks.where(user_id: params[:student_id]) if params[:student_id].present?
+
       @homeworks = @homeworks.includes(:user).order(lesson_date: :desc)
     else
       @homeworks = current_user.homeworks.order(lesson_date: :desc)

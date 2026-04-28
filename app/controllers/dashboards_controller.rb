@@ -11,22 +11,17 @@ class DashboardsController < ApplicationController
 
   def show
     if current_user.teacher?
-      # 1. 自分が所属するグループ（クラス）のIDをすべて取得
-      my_group_ids = current_user.groups.ids
-
       # 2. そのグループに所属している生徒へのフィードバックだけに限定
-      @feedbacks = Feedback.where(group_id: my_group_ids).order(lesson_date: :desc)
+      @feedbacks = Feedback.includes(:student, :teacher)
+                           .where(group_id: @current_group.id)
+                           .order(lesson_date: :desc)
 
       # 3. 検索パラメータ（生徒ID）があれば、さらに絞り込む
       @feedbacks = @feedbacks.where(student_id: params[:student_id]) if params[:student_id].present?
 
       # 4. 絞り込み用の生徒リストも「自分のグループの生徒」だけにする
-      @students = User.where(role: :student)
-                      .joins(:group_users)
-                      .where(group_users: { group_id: my_group_ids, accepted: true })
-                      .distinct
+      @students = @current_group.users.where(role: :student)
     else
-      # 生徒：自分へのフィードバックだけ
       @feedbacks = Feedback.where(student_id: current_user.id).order(lesson_date: :desc)
     end
   end
