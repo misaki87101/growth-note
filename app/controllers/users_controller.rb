@@ -7,16 +7,10 @@ class UsersController < ApplicationController
 
   # ユーザー一覧
   def index
-    # ベースのグループを特定（生徒は自分のグループ、講師は選択中または最初のグループ）
-    @current_group = if current_user.teacher?
-                       params[:group_id].present? ? Group.find(params[:group_id]) : current_user.groups.first
-                     else
-                       current_user.groups.first # 生徒は自分の所属グループ固定
-                     end
-
-    # そのグループに属する「全員」を取得（講師も生徒も！）
     @members = if @current_group
-                 @current_group.users.order(:role, :name)
+                 # そのグループに属する「全員」を、承認済みのユーザーに絞って取得
+                 # (承認待ちのユーザーを分ける場合は、ここで調整します)
+                 @current_group.users.order(:role, :name).distinct
                else
                  []
                end

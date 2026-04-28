@@ -12,18 +12,22 @@
       <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f0f0f0; padding: 25px 0;">
         
         <%# 左側：生徒の名前と目標の一部 %>
-        <div>
-          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
-            <%# 💡 ロールバッジ（講師か生徒か） %>
-            <span style="font-size: 9px; padding: 2px 6px; letter-spacing: 0.1em; <%= member.teacher? ? 'background: #1a1a1a; color: #fff;' : 'border: 1px solid #eee; color: #999;' %>">
-              <%= member.teacher? ? "TEACHER" : "STUDENT" %>
-            </span>
-            <%= link_to member.name, user_path(member), style: "text-decoration: none; color: inherit; font-weight: 500; font-size: 16px;" %>
-          </div>
-          <%# 💡 お気に入り（犬が好き、など）があれば表示 %>
-          <div style="font-size: 11px; color: #999; letter-spacing: 0.02em;">
-             <%= member.favorite_things.to_s.truncate(40) %>
-          </div>
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+          <%# ロールバッジ %>
+          <span style="font-size: 9px; padding: 2px 6px; letter-spacing: 0.1em; <%= member.teacher? ? 'background: #1a1a1a; color: #fff;' : 'border: 1px solid #eee; color: #999;' %>">
+            <%= member.teacher? ? "TEACHER" : "STUDENT" %>
+          </span>
+
+          <%# 承認ステータス %>
+          <% group_user = member.group_users.find_by(group_id: @current_group.id) %>
+          <% if group_user && !group_user.accepted %>
+            <span style="font-size: 8px; color: #fff; background: #ffcc00; padding: 2px 6px; letter-spacing: 0.1em; border-radius: 2px; vertical-align: middle;">承認待ち</span>
+          <% end %>
+
+          <%# 名前（クリックして詳細へ） %>
+          <%= link_to user_path(member), style: "text-decoration: none; color: inherit; font-weight: 500; font-size: 16px;" do %>
+            <%= member.name %>
+          <% end %>
         </div>
 
         <%# 右側：操作ボタン %>
