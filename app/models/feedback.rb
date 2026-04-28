@@ -4,6 +4,9 @@ class Feedback < ApplicationRecord
   belongs_to :student, class_name: 'User', optional: true
   belongs_to :teacher, class_name: 'User', optional: true
 
+  # enumを設定。0をdraft(下書き)、1をpublished(公開)と定義
+  enum :status, { draft: 0, published: 1 }
+  validates :status, inclusion: { in: statuses.keys }
   # validates :content, presence: true
   validates :student_id, presence: true
   # validates :teacher_id, presence: true
@@ -17,6 +20,8 @@ class Feedback < ApplicationRecord
   accepts_nested_attributes_for :check_items,
                                 allow_destroy: true,
                                 reject_if: :all_blank
+
+  scope :published, -> { where(status: :published) }
 
   def new_arrival?
     created_at > 24.hours.ago

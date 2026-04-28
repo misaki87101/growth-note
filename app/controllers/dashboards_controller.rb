@@ -22,7 +22,9 @@ class DashboardsController < ApplicationController
       # 4. 絞り込み用の生徒リストも「自分のグループの生徒」だけにする
       @students = @current_group.users.where(role: :student)
     else
-      @feedbacks = Feedback.where(student_id: current_user.id).order(lesson_date: :desc)
+      @feedbacks = Feedback.published
+                           .where(student_id: current_user.id)
+                           .order(lesson_date: :desc)
     end
   end
 end

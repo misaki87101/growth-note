@@ -88,8 +88,12 @@
             <%# 講習名 %>
             <div style="font-size: 16px; font-weight: 500; color: #1a1a1a; letter-spacing: 0.02em; margin-bottom: 4px;">
               <%= feedback.title.present? ? feedback.title : "Untitled Lesson" %>
+              <%# 下書き %>
+              <% if feedback.draft? %>
+                <span style="font-size: 8px; color: #999; border: 1px solid #eee; padding: 1px 5px; letter-spacing: 0.05em; font-weight: bold; flex-shrink: 0;">下書き</span>
+              <% end %>
             </div>
-            
+
             <%# 生徒名 講師のみ表示 %>
             <% if current_user.teacher? %>
               <div style="font-size: 10px; color: #999; letter-spacing: 0.05em; text-transform: uppercase;">

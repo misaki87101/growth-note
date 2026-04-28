@@ -62,31 +62,38 @@
 
             <%# テキストコンテンツ（中央） %>
             <div style="flex-grow: 1;">
-            <%# 日付 %>
+              <%# 日付 %>
               <div style="font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 5px;">
                 <%= feedback.lesson_date.strftime("%Y . %m . %d") %>
               </div>
-            <%# タイトル %>
-              <div style="font-size: 16px; font-weight: 500; letter-spacing: 0.05em; margin-bottom: 10px;">
-                <%= feedback.title.present? ? feedback.title : "Lesson Feedback" %>
+  
+              <%# タイトルとラベルをセットにする %>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="font-size: 16px; font-weight: 500; letter-spacing: 0.05em;">
+                  <%= feedback.title.present? ? feedback.title : "Lesson Feedback" %>
+                </div>
+                <%# 💡 下書きラベルをタイトルのすぐ横に配置 %>
+                <% if feedback.draft? %>
+                  <span style="font-size: 8px; color: #999; border: 1px solid #eee; padding: 1px 5px; letter-spacing: 0.05em; font-weight: bold; flex-shrink: 0;">下書き</span>
+                <% end %>
               </div>
-              <%# 生徒名 講師のみ表示 %>
-            <% if current_user.teacher? %>
-              <div style="font-size: 10px; color: #999; letter-spacing: 0.05em; text-transform: uppercase;">
-                STUDENT: <%= feedback.student&.name || "DELETED USER" %>
-              </div>
-            <% end %>
+            </div>
 
-            <%# 講師名 生徒にのみ表示%>
-            <% if current_user.student? %>
-              <div style="font-size: 10px; color: #999; letter-spacing: 0.05em; text-transform: uppercase;">
-                INSTRUCTOR: <%= feedback.teacher&.name || "UNKNOWN" %>
-              </div>
+            <%# 右側：講師名または生徒名（幅を固定して右寄せにする） %>
+            <div style="text-align: right; min-width: 150px; flex-shrink: 0;">
+              <% if current_user.teacher? %>
+                <div style="font-size: 9px; color: #999; letter-spacing: 0.05em; text-transform: uppercase;">
+                  STUDENT: <%= feedback.student&.name || "DELETED USER" %>
+                </div>
+              <% elsif current_user.student? %>
+                <div style="font-size: 9px; color: #999; letter-spacing: 0.05em; text-transform: uppercase;">
+                  INSTRUCTOR: <%= feedback.teacher&.name || "UNKNOWN" %>
+                </div>
               <% end %>
             </div>
 
-            <%# 矢印（右側） %>
-            <div style="color: #ccc; font-size: 18px; align-self: center;">→</div>
+            <%# 矢印（一番右） %>
+            <div style="color: #ccc; font-size: 18px; padding-left: 20px;">→</div>
           </div>
         <% end %>
       <% end %>

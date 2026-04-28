@@ -154,10 +154,17 @@
       </div>
     </div>
 
-    <%# 送信ボタンの部分 %>
-    <div style="margin-top: 30px; position: relative; z-index: 10;">
-      <%= f.submit f.object.new_record? ? "CREATE FEEDBACK" : "UPDATE FEEDBACK", style: "width: 100%; min-height: 55px; padding: 16px; background-color: #1a1a1a; color: #fff; border: none; font-size: 14px; letter-spacing: 0.2em; cursor: pointer; -webkit-tap-highlight-color: transparent;" %>
-    </div>
+    <%# 下書き保存 #%>
+    <div style="display: flex; gap: 20px; margin-top: 40px;">
+      <%= f.button :submit, name: "feedback[status]", value: "draft", style: "flex: 1; padding: 15px; background: #eee; color: #1a1a1a; border: none; cursor: pointer; letter-spacing: 0.1em; font-size: 12px;" do %>
+        下書き保存
+      <% end %>
+
+    <%# 送信ボタン %>
+    <%= f.button :submit, name: "feedback[status]", value: "published", style: "flex: 2; padding: 15px; background: #1a1a1a; color: #fff; border: none; cursor: pointer; letter-spacing: 0.1em; font-size: 12px;" do %>
+      フィードバックを公開する
+    <% end %>
+  </div>
   <% end %> <%# 💡 保存フォーム終了 %>
 
         <%# 現在の写真 もし作り直すならここに入れる%>
