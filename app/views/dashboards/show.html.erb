@@ -38,17 +38,17 @@
   <%# コンテンツエリア（既存のフィードバック一覧） %>
 
   <% if @feedbacks.any? %>
-    <div style="display: flex; flex-direction: column;">
-      <% @feedbacks.each do |feedback| %>
-        <%= link_to feedback_path(feedback), style: "text-decoration: none; color: inherit; display: block; border-bottom: 1px solid #eee; padding: 40px 0; transition: opacity 0.3s;" do %>
-          <div style="display: flex; gap: 40px; align-items: flex-start;">
+  <div style="display: flex; flex-direction: column;">
+    <% @feedbacks.each do |feedback| %>
+      <%= link_to feedback_path(feedback), style: "text-decoration: none; color: inherit; display: block; border-bottom: 1px solid #eee; padding: 30px 0; transition: opacity 0.3s; width: 100%;" do %>
+        <div style="display: flex; gap: 25px; align-items: flex-start; width: 100%;">
 
             <%# スコア & アイコン（左側に配置） %>
             <div style="width: 45px; text-align: center; flex-shrink: 0;">
               <div style="font-size: 20px; font-family: 'Georgia', serif; font-weight: 300; border-bottom: 1px solid #1a1a1a; display: inline-block; min-width: 25px;">
                 <%= feedback.rating %>
               </div>
-              <div style="font-size: 8px; color: #999; margin-top: 5px; margin-bottom: 10px;">SCORE</div>
+              <div style="font-size: 8px; color: #999; margin-top: 5px; margin-bottom: 8px;">SCORE</div>
               
               <%# アイコン類を縦に並べるコンテナ %>
               <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
@@ -56,48 +56,44 @@
                   <span style="font-size: 8px; color: #fff; background: #1a1a1a; padding: 1px 4px; letter-spacing: 0.05em; display: inline-block;">NEW!</span>
                 <% end %>
 
-                
+                <%# 💡 下書きラベルをタイトルのすぐ横に配置 %>
+                <% if feedback.draft? %>
+                  <span style="font-size: 8px; color: #999; border: 1px solid #eee; padding: 1px 4px; letter-spacing: 0.05em; font-weight: bold; display: inline-block; white-space: nowrap;">下書き</span>
+                <% end %>
               </div>
             </div>
 
             <%# テキストコンテンツ（中央） %>
             <div style="flex-grow: 1;">
               <%# 日付 %>
-              <div style="font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 5px;">
+              <div style="font-size: 10px; color: #999; letter-spacing: 0.1em; margin-bottom: 4px;">
                 <%= feedback.lesson_date.strftime("%Y . %m . %d") %>
               </div>
   
               <%# タイトルとラベルをセットにする %>
-              <div style="display: flex; align-items: center; gap: 10px;">
-                <div style="font-size: 16px; font-weight: 500; letter-spacing: 0.05em;">
-                  <%= feedback.title.present? ? feedback.title : "Lesson Feedback" %>
-                </div>
-                <%# 💡 下書きラベルをタイトルのすぐ横に配置 %>
-                <% if feedback.draft? %>
-                  <span style="font-size: 8px; color: #999; border: 1px solid #eee; padding: 1px 5px; letter-spacing: 0.05em; font-weight: bold; flex-shrink: 0;">下書き</span>
-                <% end %>
+              <div style="font-size: 16px; font-weight: 500; letter-spacing: 0.05em; color: #1a1a1a; margin-bottom: 6px; line-height: 1.4;">
+                <%= feedback.title.present? ? feedback.title.truncate(12) : "Lesson Feedback" %>
               </div>
-            </div>
 
-            <%# 右側：講師名または生徒名（幅を固定して右寄せにする） %>
-            <div style="text-align: right; min-width: 150px; flex-shrink: 0;">
+            <%# 右側：講師名または生徒名 %>
+            <div style="text-align: left;">
               <% if current_user.teacher? %>
-                <div style="font-size: 9px; color: #999; letter-spacing: 0.05em; text-transform: uppercase;">
-                  STUDENT: <%= feedback.student&.name || "DELETED USER" %>
+                <div style="font-size: 9px; color: #999; letter-spacing: 0.1em; text-transform: uppercase;">
+                  STUDENT: <span style="color: #666;"><%= feedback.student&.name || "DELETED USER" %></span>
                 </div>
               <% elsif current_user.student? %>
-                <div style="font-size: 9px; color: #999; letter-spacing: 0.05em; text-transform: uppercase;">
-                  INSTRUCTOR: <%= feedback.teacher&.name || "UNKNOWN" %>
+                <div style="font-size: 9px; color: #999; letter-spacing: 0.1em; text-transform: uppercase;">
+                  INSTRUCTOR: <span style="color: #666;"><%= feedback.teacher&.name || "UNKNOWN" %></span>
                 </div>
               <% end %>
             </div>
-
-            <%# 矢印（一番右） %>
-            <div style="color: #ccc; font-size: 18px; padding-left: 20px;">→</div>
           </div>
-        <% end %>
+          
+        </div>
       <% end %>
-    </div>
+    <% end %>
+  </div>
+
   <% else %>
     <div style="text-align: center; padding: 80px 0; color: #999; font-weight: 300; letter-spacing: 0.1em;">
       No records found.
