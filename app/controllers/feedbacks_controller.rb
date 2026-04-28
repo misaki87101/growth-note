@@ -99,11 +99,15 @@ class FeedbacksController < ApplicationController
     end
 
     if @feedback.save
-      CommentMailer.with(user: @feedback.student, feedback: @feedback).feedback_created_email.deliver_later
+      # 💡 公開(published)の場合のみメールを送信
+      if @feedback.published?
+        CommentMailer.with(user: @feedback.student, feedback: @feedback).feedback_created_email.deliver_later
+      end
+
       redirect_to feedbacks_path, notice: "フィードバックを投稿しました！"
     else
       @groups = current_user.groups
-      @students = @current_group.users.where(role: :student) # 💡 修正：@current_group から取得
+      @students = @current_group.users.where(role: :student)
       render :new, status: :unprocessable_content
     end
   end
@@ -112,10 +116,15 @@ class FeedbacksController < ApplicationController
     @feedback = Feedback.find(params[:id])
 
     if @feedback.update(feedback_params)
+      # 💡 「今回公開された」かつ「ステータスが切り替わった、または初めて公開された」時だけ送信
+      # saved_change_to_status? を使うと、ステータスが変わった時だけ判定できます
+      if @feedback.published? && @feedback.saved_change_to_status?
+        CommentMailer.with(user: @feedback.student, feedback: @feedback).feedback_created_email.deliver_later
+      end
+
       redirect_to @feedback, notice: "更新しました！"
     else
       @groups = current_user.groups
-      # 💡 修正：current_user.students を削除
       @students = if current_user.teacher? || current_user.admin?
                     @current_group.users.where(role: :student)
                   else
