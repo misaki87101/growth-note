@@ -3,6 +3,7 @@
 class Feedback < ApplicationRecord
   belongs_to :student, class_name: 'User', optional: true
   belongs_to :teacher, class_name: 'User', optional: true
+  belongs_to :lesson_archive, optional: true
 
   # enumを設定。0をdraft(下書き)、1をpublished(公開)と定義
   enum :status, { draft: 0, published: 1 }

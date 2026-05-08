@@ -30,10 +30,13 @@ class FeedbacksController < ApplicationController
   end
 
   def show
-    @feedback = Feedback.find(params[:id])
+    # 💡 .includes(:lesson_archive) を追加して、日報データをセットで取得します
+    @feedback = Feedback.includes(:lesson_archive, :student, :teacher).find(params[:id])
+
+    # 既存の @members の取得（そのまま）
     @members = User.where(id: [@feedback.teacher_id, @feedback.student_id])
 
-    # 💡 セキュリティ：先生でも「自分のグループのフィードバック」じゃなければ追い出す
+    # セキュリティチェック（そのまま）
     if current_user.teacher?
       unless current_user.groups.exists?(id: @feedback.group_id)
         redirect_to feedbacks_path, alert: "閲覧権限がありません" and return
@@ -46,6 +49,10 @@ class FeedbacksController < ApplicationController
   def new
     @feedback = Feedback.new
     @groups = current_user.groups
+    @lesson_archive = LessonArchive.new(
+      lesson_date: Time.zone.today,
+      group_id: params[:group_id] || @current_group&.id
+    )
 
     # 先生ならグループの生徒、生徒なら自分自身をプルダウン候補にする
     @students = if current_user.teacher? || current_user.admin?
@@ -151,6 +158,7 @@ class FeedbacksController < ApplicationController
       params.require(:feedback).permit(
         :student_id, :lesson_date, :content, :rating, :title, :hour, :minute,
         :secret, :status,
+        :lesson_archive_id,
         check_items_attributes: %i[id name result timestamp _destroy]
       )
     else

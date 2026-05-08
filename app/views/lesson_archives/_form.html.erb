@@ -1,0 +1,82 @@
+<div style="max-width: 650px; margin: 60px auto; padding: 50px 60px; background-color: #ffffff; border: 1px solid #e5e5e5; border-radius: 2px; font-family: 'Helvetica Neue', Arial, sans-serif; color: #1a1a1a; line-height: 1.6; letter-spacing: 0.02em;">
+
+  <h2 style="font-size: 20px; font-weight: 300; text-align: center; margin-bottom: 50px; letter-spacing: 0.15em; text-transform: uppercase;">
+    <%= action_name == 'new' ? 'New Lesson Archive' : 'Edit Lesson Archive' %>
+  </h2>
+
+  <%= form_with(model: lesson_archive, local: true) do |f| %>
+    <% if lesson_archive.errors.any? %>
+      <div style="color: #d9534f; font-size: 12px; margin-bottom: 30px; padding: 15px; border: 1px solid #ffe5e5; background: #fff9f9;">
+        <p><%= lesson_archive.errors.count %>件のエラーがあります：</p>
+        <ul style="margin: 5px 0 0; padding-left: 20px;">
+          <% lesson_archive.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div style="display: flex; flex-direction: column; gap: 30px;">
+
+      <%# クラス選択（group_id） %>
+      <div>
+        <%= f.label :group_id, "クラス *必須", style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" %>
+        <%= f.collection_select :group_id, current_user.groups, :id, :name, 
+            { 
+              selected: (f.object.group_id || @current_group.id), 
+              prompt: "クラスを選択してください" 
+            }, 
+            { style: "width: 100%; padding: 12px; border: 1px solid #e5e5e5; font-size: 13px; border-radius: 0; background: #fff;" } %>
+       </div>
+      
+      <%# レッスン日 %>
+      <div>
+        <%= f.label :lesson_date, "講習日 *必須", style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" %>
+        <%= f.date_field :lesson_date, style: "font-size: 13px; width: 100%; padding: 12px; border: 1px solid #e5e5e5; border-radius: 0; background: #fff;" %>
+      </div>
+
+      <%# タイトル %>
+      <div>
+        <%= f.label :title, "講習タイトル *必須", style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" %>
+        <%= f.text_field :title, placeholder: "例：ジェル基礎・ワンカラー講習", style: "width: 100%; padding: 12px; border: 1px solid #e5e5e5; font-size: 13px; border-radius: 0;" %>
+      </div>
+
+      <%# タイムスケジュール %>
+      <div>
+        <%= f.label :schedule, "タイムスケジュール・内容", style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" %>
+        <%= f.text_area :schedule, placeholder: "10:00~12:00 ワンカラー\n12:00~13:00 休憩...", 
+            style: "width: 100%; height: 150px; padding: 15px; border: 1px solid #e5e5e5; font-size: 13px; line-height: 1.8; border-radius: 0;" %>
+      </div>
+
+      <%# 使用商材 %>
+      <div>
+        <%= f.label :items, "使用商材", style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" %>
+        <%= f.text_area :items, placeholder: "使用したジェルの品番や筆など", 
+            style: "width: 100%; height: 100px; padding: 15px; border: 1px solid #e5e5e5; font-size: 13px; border-radius: 0;" %>
+      </div>
+
+      <%# 全体伝達事項 %>
+      <div style="padding: 20px; background-color: #f9f9f9; border: 1px solid #eee;">
+        <%= f.label :notice, "全体伝達事項", style: "display: block; font-size: 11px; font-weight: bold; color: #1a1a1a; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px;" %>
+        <%= f.text_area :notice, placeholder: "明日までにオフしてきてください、など", 
+            style: "width: 100%; height: 80px; padding: 12px; font-size: 13px; border: 1px solid #e5e5e5; background-color: #fff; border-radius: 0;" %>
+      </div>
+
+      <%# 保存ボタンエリア %>
+      <div style="display: flex; gap: 20px; margin-top: 20px;">
+        <%= f.button :submit, name: "lesson_archive[status]", value: "draft", style: "flex: 1; padding: 15px; background: #eee; color: #1a1a1a; border: none; cursor: pointer; letter-spacing: 0.1em; font-size: 12px; text-transform: uppercase;" do %>
+          下書き保存
+        <% end %>
+
+        <%= f.button :submit, name: "lesson_archive[status]", value: "published", style: "flex: 2; padding: 15px; background: #1a1a1a; color: #fff; border: none; cursor: pointer; letter-spacing: 0.1em; font-size: 12px; text-transform: uppercase;" do %>
+          講習記録を公開する
+        <% end %>
+      </div>
+      
+      <div style="text-align: center; margin-top: 10px;">
+        <%= link_to "キャンセル", lesson_archives_path, style: "font-size: 11px; color: #999; text-decoration: none; letter-spacing: 0.1em;" %>
+      </div>
+
+    </div>
+  <% end %>
+</div>

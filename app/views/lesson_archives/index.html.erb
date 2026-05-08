@@ -1,0 +1,70 @@
+<div style="max-width: 700px; margin: 60px auto; padding: 0 20px; font-family: 'Helvetica Neue', Arial, sans-serif; color: #1a1a1a;">
+  
+  <%# タイトル部分 %>
+  <div style="text-align: center; margin-bottom: 60px;">
+    <h1 style="font-size: 22px; font-weight: 300; letter-spacing: 0.15em; margin-bottom: 10px; text-transform: uppercase;">Lesson Archives</h1>
+    <div style="font-size: 10px; color: #999; letter-spacing: 0.2em;">CURRICULUM LOG</div>
+  </div>
+
+  <%# ナビゲーションメニュー %>
+  <%= render 'shared/nav' %>
+
+  <%# ヘッダー部分 %>
+  <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 40px; border-bottom: 1px solid #1a1a1a; padding-bottom: 15px;">
+    <h2 style="font-size: 20px; font-weight: 300; letter-spacing: 0.15em; margin: 0;">LOG LISTS</h2>
+    <%= link_to "New Archive", new_lesson_archive_path, style: "font-size: 11px; color: #1a1a1a; text-decoration: none; letter-spacing: 0.1em; border: 1px solid #1a1a1a; padding: 8px 20px;" %>
+  </div>
+
+  <%# 一覧部分 %>
+  <% if @lesson_archives.any? %>
+    <div style="display: flex; flex-direction: column;">
+      <% @lesson_archives.each do |archive| %>
+        <%= link_to lesson_archive_path(archive), style: "text-decoration: none; color: inherit; display: block; border-bottom: 1px solid #f0f0f0; padding: 25px 0; transition: background 0.2s;" do %>
+          <div style="display: flex; align-items: flex-start; gap: 25px;" onmouseover="this.style.backgroundColor='#fafafa'" onmouseout="this.style.backgroundColor='transparent'">
+            
+            <%# 日付ブロック（カレンダー風のアクセント） %>
+            <div style="width: 60px; text-align: center; flex-shrink: 0; border-right: 1px solid #eee; padding-right: 15px;">
+              <div style="font-size: 18px; font-family: 'Georgia', serif; font-weight: 300; line-height: 1;">
+                <%= archive.lesson_date.strftime("%d") %>
+              </div>
+              <div style="font-size: 9px; color: #999; margin-top: 5px; text-transform: uppercase; letter-spacing: 0.05em;">
+                <%= archive.lesson_date.strftime("%b") %>
+              </div>
+            </div>
+
+            <%# コンテンツ部分 %>
+            <div style="flex-grow: 1;">
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                <%# タイトル %>
+                <h3 style="font-size: 16px; font-weight: 500; margin: 0; letter-spacing: 0.02em;">
+                  <%= archive.title %>
+                </h3>
+                
+                <%# ステータスバッジ（下書きのみ表示） %>
+                <% if archive.draft? %>
+                  <span style="font-size: 8px; color: #999; border: 1px solid #eee; padding: 2px 6px; letter-spacing: 0.05em; font-weight: bold;">下書き</span>
+                <% end %>
+              </div>
+
+              <%# 紐づいている生徒の数を確認（あとで印刷時に便利） %>
+              <div style="font-size: 9px; color: #aaa; letter-spacing: 0.05em; text-transform: uppercase;">
+                FEEDBACKS: <span style="color: #666;"><%= archive.feedbacks.count %> STUDENTS</span>
+              </div>
+            </div>
+
+            <%# 矢印アイコンの代わりに編集・削除への導線（任意ですが一覧にあると便利です） %>
+            <div style="display: flex; gap: 10px; align-self: center;">
+               <span style="font-size: 18px; color: #ccc;">›</span>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <div style="text-align: center; padding: 100px 0; color: #999; font-weight: 300; letter-spacing: 0.1em; border: 1px dotted #eee;">
+      No archives found.<br>
+      <span style="font-size: 10px; margin-top: 10px; display: block;">講習の記録をここから始めましょう。</span>
+    </div>
+  <% end %>
+
+</div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_04_28_063228) do
+ActiveRecord::Schema[7.2].define(version: 2026_05_07_073459) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -130,6 +130,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_28_063228) do
     t.integer "group_id"
     t.text "secret"
     t.integer "status", default: 0, null: false
+    t.bigint "lesson_archive_id"
+    t.index ["lesson_archive_id"], name: "index_feedbacks_on_lesson_archive_id"
     t.index ["status"], name: "index_feedbacks_on_status"
     t.index ["student_id"], name: "index_feedbacks_on_student_id"
     t.index ["teacher_id"], name: "index_feedbacks_on_teacher_id"
@@ -163,6 +165,22 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_28_063228) do
     t.datetime "updated_at", null: false
     t.index ["feedback_id"], name: "index_homeworks_on_feedback_id"
     t.index ["user_id"], name: "index_homeworks_on_user_id"
+  end
+
+  create_table "lesson_archives", force: :cascade do |t|
+    t.bigint "teacher_id", null: false
+    t.bigint "group_id", null: false
+    t.date "lesson_date"
+    t.string "title"
+    t.text "schedule"
+    t.text "items"
+    t.text "notice"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "status", default: 0, null: false
+    t.index ["group_id"], name: "index_lesson_archives_on_group_id"
+    t.index ["status"], name: "index_lesson_archives_on_status"
+    t.index ["teacher_id"], name: "index_lesson_archives_on_teacher_id"
   end
 
   create_table "likes", force: :cascade do |t|
@@ -262,6 +280,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_28_063228) do
   add_foreign_key "group_users", "users"
   add_foreign_key "homeworks", "feedbacks"
   add_foreign_key "homeworks", "users"
+  add_foreign_key "lesson_archives", "groups"
+  add_foreign_key "lesson_archives", "users", column: "teacher_id"
   add_foreign_key "likes", "feedbacks"
   add_foreign_key "likes", "homeworks"
   add_foreign_key "likes", "users"

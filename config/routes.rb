@@ -56,6 +56,9 @@ Rails.application.routes.draw do
     resources :comments, only: [:create, :destroy, :edit, :update]
   end
 
+
+    resources :lesson_archives, only: [:index, :new, :create, :show, :edit, :update, :destroy]
+    
   # ユーザープロフィールの表示・編集
   resources :users, only: [:show, :edit, :update , :index, :destroy]
 

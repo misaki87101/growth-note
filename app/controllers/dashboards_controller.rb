@@ -12,10 +12,9 @@ class DashboardsController < ApplicationController
   def show
     if current_user.teacher?
       # 2. そのグループに所属している生徒へのフィードバックだけに限定
-      @feedbacks = Feedback.includes(:student, :teacher)
+      @feedbacks = Feedback.includes(:student, :teacher, :lesson_archive)
                            .where(group_id: @current_group.id)
                            .order(lesson_date: :desc)
-
       # 3. 検索パラメータ（生徒ID）があれば、さらに絞り込む
       @feedbacks = @feedbacks.where(student_id: params[:student_id]) if params[:student_id].present?
 
@@ -23,6 +22,7 @@ class DashboardsController < ApplicationController
       @students = @current_group.users.where(role: :student)
     else
       @feedbacks = Feedback.published
+                           .includes(:teacher, :lesson_archive)
                            .where(student_id: current_user.id)
                            .order(lesson_date: :desc)
     end

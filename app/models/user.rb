@@ -32,6 +32,7 @@ class User < ApplicationRecord
   has_many :board_likes, dependent: :destroy
   has_many :group_users, dependent: :destroy
   has_many :groups, through: :group_users, dependent: :destroy
+  has_many :lesson_archives, foreign_key: :teacher_id, dependent: :destroy
 
   has_many :accepted_group_users, -> { where(accepted: true) }, class_name: 'GroupUser', dependent: :destroy
   has_many :active_groups, through: :accepted_group_users, source: :group

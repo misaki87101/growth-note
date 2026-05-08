@@ -38,6 +38,26 @@
         <%= render "feedbacks/student_select", students: @students %>
       </div>
 
+      <%# 日報（LessonArchive）の選択プルダウン %>
+      <% if current_user.teacher? %>
+        <div style="margin-bottom: 25px; padding: 15px; background: #f9f9f9; border: 1px solid #e5e5e5;">
+          <%= f.label :lesson_archive_id, "🔗 講習記録(日報)を紐付ける", style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #1a1a1a; margin-bottom: 8px; font-weight: bold;" %>
+          <%= f.select :lesson_archive_id, 
+              options_for_select(
+                LessonArchive.where(group_id: @current_group.id).order(lesson_date: :desc).limit(10).map { |la| 
+                  # 💡 表示名を [05/08] ワンカラー の形式に
+                  display_name = "[#{la.lesson_date.strftime('%m/%d')}] #{la.title}"
+                  [display_name, la.id, { 'data-date': la.lesson_date.to_s, 'data-title': la.title }] 
+                }, 
+                @feedback.lesson_archive_id
+              ), 
+              { include_blank: "選択しない（手入力する）" }, 
+              { id: "feedback_lesson_archive_id", style: "width: 100%; padding: 12px; border: 1px solid #ccc; font-size: 12px;" } %>
+              
+          <p style="font-size: 10px; color: #999; margin-top: 5px;">※紐付けると、講習内容が自動的に生徒に共有されます。</p>
+        </div>
+      <% end %>
+
       <%# レッスン日 %>
       <div>
         <%= f.label :lesson_date, "レッスン日 *入力必須", style: "display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px;" %>
@@ -176,6 +196,31 @@
     const container = document.getElementById('check-items-container');
     const template = document.getElementById('item-template');
     const contentArea = document.getElementById('feedback-content');
+
+    // 日報選択時の自動入力
+    const archiveSelect = document.getElementById('feedback_lesson_archive_id');
+    if (archiveSelect) {
+      archiveSelect.addEventListener('change', (e) => {
+        const selectedOption = e.target.options[e.target.selectedIndex];
+        
+        if (selectedOption.value !== "") {
+          // 1. タイトル（講習名）の自動入力
+          // 💡 selectedOption.text ではなく data-title から取得！
+          const titleData = selectedOption.getAttribute('data-title'); 
+          const titleInput = document.querySelector('input[name="feedback[title]"]');
+          if (titleInput && titleData) {
+            titleInput.value = titleData;
+          }
+
+          // 2. 日付の自動入力
+          const dateData = selectedOption.getAttribute('data-date');
+          const dateInput = document.querySelector('input[name="feedback[lesson_date]"]');
+          if (dateInput && dateData) {
+            dateInput.value = dateData;
+          }
+        }
+      });
+    }
 
     // ページ内に必要な要素がない場合は何もしない（エラー防止）
     if (!container || !template) return;

@@ -8,6 +8,15 @@
         FEEDBACK
       <% end %>
     </div>
+
+    <%# LESSON ARCHIVE 講師のみ表示%>
+    <% if current_user.teacher? %>
+      <div style="padding-bottom: 15px; <%= 'border-bottom: 2px solid #1a1a1a;' if current_page?(lesson_archives_path) %>">
+        <%= link_to lesson_archives_path, style: "text-decoration: none; color: #{current_page?(lesson_archives_path) ? '#1a1a1a' : '#999'}; font-size: 11px; letter-spacing: 0.15em; font-weight: bold; position: relative;" do %>
+          LESSON ARCHIVE
+        <% end %>
+      </div>
+    <% end %>
   
     <%# HOMEWORK %>
     <div style="padding-bottom: 15px; <%= 'border-bottom: 2px solid #1a1a1a;' if current_page?(homeworks_path) %>">
